@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PTE WE 练习与考核</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div>
+            <h1>PTE WE</h1>
+            <p id="progressSummary">0 / 39 已掌握</p>
+          </div>
+        </div>
+
+        <div class="sidebar-tools">
+          <div class="mode-tabs" role="tablist" aria-label="练习模式">
+            <button class="mode-tab is-active" type="button" data-mode="template">模板</button>
+            <button class="mode-tab" type="button" data-mode="article">文章论点</button>
+            <button class="mode-tab" type="button" data-mode="exam">考核</button>
+          </div>
+          <label class="field">
+            <span>搜索文章</span>
+            <input id="searchInput" type="search" autocomplete="off" placeholder="#17 / topic">
+          </label>
+          <div class="segmented" role="group" aria-label="状态筛选">
+            <button class="segment is-active" type="button" data-filter="all">全部</button>
+            <button class="segment" type="button" data-filter="todo">未过</button>
+            <button class="segment" type="button" data-filter="mastered">已掌握</button>
+          </div>
+        </div>
+
+        <nav class="level-list" id="levelList" aria-label="文章列表"></nav>
+      </aside>
+
+      <main class="workspace">
+        <section class="level-header">
+          <div>
+            <p class="eyebrow" id="levelNumber">模板练习</p>
+            <h2 id="levelTitle">WE 四段模板</h2>
+          </div>
+          <div class="header-actions">
+            <div class="timer" id="timerDisplay">05:00</div>
+            <button class="secondary-button" id="markMasteredButton" type="button">标记已会</button>
+            <button class="primary-button" id="nextLevelButton" type="button">下一篇</button>
+          </div>
+        </section>
+
+        <section class="prompt-panel" id="promptPanel">
+          <div class="prompt-block">
+            <span>Topic</span>
+            <p id="topicText"></p>
+          </div>
+          <div class="prompt-block">
+            <span>Position</span>
+            <p id="positionText"></p>
+          </div>
+        </section>
+
+        <section class="reference-band" id="imageSection">
+          <div class="image-pane">
+            <div class="image-toolbar">
+              <span>关卡图片</span>
+              <button class="ghost-button" id="toggleImageButton" type="button">展开</button>
+            </div>
+            <div class="image-frame" id="imageFrame">
+              <img id="levelImage" alt="">
+            </div>
+          </div>
+        </section>
+
+        <section class="practice-panel" id="practicePanel">
+          <div class="panel-heading">
+            <div>
+              <h3 id="practiceTitle">默写区</h3>
+              <p id="levelScore">未检查</p>
+            </div>
+            <div class="panel-actions">
+              <button class="secondary-button" id="startTimerButton" type="button">开始计时</button>
+              <button class="secondary-button" id="resetInputsButton" type="button">清空</button>
+              <button class="secondary-button" id="revealAllButton" type="button">显示答案</button>
+              <button class="primary-button" id="checkButton" type="button">检查</button>
+            </div>
+          </div>
+          <div class="module-grid" id="moduleGrid"></div>
+        </section>
+
+        <section class="exam-panel" id="examPanel" hidden>
+          <div class="panel-heading">
+            <div>
+              <h3 id="examTitle">单篇考核</h3>
+              <p id="examScore">开考后限时 20 分钟，到时自动提交。</p>
+            </div>
+            <div class="panel-actions">
+              <div class="segmented exam-switch" role="group" aria-label="考核类型">
+                <button class="segment is-active" id="singleExamModeButton" type="button">单篇</button>
+                <button class="segment" id="compositeExamModeButton" type="button">综合</button>
+              </div>
+              <button class="secondary-button" id="clearExamButton" type="button">清空</button>
+              <button class="secondary-button" id="nextCompositeExamButton" type="button" hidden>下一篇</button>
+              <button class="secondary-button" id="startExamButton" type="button">开始</button>
+              <button class="primary-button" id="submitExamButton" type="button">提交考核</button>
+            </div>
+          </div>
+          <div class="exam-topic-card" id="examTopicCard">
+            <span id="examTopicLabel">Topic</span>
+            <p id="examTopicText"></p>
+          </div>
+          <div class="exam-progress" id="examProgress" hidden></div>
+          <textarea id="examInput" class="exam-input" spellcheck="false" placeholder="在这里默写完整作文..."></textarea>
+          <div class="exam-result" id="examResult" hidden></div>
+        </section>
+      </main>
+    </div>
+
+    <script src="./practice-data.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
