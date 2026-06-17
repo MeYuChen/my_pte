@@ -530,7 +530,8 @@ textarea:focus {
 
 .module-title h4 {
   margin: 0;
-  font-size: 15px;
+  font-size: 14px;
+  font-weight: 900;
 }
 
 .module-count {
