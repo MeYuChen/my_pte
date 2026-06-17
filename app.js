@@ -12,6 +12,75 @@ const MODE_LIMITS = {
   exam: 1200
 };
 
+const ARTICLE_SLOT_PATTERNS = {
+  introduction: [
+    {
+      regex: /^The issue of (.+) has triggered a heated debate in contemporary society\.$/,
+      labels: ["议题"]
+    },
+    {
+      regex: /^Many people claim that (.+)\.$/,
+      labels: ["反方观点"]
+    },
+    null,
+    {
+      regex: /^In this essay, I will (?:(?:describe (.+) and )?elaborate) on my point of view that (.+)\.$/,
+      labels: ["描述对象", "我的观点"]
+    }
+  ],
+  argument1: [
+    {
+      regex: /^To begin with, one of the most compelling reasons for the significance of (.+) is that (.+)\.$/,
+      labels: ["关键词", "分论点"]
+    },
+    {
+      regex: /^This plays a vital role because (.+)\.$/,
+      labels: ["原因"]
+    },
+    {
+      regex: /^To illustrate, studies have shown that (.+)\.$/,
+      labels: ["例子"]
+    },
+    {
+      regex: /^Consequently, (.+)\.$/,
+      labels: ["结果"]
+    }
+  ],
+  argument2: [
+    {
+      regex: /^(?:In addition|However), a crucial factor that cannot be ignored is that (.+)\.$/,
+      labels: ["分论点"]
+    },
+    {
+      regex: /^This point matters greatly because (.+)\.$/,
+      labels: ["原因"]
+    },
+    {
+      regex: /^Based on my experience, (.+)\.$/,
+      labels: ["个人例子"]
+    },
+    null,
+    {
+      regex: /^As a result, (.+)\.$/,
+      labels: ["结果"]
+    }
+  ],
+  conclusion: [
+    {
+      regex: /^To sum up, all the evidence suggests that (.+), mainly due to (.+) and (.+)\.$/,
+      labels: ["总结观点", "理由一", "理由二"]
+    },
+    {
+      regex: /^Therefore, I strongly recommend that (.+?) should (.+)\.$/,
+      labels: ["推荐对象", "推荐动作"]
+    },
+    {
+      regex: /^Therefore, I strongly recommend that (.+)\.$/,
+      labels: ["推荐句"]
+    }
+  ]
+};
+
 const MASTERY_STEPS = [
   { key: "new", label: "未熟悉", minCorrect: 0 },
   { key: "familiar", label: "熟悉", minCorrect: 1 },
@@ -216,7 +285,7 @@ function renderLevelList() {
           <span class="level-item-meta">${
             state.mode === "exam"
               ? "可选考核题目"
-              : `${sentenceCount(article)} 句 · 近5次 ${windowCorrectCount(progress)}/5`
+              : `${practiceFieldCount(article)} 空 · 近5次 ${windowCorrectCount(progress)}/5`
           }</span>
         </span>
         <span class="status-pill ${level.key}">
@@ -267,7 +336,7 @@ function renderMain() {
     els.levelNumber.textContent = "模板练习";
     els.levelTitle.textContent = template.title;
     els.practiceTitle.textContent = "5 分钟模板默写";
-    els.levelScore.textContent = scoreText("template");
+    els.levelScore.textContent = scoreText(template.id);
   } else {
     const article = state.mode === "exam" ? currentExamArticle() : getActiveArticle();
     if (state.mode === "exam") {
@@ -292,21 +361,26 @@ function renderMain() {
 }
 
 function renderPractice(item) {
+  const modules = practiceModules(item);
+  const countUnit = item.id === template.id ? "句" : "空";
   els.moduleGrid.replaceChildren(
     ...MODULES.map(([key, label]) => {
-      const sentences = item.modules[key] || [];
+      const fields = modules[key] || [];
       const card = document.createElement("article");
       card.className = "module-card";
-      const rows = sentences.map((sentence, index) => {
+      const rows = fields.map((field, index) => {
         const draftKey = inputKey(item.id, key, index);
         const value = persisted.drafts[draftKey] || "";
         return `
           <div class="sentence-row">
             <span class="sentence-index">${index + 1}</span>
-            <input class="sentence-input" type="text" autocomplete="off"
-              data-module="${key}" data-index="${index}" value="${escapeAttr(value)}">
+            <div class="input-stack">
+              ${field.label ? `<div class="slot-cue">${escapeHtml(field.label)}</div>` : ""}
+              <input class="sentence-input" type="text" autocomplete="off"
+                data-module="${key}" data-index="${index}" value="${escapeAttr(value)}">
+            </div>
             <div class="answer-line ${state.answersVisible ? "is-visible" : ""}">
-              ${escapeHtml(sentence)}
+              ${escapeHtml(field.answer)}
             </div>
           </div>
         `;
@@ -314,7 +388,7 @@ function renderPractice(item) {
       card.innerHTML = `
         <div class="module-title">
           <h4>${label}</h4>
-          <span class="module-count">${sentences.length} 句</span>
+          <span class="module-count">${fields.length} ${countUnit}</span>
         </div>
         <div class="sentence-list">${rows}</div>
       `;
@@ -413,18 +487,19 @@ function goToNextCompositeArticle() {
 
 function checkPractice() {
   const item = currentPracticeItem();
+  const modules = practiceModules(item);
   let correct = 0;
   let total = 0;
 
   els.moduleGrid.querySelectorAll(".sentence-input").forEach((input) => {
-    const expected = item.modules[input.dataset.module][Number(input.dataset.index)];
-    const actual = input.value.trim();
-    const ok = actual === expected;
+    const expected = modules[input.dataset.module][Number(input.dataset.index)].answer;
+    const actual = normalizeForPractice(input.value);
+    const ok = actual === normalizeForPractice(expected);
     total += 1;
     correct += ok ? 1 : 0;
     input.classList.toggle("correct", ok);
     input.classList.toggle("wrong", !ok);
-    input.parentElement.querySelector(".answer-line").classList.toggle("is-visible", !ok || state.answersVisible);
+    input.closest(".sentence-row").querySelector(".answer-line").classList.toggle("is-visible", !ok || state.answersVisible);
   });
 
   const id = item.id;
@@ -750,6 +825,55 @@ function currentPracticeItem() {
   return getActiveArticle();
 }
 
+function practiceModules(item) {
+  if (item.id === template.id) return templatePracticeModules(item);
+  return articlePracticeModules(item);
+}
+
+function templatePracticeModules(item) {
+  return MODULES.reduce((modules, [key]) => {
+    modules[key] = (item.modules[key] || []).map((sentence, index) => ({
+      answer: sentence,
+      label: `句子 ${index + 1}`
+    }));
+    return modules;
+  }, {});
+}
+
+function articlePracticeModules(article) {
+  return MODULES.reduce((modules, [key]) => {
+    modules[key] = (article.modules[key] || []).flatMap((sentence, index) => {
+      return extractArticleFields(key, sentence, index);
+    });
+    return modules;
+  }, {});
+}
+
+function extractArticleFields(moduleKey, sentence, sentenceIndex) {
+  if (sentence === "Nevertheless, others hold different opinions.") return [];
+
+  const specs = (ARTICLE_SLOT_PATTERNS[moduleKey] || []).filter(Boolean);
+  for (const spec of specs) {
+    const match = sentence.match(spec.regex);
+    if (!match) continue;
+
+    const fields = [];
+    match.slice(1).forEach((answer, captureIndex) => {
+      if (!answer) return;
+      fields.push({
+        answer: answer.trim(),
+        label: spec.labels?.[captureIndex] || `空 ${fields.length + 1}`
+      });
+    });
+    if (fields.length) return fields;
+  }
+
+  return [{
+    answer: sentence.trim(),
+    label: `额外句 ${sentenceIndex + 1}`
+  }];
+}
+
 function getActiveArticle() {
   return articles.find((article) => article.id === state.activeArticleId) || articles[0];
 }
@@ -853,8 +977,14 @@ function sentenceCount(item) {
   return MODULES.reduce((sum, [key]) => sum + (item.modules[key] || []).length, 0);
 }
 
+function practiceFieldCount(item) {
+  const modules = practiceModules(item);
+  return MODULES.reduce((sum, [key]) => sum + (modules[key] || []).length, 0);
+}
+
 function inputKey(itemId, moduleKey, index) {
-  return `${itemId}::${moduleKey}::${index}`;
+  const scope = itemId === template.id ? "template-full" : "article-slots";
+  return `${itemId}::${scope}::${moduleKey}::${index}`;
 }
 
 function splitEssayInput(value) {
@@ -866,6 +996,13 @@ function splitEssayInput(value) {
 
 function normalizeForExact(value) {
   return String(value || "").trim();
+}
+
+function normalizeForPractice(value) {
+  return String(value || "")
+    .trim()
+    .replace(/\s+/g, " ")
+    .replace(/\s+([,.;:!?])/g, "$1");
 }
 
 function assetUrl(rawPath) {

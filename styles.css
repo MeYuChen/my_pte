@@ -565,6 +565,18 @@ textarea:focus {
   font-weight: 900;
 }
 
+.input-stack {
+  display: grid;
+  gap: 6px;
+}
+
+.slot-cue {
+  color: var(--accent-strong);
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.25;
+}
+
 .sentence-input {
   min-height: 38px;
 }
