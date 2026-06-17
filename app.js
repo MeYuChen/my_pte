@@ -16,67 +16,81 @@ const ARTICLE_SLOT_PATTERNS = {
   introduction: [
     {
       regex: /^The issue of (.+) has triggered a heated debate in contemporary society\.$/,
-      labels: ["议题"]
+      labels: ["议题"],
+      suffixes: [""]
     },
     {
       regex: /^Many people claim that (.+)\.$/,
-      labels: ["反方观点"]
+      labels: ["反方观点"],
+      suffixes: ["."]
     },
     null,
     {
       regex: /^In this essay, I will (?:(?:describe (.+) and )?elaborate) on my point of view that (.+)\.$/,
-      labels: ["描述对象", "我的观点"]
+      labels: ["描述对象", "我的观点"],
+      suffixes: ["", "."]
     }
   ],
   argument1: [
     {
       regex: /^To begin with, one of the most compelling reasons for the significance of (.+) is that (.+)\.$/,
-      labels: ["关键词", "分论点"]
+      labels: ["关键词", "分论点"],
+      suffixes: ["", "."]
     },
     {
       regex: /^This plays a vital role because (.+)\.$/,
-      labels: ["原因"]
+      labels: ["原因"],
+      suffixes: ["."]
     },
     {
       regex: /^To illustrate, studies have shown that (.+)\.$/,
-      labels: ["例子"]
+      labels: ["例子"],
+      suffixes: ["."]
     },
     {
       regex: /^Consequently, (.+)\.$/,
-      labels: ["结果"]
+      labels: ["结果"],
+      suffixes: ["."]
     }
   ],
   argument2: [
     {
       regex: /^(?:In addition|However), a crucial factor that cannot be ignored is that (.+)\.$/,
-      labels: ["分论点"]
+      labels: ["分论点"],
+      suffixes: ["."]
     },
     {
       regex: /^This point matters greatly because (.+)\.$/,
-      labels: ["原因"]
+      labels: ["原因"],
+      suffixes: ["."]
     },
     {
       regex: /^Based on my experience, (.+)\.$/,
-      labels: ["个人例子"]
+      labels: ["个人例子"],
+      suffixes: ["."]
     },
     null,
     {
       regex: /^As a result, (.+)\.$/,
-      labels: ["结果"]
+      labels: ["结果"],
+      suffixes: ["."]
     }
   ],
   conclusion: [
     {
       regex: /^To sum up, all the evidence suggests that (.+), mainly due to (.+) and (.+)\.$/,
-      labels: ["总结观点", "理由一", "理由二"]
+      labels: ["总结观点", "理由一", "理由二"],
+      suffixes: ["", "", "."]
     },
     {
       regex: /^Therefore, I strongly recommend that (.+?) should (.+)\.$/,
-      labels: ["推荐对象", "推荐动作"]
+      labels: ["推荐对象", "推荐动作"],
+      suffixes: ["", "."]
     },
     {
       regex: /^Therefore, I strongly recommend that (.+)\.$/,
-      labels: ["推荐句"]
+      labels: ["推荐句"],
+      suffixes: ["."]
     }
   ]
 };
@@ -382,7 +396,10 @@ function renderPractice(item) {
                 data-module="${key}" data-index="${index}" value="${escapeAttr(value)}">
             </div>
             <div class="answer-line ${state.answersVisible ? "is-visible" : ""}">
-              ${escapeHtml(field.answer)}
+              <div class="answer-row">
+                <span class="answer-label">标准答案</span>
+                <span class="answer-text">${escapeHtml(field.answer)}</span>
+              </div>
             </div>
           </div>
         `;
@@ -496,12 +513,17 @@ function checkPractice() {
   els.moduleGrid.querySelectorAll(".sentence-input").forEach((input) => {
     const expected = modules[input.dataset.module][Number(input.dataset.index)].answer;
     const actual = normalizeForPractice(input.value);
-    const ok = actual === normalizeForPractice(expected);
+    const normalizedExpected = normalizeForPractice(expected);
+    const ok = actual === normalizedExpected;
+    const answerLine = input.closest(".sentence-row").querySelector(".answer-line");
     total += 1;
     correct += ok ? 1 : 0;
     input.classList.toggle("correct", ok);
     input.classList.toggle("wrong", !ok);
-    input.closest(".sentence-row").querySelector(".answer-line").classList.toggle("is-visible", !ok || state.answersVisible);
+    answerLine.classList.toggle("is-visible", !ok || state.answersVisible);
+    answerLine.innerHTML = ok
+      ? answerHtml(normalizedExpected)
+      : diffAnswerHtml(normalizedExpected, actual);
   });
 
   const id = item.id;
@@ -867,7 +889,7 @@ function extractArticleFields(moduleKey, sentence, sentenceIndex) {
     match.slice(1).forEach((answer, captureIndex) => {
       if (!answer) return;
       fields.push({
-        answer: answer.trim(),
+        answer: `${answer.trim()}${spec.suffixes?.[captureIndex] || ""}`,
         label: spec.labels?.[captureIndex] || `空 ${fields.length + 1}`
       });
     });
@@ -878,6 +900,89 @@ function extractArticleFields(moduleKey, sentence, sentenceIndex) {
     answer: sentence.trim(),
     label: `额外句 ${sentenceIndex + 1}`
   }];
+}
+
+function answerHtml(expected) {
+  return `
+    <div class="answer-row">
+      <span class="answer-label">标准答案</span>
+      <span class="answer-text">${escapeHtml(expected)}</span>
+    </div>
+  `;
+}
+
+function diffAnswerHtml(expected, actual) {
+  const expectedTokens = diffTokens(expected);
+  const actualTokens = diffTokens(actual);
+  const diff = tokenDiff(expectedTokens, actualTokens);
+  return `
+    <div class="answer-row">
+      <span class="answer-label">你的答案</span>
+      <span class="answer-text">${renderDiffTokens(diff.actual, "actual") || '<span class="muted-token">[空]</span>'}</span>
+    </div>
+    <div class="answer-row">
+      <span class="answer-label">标准答案</span>
+      <span class="answer-text">${renderDiffTokens(diff.expected, "expected") || '<span class="muted-token">[空]</span>'}</span>
+    </div>
+  `;
+}
+
+function diffTokens(value) {
+  return String(value || "").match(/[A-Za-z0-9']+|[^\sA-Za-z0-9']/g) || [];
+}
+
+function tokenDiff(expectedTokens, actualTokens) {
+  const rows = Array.from({ length: expectedTokens.length + 1 }, () => (
+    Array(actualTokens.length + 1).fill(0)
+  ));
+
+  for (let i = expectedTokens.length - 1; i >= 0; i -= 1) {
+    for (let j = actualTokens.length - 1; j >= 0; j -= 1) {
+      rows[i][j] = expectedTokens[i] === actualTokens[j]
+        ? rows[i + 1][j + 1] + 1
+        : Math.max(rows[i + 1][j], rows[i][j + 1]);
+    }
+  }
+
+  const expected = [];
+  const actual = [];
+  let i = 0;
+  let j = 0;
+
+  while (i < expectedTokens.length || j < actualTokens.length) {
+    if (i < expectedTokens.length && j < actualTokens.length && expectedTokens[i] === actualTokens[j]) {
+      expected.push({ value: expectedTokens[i], status: "same" });
+      actual.push({ value: actualTokens[j], status: "same" });
+      i += 1;
+      j += 1;
+    } else if (j < actualTokens.length && (i >= expectedTokens.length || rows[i][j + 1] >= rows[i + 1][j])) {
+      actual.push({ value: actualTokens[j], status: "extra" });
+      j += 1;
+    } else {
+      expected.push({ value: expectedTokens[i], status: "missing" });
+      i += 1;
+    }
+  }
+
+  return { expected, actual };
+}
+
+function renderDiffTokens(tokens, type) {
+  return tokens.map((token, index) => {
+    const prefix = index > 0 && shouldSeparate(tokens[index - 1].value, token.value) ? " " : "";
+    const className = token.status === "same"
+      ? "diff-token"
+      : `diff-token ${type === "actual" ? "extra" : "missing"}`;
+    return `${prefix}<mark class="${className}">${escapeHtml(token.value)}</mark>`;
+  }).join("");
+}
+
+function shouldSeparate(previous, current) {
+  return isWordToken(previous) && isWordToken(current);
+}
+
+function isWordToken(token) {
+  return /^[A-Za-z0-9']+$/.test(token);
 }
 
 function getActiveArticle() {

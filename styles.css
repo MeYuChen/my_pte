@@ -606,6 +606,49 @@ textarea:focus {
   display: block;
 }
 
+.answer-row {
+  display: grid;
+  grid-template-columns: 62px 1fr;
+  gap: 8px;
+  align-items: start;
+}
+
+.answer-row + .answer-row {
+  margin-top: 7px;
+}
+
+.answer-label {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.answer-text {
+  min-width: 0;
+}
+
+.diff-token {
+  padding: 1px 2px;
+  border-radius: 3px;
+  background: transparent;
+  color: inherit;
+}
+
+.diff-token.extra,
+.diff-token.missing {
+  background: #fff07a;
+  color: #231c00;
+}
+
+.diff-token.extra {
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+}
+
+.muted-token {
+  color: var(--muted);
+}
+
 .exam-input {
   min-height: 430px;
   font-size: 15px;
