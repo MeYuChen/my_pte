@@ -192,7 +192,9 @@ function bindEvents() {
   });
   els.imageFrame.addEventListener("dblclick", openImageFullscreen);
 
-  els.startTimerButton.addEventListener("click", () => startTimer(state.mode));
+  els.startTimerButton.addEventListener("click", () => {
+    if (state.mode === "template") startTimer(state.mode);
+  });
   els.checkButton.addEventListener("click", checkPractice);
   els.revealAllButton.addEventListener("click", toggleAnswers);
   els.resetInputsButton.addEventListener("click", resetPracticeInputs);
@@ -726,6 +728,7 @@ function goToNextArticle() {
 }
 
 function startTimer(mode) {
+  if (mode === "article") return;
   stopTimer(false);
   const seconds = MODE_LIMITS[mode] || 300;
   state.timer = {
@@ -735,7 +738,7 @@ function startTimer(mode) {
     interval: window.setInterval(tickTimer, 250)
   };
   tickTimer();
-  if (mode === "template" || mode === "article") {
+  if (mode === "template") {
     els.moduleGrid.querySelector(".sentence-input")?.focus();
   } else if (mode === "exam") {
     els.examInput.focus();
@@ -754,7 +757,7 @@ function tickTimer() {
       } else {
         submitExam({ auto: true });
       }
-    } else if (state.mode === "template" || state.mode === "article") {
+    } else if (state.mode === "template") {
       checkPractice();
     }
   }
@@ -788,6 +791,9 @@ function renderTimer() {
   const seconds = state.timer.interval ? state.timer.remaining : MODE_LIMITS[state.mode];
   const mins = Math.floor(seconds / 60);
   const secs = seconds % 60;
+  const showPracticeTimer = state.mode === "template";
+  els.timerDisplay.hidden = state.mode === "article";
+  els.startTimerButton.hidden = !showPracticeTimer;
   els.timerDisplay.textContent = `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
   els.timerDisplay.classList.toggle("is-warning", seconds <= 60 && seconds > 0);
   els.timerDisplay.classList.toggle("is-ended", seconds === 0);
