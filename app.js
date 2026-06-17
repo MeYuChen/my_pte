@@ -645,10 +645,7 @@ function renderExamResult(passed, diffs) {
       ${diffs.map((diff) => `
         <div class="diff-item">
           <div class="diff-title">第 ${diff.index + 1} 段</div>
-          <div class="diff-columns">
-            <div class="diff-cell expected"><strong>标准答案</strong>\n${escapeHtml(diff.expected || "[缺少标准段落]")}</div>
-            <div class="diff-cell actual"><strong>你的答案</strong>\n${escapeHtml(diff.actual || "[未填写]")}</div>
-          </div>
+          ${examDiffHtml(diff)}
         </div>
       `).join("")}
     </div>
@@ -687,10 +684,7 @@ function compositeResultHtml(result, index) {
         ${result.diffs.map((diff) => `
           <div class="diff-item">
             <div class="diff-title">第 ${diff.index + 1} 段</div>
-            <div class="diff-columns">
-              <div class="diff-cell expected"><strong>标准答案</strong>\n${escapeHtml(diff.expected || "[缺少标准段落]")}</div>
-              <div class="diff-cell actual"><strong>你的答案</strong>\n${escapeHtml(diff.actual || "[未填写]")}</div>
-            </div>
+            ${examDiffHtml(diff)}
           </div>
         `).join("")}
       </div>
@@ -923,6 +917,24 @@ function diffAnswerHtml(expected, actual) {
     <div class="answer-row">
       <span class="answer-label">标准答案</span>
       <span class="answer-text">${renderDiffTokens(diff.expected, "expected") || '<span class="muted-token">[空]</span>'}</span>
+    </div>
+  `;
+}
+
+function examDiffHtml(diff) {
+  const expected = diff.expected || "";
+  const actual = diff.actual || "";
+  const tokenDiffResult = tokenDiff(diffTokens(expected), diffTokens(actual));
+  return `
+    <div class="diff-columns">
+      <div class="diff-cell expected">
+        <strong>标准答案</strong>
+        <div class="exam-diff-text">${renderDiffTokens(tokenDiffResult.expected, "expected") || '<span class="muted-token">[缺少标准段落]</span>'}</div>
+      </div>
+      <div class="diff-cell actual">
+        <strong>你的答案</strong>
+        <div class="exam-diff-text">${renderDiffTokens(tokenDiffResult.actual, "actual") || '<span class="muted-token">[未填写]</span>'}</div>
+      </div>
     </div>
   `;
 }

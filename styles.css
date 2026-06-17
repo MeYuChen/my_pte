@@ -710,7 +710,6 @@ textarea:focus {
   background: var(--surface);
   line-height: 1.45;
   font-size: 13px;
-  white-space: pre-wrap;
 }
 
 .diff-cell.expected {
@@ -719,6 +718,10 @@ textarea:focus {
 
 .diff-cell.actual {
   border-left: 3px solid var(--bad);
+}
+
+.exam-diff-text {
+  margin-top: 7px;
 }
 
 .toast {
