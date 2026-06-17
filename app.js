@@ -137,7 +137,8 @@ const state = {
 
 const els = {
   appShell: document.getElementById("appShell"),
-  sidebarToggle: document.getElementById("sidebarToggle"),
+  sidebarCollapseButton: document.getElementById("sidebarCollapseButton"),
+  sidebarExpandButton: document.getElementById("sidebarExpandButton"),
   progressSummary: document.getElementById("progressSummary"),
   searchInput: document.getElementById("searchInput"),
   levelList: document.getElementById("levelList"),
@@ -190,7 +191,8 @@ function bindEvents() {
     });
   });
 
-  els.sidebarToggle.addEventListener("click", toggleSidebar);
+  els.sidebarCollapseButton.addEventListener("click", toggleSidebar);
+  els.sidebarExpandButton.addEventListener("click", toggleSidebar);
 
   document.querySelectorAll(".segment").forEach((button) => {
     button.addEventListener("click", () => {
@@ -239,10 +241,8 @@ function toggleSidebar() {
 
 function renderSidebarState() {
   els.appShell.classList.toggle("is-sidebar-collapsed", state.sidebarCollapsed);
-  els.appShell.style.gridTemplateColumns = state.sidebarCollapsed ? "0 12px 1fr" : "336px 12px 1fr";
-  els.sidebarToggle.textContent = state.sidebarCollapsed ? "›" : "‹";
-  els.sidebarToggle.setAttribute("aria-expanded", String(!state.sidebarCollapsed));
-  els.sidebarToggle.setAttribute("aria-label", state.sidebarCollapsed ? "展开左侧栏" : "收起左侧栏");
+  els.sidebarCollapseButton.hidden = state.sidebarCollapsed;
+  els.sidebarExpandButton.hidden = !state.sidebarCollapsed;
 }
 
 function setMode(mode) {
