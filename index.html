@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="./styles.css">
   </head>
   <body>
-    <div class="app-shell">
+    <div class="app-shell" id="appShell">
       <aside class="sidebar">
         <div class="brand">
           <div>
@@ -35,6 +35,15 @@
 
         <nav class="level-list" id="levelList" aria-label="文章列表"></nav>
       </aside>
+      <button
+        class="sidebar-toggle"
+        id="sidebarToggle"
+        type="button"
+        aria-label="收起左侧栏"
+        aria-expanded="true"
+      >
+        ‹
+      </button>
 
       <main class="workspace">
         <section class="level-header">

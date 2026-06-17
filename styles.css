@@ -45,11 +45,16 @@ button {
 
 .app-shell {
   display: grid;
-  grid-template-columns: 336px 1fr;
+  grid-template-columns: 336px 12px 1fr;
   min-height: 100vh;
 }
 
+.app-shell.is-sidebar-collapsed {
+  grid-template-columns: 0 12px 1fr;
+}
+
 .sidebar {
+  grid-column: 1;
   position: sticky;
   top: 0;
   height: 100vh;
@@ -60,9 +65,50 @@ button {
   background: #fbfcfa;
 }
 
+.sidebar-toggle {
+  grid-column: 2;
+  position: sticky;
+  top: 50vh;
+  z-index: 5;
+  width: 28px;
+  height: 64px;
+  margin-left: -14px;
+  align-self: start;
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transform: translateY(-50%);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--accent-strong);
+  box-shadow: var(--shadow);
+  font-size: 28px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.sidebar-toggle:hover {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+.app-shell.is-sidebar-collapsed .sidebar-toggle {
+  position: fixed;
+  left: 0;
+  top: 50vh;
+  margin-left: 0;
+}
+
 .brand {
   padding: 22px 20px 16px;
   border-bottom: 1px solid var(--line);
+}
+
+.workspace {
+  grid-column: 3;
 }
 
 .brand h1 {

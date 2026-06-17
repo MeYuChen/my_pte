@@ -6,6 +6,7 @@ const MODULES = [
 ];
 
 const STORAGE_KEY = "pte-we-v2-state";
+const SIDEBAR_STATE_KEY = "pte-we-sidebar-collapsed";
 const MODE_LIMITS = {
   template: 300,
   article: 300,
@@ -116,6 +117,7 @@ const state = {
   mode: "template",
   examType: "single",
   activeArticleId: articles[0]?.id || null,
+  sidebarCollapsed: readJson(SIDEBAR_STATE_KEY, false),
   filter: "all",
   search: "",
   answersVisible: false,
@@ -134,6 +136,8 @@ const state = {
 };
 
 const els = {
+  appShell: document.getElementById("appShell"),
+  sidebarToggle: document.getElementById("sidebarToggle"),
   progressSummary: document.getElementById("progressSummary"),
   searchInput: document.getElementById("searchInput"),
   levelList: document.getElementById("levelList"),
@@ -175,6 +179,7 @@ const els = {
 };
 
 bindEvents();
+renderSidebarState();
 render();
 
 function bindEvents() {
@@ -184,6 +189,8 @@ function bindEvents() {
       setMode(button.dataset.mode);
     });
   });
+
+  els.sidebarToggle.addEventListener("click", toggleSidebar);
 
   document.querySelectorAll(".segment").forEach((button) => {
     button.addEventListener("click", () => {
@@ -222,6 +229,20 @@ function bindEvents() {
   els.submitExamButton.addEventListener("click", () => submitExam({ auto: false }));
   els.clearExamButton.addEventListener("click", clearExam);
   els.examInput.addEventListener("input", saveExamDraft);
+}
+
+function toggleSidebar() {
+  state.sidebarCollapsed = !state.sidebarCollapsed;
+  localStorage.setItem(SIDEBAR_STATE_KEY, JSON.stringify(state.sidebarCollapsed));
+  renderSidebarState();
+}
+
+function renderSidebarState() {
+  els.appShell.classList.toggle("is-sidebar-collapsed", state.sidebarCollapsed);
+  els.appShell.style.gridTemplateColumns = state.sidebarCollapsed ? "0 12px 1fr" : "336px 12px 1fr";
+  els.sidebarToggle.textContent = state.sidebarCollapsed ? "›" : "‹";
+  els.sidebarToggle.setAttribute("aria-expanded", String(!state.sidebarCollapsed));
+  els.sidebarToggle.setAttribute("aria-label", state.sidebarCollapsed ? "展开左侧栏" : "收起左侧栏");
 }
 
 function setMode(mode) {
