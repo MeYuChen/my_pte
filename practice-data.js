@@ -55,7 +55,7 @@ window.WE_DATA = {
       "name": "Transportation Networks",
       "topic": "As cities expand, governments should look forward to creating better networks of public transport available for everyone rather than building more roads for vehicle owning population. To what extent do you agree or disagree?",
       "position": "Agree. Governments should give priority to public transport.",
-      "image": "./images/#5 Transportation Networks.jpg",
+      "image": "./images/5-transportation-networks.jpg",
       "paragraphs": [
         "The issue of whether governments should improve public transport instead of building more roads for private cars has triggered a heated debate in contemporary society. Many people claim that new roads are necessary for car owners. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that governments should develop better public transport networks for everyone.",
         "To begin with, one of the most compelling reasons for the significance of public transport is that it can reduce traffic congestion. This plays a vital role because buses, trains and subways can carry far more people than private cars. To illustrate, studies have shown that if more citizens choose the metro to travel to work, there will be fewer cars on the road during rush hours. Consequently, cities can become more efficient and people can save time every day.",
@@ -95,7 +95,7 @@ window.WE_DATA = {
       "name": "Global Issue",
       "topic": "Climate change is a concerning global issue. Who has the main responsibility to take action to solve this problem, governments, large companies, or individuals?",
       "position": "Governments should take the main responsibility.",
-      "image": "./images/#9 Global Issue.jpg",
+      "image": "./images/9-global-issue.jpg",
       "paragraphs": [
         "The issue of who should take the main responsibility for solving climate change has triggered a heated debate in contemporary society. Many people claim that individuals and companies should act first. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that governments should take the leading responsibility for dealing with climate change.",
         "To begin with, one of the most compelling reasons for the significance of governments is that they have the authority to make laws and policies. This plays a vital role because climate change cannot be solved only by voluntary personal choices. To illustrate, studies have shown that governments can set strict emission standards for factories, limit the use of fossil fuels and support renewable energy. Consequently, society can move toward a cleaner and more sustainable direction.",
@@ -135,7 +135,7 @@ window.WE_DATA = {
       "name": "Formal Written Examination",
       "topic": "Many education systems assess students' learning using formal written examinations. Those kinds of exams are a valid method. To what extent do you agree or disagree? Give examples with your own experience.",
       "position": "Written examinations are useful but incomplete.",
-      "image": "./images/#17 Formal Written Examination.jpg",
+      "image": "./images/17-formal-written-examination.jpg",
       "paragraphs": [
         "The issue of whether formal written examinations are a valid way to assess students' learning has triggered a heated debate in contemporary society. Many people claim that exams are stressful and limited. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that written examinations are useful but incomplete.",
         "To begin with, one of the most compelling reasons for the significance of written examinations is that they can test students' basic knowledge in a clear and fair way. This plays a vital role because all students answer the same questions under the same conditions. To illustrate, studies have shown that a mathematics exam can show whether students understand formulas, methods and problem-solving steps. Consequently, teachers can compare learning results more objectively.",
@@ -175,7 +175,7 @@ window.WE_DATA = {
       "name": "Information Revolution",
       "topic": "The information revolution brought about by modern mass communications has both positive and negative consequences for individuals and society. To what extent do you agree with this statement? Give the reason with your own experience.",
       "position": "Agree. It has both benefits and drawbacks.",
-      "image": "./images/#24 Information Revolution.jpg",
+      "image": "./images/24-information-revolution.jpg",
       "paragraphs": [
         "The issue of whether the information revolution has both positive and negative consequences has triggered a heated debate in contemporary society. Many people claim that modern mass communication only improves life. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that the information revolution brings both opportunities and problems to individuals and society.",
         "To begin with, one of the most compelling reasons for the significance of modern communication is that it gives people quick access to knowledge. This plays a vital role because information can help people make better decisions in study, work and daily life. To illustrate, studies have shown that students can watch online lectures, read news and search academic materials within a few seconds. Consequently, learning becomes more flexible and people can broaden their horizons.",
@@ -215,7 +215,7 @@ window.WE_DATA = {
       "name": "Shopping Malls",
       "topic": "In many towns and cities large shopping malls are replacing small local shops. Some people say that this is a positive development. To what extent do you agree?",
       "position": "Mostly agree.",
-      "image": "./images/#30 Shopping Malls.jpg",
+      "image": "./images/30-shopping-malls.jpg",
       "paragraphs": [
         "The issue of whether the replacement of small local shops by large shopping malls is a positive development has triggered a heated debate in contemporary society. Many people claim that local shops are more personal and traditional. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that large shopping malls are generally positive, although small shops should still be protected.",
         "To begin with, one of the most compelling reasons for the significance of shopping malls is that they make life more convenient. This plays a vital role because people can buy different goods and enjoy services in one place. To illustrate, studies have shown that a shopping mall usually has supermarkets, restaurants, cinemas and clothing stores. Consequently, families can save time and meet several needs during one trip.",
@@ -255,7 +255,7 @@ window.WE_DATA = {
       "name": "Mass Media",
       "topic": "The mass media, such as TV, radio and newspapers, have an influence on people, particularly on younger generations. It plays a pivotal role in shaping the opinions of people, especially teenagers and young people. To what extent do you agree with this? Please give examples.",
       "position": "Agree.",
-      "image": "./images/#35 Mass Media.jpg",
+      "image": "./images/35-mass-media.jpg",
       "paragraphs": [
         "The issue of whether mass media shapes people's opinions, especially those of young people, has triggered a heated debate in contemporary society. Many people claim that family and school are more influential. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that mass media has a powerful influence on teenagers and young adults.",
         "To begin with, one of the most compelling reasons for the significance of mass media is that it provides young people with information and values every day. This plays a vital role because teenagers are still developing their understanding of society. To illustrate, studies have shown that news reports, documentaries and public programs can influence how students think about climate change, health and social responsibility. Consequently, mass media can guide young people toward better choices.",
@@ -295,7 +295,7 @@ window.WE_DATA = {
       "name": "Right Balance",
       "topic": "Nowadays, it is increasingly more difficult to maintain the right balance between work and the other aspects of one's life, such as leisure pursuits with family members. How important do you think this balance is and what are the reasons that make some people think that this is hard to achieve?",
       "position": "Work-life balance is very important.",
-      "image": "./images/#39 Right Balance.jpg",
+      "image": "./images/39-right-balance.jpg",
       "paragraphs": [
         "The issue of maintaining the right balance between work and personal life has triggered a heated debate in contemporary society. Many people claim that career success should come first. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that work-life balance is extremely important, although it is difficult for many people to achieve.",
         "To begin with, one of the most compelling reasons for the significance of work-life balance is that it protects people's physical and mental health. This plays a vital role because long working hours can lead to stress, tiredness and family conflict. To illustrate, studies have shown that employees who have enough time for exercise, sleep and family activities are more likely to stay energetic. Consequently, they can work more efficiently and live more happily.",
@@ -335,7 +335,7 @@ window.WE_DATA = {
       "name": "Personal Life",
       "topic": "Many people find that work leaves little time for people's personal life. How widespread do you think it is? How can we solve the problems caused by the shortage of time?",
       "position": "It is widespread and can be solved through better time management and company policies.",
-      "image": "./images/#40 Personal Life.jpg",
+      "image": "./images/40-personal-life.jpg",
       "paragraphs": [
         "The issue of work leaving little time for personal life has triggered a heated debate in contemporary society. Many people claim that this problem only happens to a small number of ambitious workers. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that the shortage of personal time is widespread and should be solved by both employers and individuals.",
         "To begin with, one of the most compelling reasons for the significance of protecting personal time is that modern jobs often require long hours and constant communication. This plays a vital role because technology allows work to enter people's homes through emails and phones. To illustrate, studies have shown that many employees continue to answer messages after dinner or during weekends. Consequently, they have less time for family, hobbies and rest.",
@@ -375,7 +375,7 @@ window.WE_DATA = {
       "name": "Legal Responsibility",
       "topic": "Should parents be held legally responsible for the actions of their children? Support your opinion from your study, observations or experiences.",
       "position": "Parents should be partly legally responsible.",
-      "image": "./images/#43 Legal Responsibility.jpg",
+      "image": "./images/43-legal-responsibility.jpg",
       "paragraphs": [
         "The issue of whether parents should be held legally responsible for the actions of their children has triggered a heated debate in contemporary society. Many people claim that children should take full responsibility for their own behavior. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that parents should be partly responsible, especially when their children are young.",
         "To begin with, one of the most compelling reasons for the significance of parental responsibility is that parents have the duty to guide and supervise their children. This plays a vital role because young children may not fully understand the consequences of their actions. To illustrate, studies have shown that if a child damages public property because parents fail to supervise him or her, it is reasonable for parents to pay compensation. Consequently, parents will pay more attention to education and discipline.",
@@ -415,7 +415,7 @@ window.WE_DATA = {
       "name": "Worker Decision-Making",
       "topic": "In some companies, employers involve workers in the decision-making process about products and services. What are the advantages and disadvantages of such a policy?",
       "position": "It has more advantages than disadvantages.",
-      "image": "./images/#46 Worker Decision-Making.jpg",
+      "image": "./images/46-worker-decision-making.jpg",
       "paragraphs": [
         "The issue of involving workers in company decisions about products and services has triggered a heated debate in contemporary society. Many people claim that managers should make decisions alone because they have more experience. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that worker participation has more advantages than disadvantages.",
         "To begin with, one of the most compelling reasons for the significance of this policy is that workers often understand daily operations very well. This plays a vital role because they deal with customers, machines and practical problems directly. To illustrate, studies have shown that sales staff may know what customers complain about, while factory workers may notice how production can be improved. Consequently, companies can make better and more realistic decisions.",
@@ -455,7 +455,7 @@ window.WE_DATA = {
       "name": "Experiential Learning",
       "topic": "Some people point that experiential learning, or learning by doing, can work well in formal education. However, others think a traditional form of teaching is the best. Do you think experiential learning can work well in high schools or colleges?",
       "position": "Experiential learning can work well when combined with traditional teaching.",
-      "image": "./images/#56 Experiential Learning.jpg",
+      "image": "./images/56-experiential-learning.jpg",
       "paragraphs": [
         "The issue of whether experiential learning can work well in formal education has triggered a heated debate in contemporary society. Many people claim that traditional teaching is the safest and most efficient method. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that experiential learning can work well in high schools and colleges if it is properly designed.",
         "To begin with, one of the most compelling reasons for the significance of experiential learning is that students can understand knowledge more deeply by using it. This plays a vital role because theory alone may be difficult to remember. To illustrate, studies have shown that students who conduct a science experiment can see how a principle works in real life. Consequently, they are more likely to remember the lesson and develop problem-solving skills.",
@@ -495,7 +495,7 @@ window.WE_DATA = {
       "name": "Mark Deduction",
       "topic": "Some universities deduct marks from students' work if it is given late. What is your opinion? What other actions do you recommend?",
       "position": "Deducting marks is fair but should be flexible.",
-      "image": "./images/#63 Mark Deduction.jpg",
+      "image": "./images/63-mark-deduction.jpg",
       "paragraphs": [
         "The issue of whether universities should deduct marks from late work has triggered a heated debate in contemporary society. Many people claim that this rule is too strict and may hurt students' grades. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that deducting marks is generally fair, but universities should also use flexible alternatives.",
         "To begin with, one of the most compelling reasons for the significance of mark deduction is that it teaches responsibility. This plays a vital role because meeting deadlines is an important requirement in both academic study and professional life. To illustrate, studies have shown that if some students submit assignments late without any penalty, it is unfair to classmates who finish their work on time. Consequently, reasonable deduction can protect fairness and encourage self-discipline.",
@@ -535,7 +535,7 @@ window.WE_DATA = {
       "name": "Extending Life Expectancy",
       "topic": "Medical technology is responsible for increasing the average life expectancy. Do you think it is a curse or a blessing?",
       "position": "It is mainly a blessing.",
-      "image": "./images/#71 Extending Life Expectancy.jpg",
+      "image": "./images/71-extending-life-expectancy.jpg",
       "paragraphs": [
         "The issue of whether the increase in life expectancy brought by medical technology is a blessing or a curse has triggered a heated debate in contemporary society. Many people claim that longer lives create pressure on pensions and hospitals. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that longer life expectancy is mainly a blessing.",
         "To begin with, one of the most compelling reasons for the significance of medical technology is that it saves lives and reduces suffering. This plays a vital role because many diseases that were deadly in the past can now be treated or controlled. To illustrate, studies have shown that vaccines, antibiotics and modern surgery allow people to recover from serious illnesses and live healthier lives. Consequently, families can spend more time together and society can benefit from older people's experience.",
@@ -575,7 +575,7 @@ window.WE_DATA = {
       "name": "Building Effects",
       "topic": "Do you think the design of buildings affects, either positively or negatively, where people live and work?",
       "position": "Building design strongly affects people's lives and work.",
-      "image": "./images/#72 Building Effects.jpg",
+      "image": "./images/72-building-effects.jpg",
       "paragraphs": [
         "The issue of whether the design of buildings affects where people live and work has triggered a heated debate in contemporary society. Many people claim that buildings are only physical spaces and have little influence on people's feelings. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that building design can affect people both positively and negatively.",
         "To begin with, one of the most compelling reasons for the significance of building design is that it influences comfort and efficiency. This plays a vital role because people spend many hours in homes, schools and offices. To illustrate, studies have shown that a workplace with natural light, fresh air and enough space can help employees stay focused and healthy. Consequently, good design may improve productivity and reduce stress.",
@@ -616,7 +616,7 @@ window.WE_DATA = {
       "name": "Facing Issues",
       "topic": "The world's governments and international organizations confront a multitude of global problems. Which do you think is the most pressing problem for the inhabitants of our planet and give the solution?",
       "position": "Climate change is the most pressing problem.",
-      "image": "./images/#76 Facing Issues.jpg",
+      "image": "./images/76-facing-issues.jpg",
       "paragraphs": [
         "The issue of which global problem is the most pressing for the inhabitants of our planet has triggered a heated debate in contemporary society. Many people claim that poverty, war or disease should come first. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that climate change is the most urgent global problem.",
         "To begin with, one of the most compelling reasons for the significance of addressing climate change is that it affects every country. This plays a vital role because rising temperatures can cause floods, droughts, storms and food shortages. To illustrate, studies have shown that extreme weather may destroy farms and homes, forcing people to move to safer places. Consequently, climate change can create economic loss, health problems and social instability.",
@@ -657,7 +657,7 @@ window.WE_DATA = {
       "name": "Studying Theater",
       "topic": "What are the problems and the benefits for high school students of studying plays and other works for theatre that were written centuries ago? Use your own experience to discuss it.",
       "position": "It has both problems and benefits.",
-      "image": "./images/#77 Studying Theater.jpg",
+      "image": "./images/77-studying-theater.jpg",
       "paragraphs": [
         "The issue of studying plays and theatre works written centuries ago has triggered a heated debate in contemporary society. Many people claim that old works are too difficult and irrelevant for high school students. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that studying classical theatre has both problems and benefits.",
         "To begin with, one of the most compelling reasons for the significance of studying old plays is that they help students understand culture, language and human nature. This plays a vital role because many classical works discuss love, ambition, family conflict and moral choices. To illustrate, studies have shown that when students read Shakespeare, they can learn how people in different periods thought about power and responsibility. Consequently, their historical knowledge and critical thinking can improve.",
@@ -697,7 +697,7 @@ window.WE_DATA = {
       "name": "Digital Materials",
       "topic": "With the increase of digital media available online, the role of the library has become obsolete. Universities should only procure new digital media rather than constantly update textbooks. Discuss both the advantages and disadvantages of this position and give your own point of view.",
       "position": "Digital media is useful, but libraries and textbooks are still needed.",
-      "image": "./images/#86 Digital Materials.jpg",
+      "image": "./images/86-digital-materials.jpg",
       "paragraphs": [
         "The issue of whether universities should only buy digital media instead of updating textbooks has triggered a heated debate in contemporary society. Many people claim that libraries have become obsolete in the digital age. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that digital materials are valuable, but printed textbooks and libraries are still necessary.",
         "To begin with, one of the most compelling reasons for the significance of digital media is that it is convenient and up to date. This plays a vital role because students can access online journals, videos and databases at any time. To illustrate, studies have shown that a student can search for recent scientific research on a laptop without waiting for a printed book. Consequently, learning becomes faster and more flexible.",
@@ -738,7 +738,7 @@ window.WE_DATA = {
       "name": "Age Limit",
       "topic": "Age restrictions are placed on many activities. It is believed that people should not do things until they reach the right ages, such as getting married, driving, voting, buying certain products, and doing particular things. Give an example, state which minimum age you think it should be and share your own experience.",
       "position": "Age limits are necessary for risky activities such as driving.",
-      "image": "./images/#90 Age Limit.jpg",
+      "image": "./images/90-age-limit.jpg",
       "paragraphs": [
         "The issue of whether age restrictions should be placed on certain activities has triggered a heated debate in contemporary society. Many people claim that age limits restrict personal freedom. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that age restrictions are necessary, especially for activities that involve public safety, such as driving.",
         "To begin with, one of the most compelling reasons for the significance of age limits is that young people may not have enough judgment and self-control. This plays a vital role because driving requires responsibility, attention and emotional stability. To illustrate, studies have shown that if very young teenagers are allowed to drive, they may speed, ignore rules or react poorly in dangerous situations. Consequently, accidents may increase and innocent people may be harmed.",
@@ -778,7 +778,7 @@ window.WE_DATA = {
       "name": "International Organizations",
       "topic": "Global problems are related to governments and international organizations. What are the problems and what is your solution?",
       "position": "Climate change and poverty need cooperation.",
-      "image": "./images/#98 International Organizations.jpg",
+      "image": "./images/98-international-organizations.jpg",
       "paragraphs": [
         "The issue of global problems related to governments and international organizations has triggered a heated debate in contemporary society. Many people claim that each country should solve its own problems independently. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that problems such as climate change and poverty require cooperation between governments and international organizations.",
         "To begin with, one of the most compelling reasons for the significance of international cooperation is that climate change crosses national borders. This plays a vital role because it can cause extreme weather, rising sea levels and food shortages in many regions. To illustrate, studies have shown that a flood in one country may damage farms, increase food prices and affect international trade. Consequently, environmental problems can quickly become economic and social problems for the whole world.",
@@ -818,7 +818,7 @@ window.WE_DATA = {
       "name": "Life Experience",
       "topic": "Some people argue that experience is the best teacher, saying life experiences teach people more effectively than books or formal education can. How far do you agree with this statement? Give your reason or provide your personal experience.",
       "position": "Experience is important, but it should work with formal education.",
-      "image": "./images/#102 Life Experience.jpg",
+      "image": "./images/102-life-experience.jpg",
       "paragraphs": [
         "The issue of whether experience is the best teacher has triggered a heated debate in contemporary society. Many people claim that books and formal education are less useful than real-life experience. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that experience is very important, but it should be combined with formal education.",
         "To begin with, one of the most compelling reasons for the significance of life experience is that it teaches practical lessons. This plays a vital role because people often remember lessons better when they face real consequences. To illustrate, studies have shown that a student who runs a small business project can learn communication, planning and responsibility more directly than by only reading a textbook. Consequently, experience can develop confidence and problem-solving ability.",
@@ -859,7 +859,7 @@ window.WE_DATA = {
       "name": "Effective Study",
       "topic": "Effective study requires time, comfort and peace. It is impossible to combine a student's learning with employment because one may distract the other. To what extent do you think the statements are realistic? Give your opinion with examples.",
       "position": "Study and employment can be combined, but only with good balance.",
-      "image": "./images/#106 Effective Study.jpg",
+      "image": "./images/106-effective-study.jpg",
       "paragraphs": [
         "The issue of whether students can combine learning with employment has triggered a heated debate in contemporary society. Many people claim that working always distracts students from study. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that study and employment can be combined, but students need enough time, comfort and discipline.",
         "To begin with, one of the most compelling reasons for the significance of balanced study is that effective learning requires concentration. This plays a vital role because students need quiet time to read, think and review knowledge. To illustrate, studies have shown that if a student works too many hours at night, he or she may feel tired in class and fail to finish assignments. Consequently, heavy employment can damage academic performance.",
@@ -899,7 +899,7 @@ window.WE_DATA = {
       "name": "Public Transportation",
       "topic": "What are the advantages and problems of cheaper public transportation? Give your opinion from your own experience.",
       "position": "Cheaper public transportation has more advantages than problems.",
-      "image": "./images/#116 Public Transportation.jpg",
+      "image": "./images/116-public-transportation.jpg",
       "paragraphs": [
         "The issue of whether public transportation should be made cheaper has triggered a heated debate in contemporary society. Many people claim that low fares may create financial pressure for governments. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that cheaper public transportation has more advantages than problems if it is managed properly.",
         "To begin with, one of the most compelling reasons for the significance of cheaper public transport is that it reduces the cost of living. This plays a vital role because many students, workers and older people depend on buses and trains every day. To illustrate, studies have shown that if bus tickets are affordable, low-income workers can travel to work without spending too much of their salary. Consequently, cheaper transport can improve social equality and daily convenience.",
@@ -939,7 +939,7 @@ window.WE_DATA = {
       "name": "Studying Abroad",
       "topic": "It is often argued that studying overseas is overrated. There are many scholars who study locally. To what extent do you agree with this?",
       "position": "Partly agree. Studying abroad is valuable but not necessary for everyone.",
-      "image": "./images/#124 Studying Abroad.jpg",
+      "image": "./images/124-studying-abroad.jpg",
       "paragraphs": [
         "The issue of whether studying overseas is overrated has triggered a heated debate in contemporary society. Many people claim that overseas education is always better than local education. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that studying abroad is valuable, but it is not necessary for everyone to become successful.",
         "To begin with, one of the most compelling reasons for the significance of studying abroad is that it can broaden students' horizons. This plays a vital role because students can experience different cultures, teaching styles and ways of thinking. To illustrate, studies have shown that an international student may improve language skills, independence and cross-cultural communication through daily life in another country. Consequently, overseas study can provide personal growth beyond classroom knowledge.",
@@ -979,7 +979,7 @@ window.WE_DATA = {
       "name": "Law Effect",
       "topic": "Some people think human behavior can be changed by laws, while others think laws have little effect. What is your opinion?",
       "position": "Laws can change behavior, but education is also needed.",
-      "image": "./images/#149 Law Effect.jpg",
+      "image": "./images/149-law-effect.jpg",
       "paragraphs": [
         "The issue of whether human behavior can be changed by laws has triggered a heated debate in contemporary society. Many people claim that laws have little effect because people may still break rules. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that laws can change behavior, although education and social values are also necessary.",
         "To begin with, one of the most compelling reasons for the significance of laws is that they create clear consequences. This plays a vital role because people are more likely to avoid harmful actions when they know there will be punishment. To illustrate, studies have shown that traffic laws against drunk driving can reduce dangerous behavior by using fines, license suspension and imprisonment. Consequently, laws can protect public safety and guide people's choices.",
@@ -1019,7 +1019,7 @@ window.WE_DATA = {
       "name": "Studying Climate Change",
       "topic": "Imagine you have been assigned on the study of climate change. Which area of climate change will you focus on and why? Use examples.",
       "position": "Focus on extreme weather and its impact on food security.",
-      "image": "./images/#155 Studying Climate Change.jpg",
+      "image": "./images/155-studying-climate-change.jpg",
       "paragraphs": [
         "The issue of which area of climate change should be studied has triggered a heated debate in contemporary society. Many people claim that sea level rise or wildlife protection should receive the most attention. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that the study should focus on extreme weather and its impact on food security.",
         "To begin with, one of the most compelling reasons for the significance of extreme weather is that it directly affects people's daily lives. This plays a vital role because floods, droughts and heat waves can destroy farms and reduce food production. To illustrate, studies have shown that a long drought may kill crops, increase food prices and make poor families suffer more. Consequently, climate change can become a serious economic and social problem.",
@@ -1059,7 +1059,7 @@ window.WE_DATA = {
       "name": "Tourism's Pros and Cons",
       "topic": "For a less developed country, the disadvantages of tourism are as great as the advantages. Please discuss this statement, and explain your opinion.",
       "position": "Tourism has both advantages and disadvantages, but benefits can be greater with good management.",
-      "image": "./images/#156 Tourism's Pros and Cons.jpg",
+      "image": "./images/156-tourism-s-pros-and-cons.jpg",
       "paragraphs": [
         "The issue of whether the disadvantages of tourism are as great as the advantages for a less developed country has triggered a heated debate in contemporary society. Many people claim that tourism brings pollution and cultural damage. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that tourism has both sides, but its benefits can be greater if it is well managed.",
         "To begin with, one of the most compelling reasons for the significance of tourism is that it can support economic development. This plays a vital role because tourists spend money on hotels, restaurants, transport and local products. To illustrate, studies have shown that a small town with beautiful natural scenery may create jobs for guides, drivers and shop owners. Consequently, tourism can reduce unemployment and increase government tax income.",
@@ -1099,7 +1099,7 @@ window.WE_DATA = {
       "name": "Inventions",
       "topic": "In our technological world, the number of new inventions has been evolving daily. Please describe a new invention and determine whether it has a beneficial or detrimental impact on society.",
       "position": "Artificial intelligence assistants are beneficial overall.",
-      "image": "./images/#159 Inventions.jpg",
+      "image": "./images/159-inventions.jpg",
       "paragraphs": [
         "The issue of whether new inventions have beneficial or detrimental impacts on society has triggered a heated debate in contemporary society. Many people claim that technology creates unemployment and dependence. Nevertheless, others hold different opinions. In this essay, I will describe artificial intelligence assistants and elaborate on my point of view that they are beneficial overall.",
         "To begin with, one of the most compelling reasons for the significance of AI assistants is that they improve efficiency. This plays a vital role because people can use them to search information, translate languages, organize schedules and complete simple writing tasks. To illustrate, studies have shown that a student can ask an AI assistant to explain a difficult concept in simple words. Consequently, learning and working can become faster and more convenient.",
@@ -1139,7 +1139,7 @@ window.WE_DATA = {
       "name": "Television",
       "topic": "Television serves many useful functions. It helps people to relax. We can learn from television, and it can also be seen as a companion for the lonely. To what extent do you agree with this? Explain why with your own experience.",
       "position": "Agree.",
-      "image": "./images/#160 Television.jpg",
+      "image": "./images/160-television.jpg",
       "paragraphs": [
         "The issue of whether television serves many useful functions has triggered a heated debate in contemporary society. Many people claim that television wastes time and reduces communication. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that television is still useful because it helps people relax, learn and feel less lonely.",
         "To begin with, one of the most compelling reasons for the significance of television is that it provides relaxation after work or study. This plays a vital role because modern life is often stressful and fast-paced. To illustrate, studies have shown that watching a comedy show or a sports program can help people release pressure after a long day. Consequently, television can support mental health when it is used in moderation.",
@@ -1180,7 +1180,7 @@ window.WE_DATA = {
       "name": "Fewer Work Hours",
       "topic": "In the future, people will work fewer hours at their jobs than they do now. Do you agree with the statement? Please support your opinion with your own experience.",
       "position": "Agree.",
-      "image": "./images/#162 Fewer Work Hours.jpg",
+      "image": "./images/162-fewer-work-hours.jpg",
       "paragraphs": [
         "The issue of whether people will work fewer hours in the future has triggered a heated debate in contemporary society. Many people claim that competition will force employees to work even longer. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that people are likely to work fewer hours because of technology and changing values.",
         "To begin with, one of the most compelling reasons for the significance of shorter working hours is that technological progress can reduce routine work. This plays a vital role because machines, software and artificial intelligence can complete many routine tasks faster than humans. To illustrate, studies have shown that office workers can now use digital tools to prepare reports, manage data and communicate with customers more efficiently. Consequently, the same amount of work may require less time in the future.",
@@ -1220,7 +1220,7 @@ window.WE_DATA = {
       "name": "Celebrities' Privacy",
       "topic": "People who are famous entertainers or sportspeople should give up the right to privacy as this is the price of fame. To what extent do you agree or disagree with this point of view?",
       "position": "Disagree.",
-      "image": "./images/#163 Celebrities' Privacy.jpg",
+      "image": "./images/163-celebrities-privacy.jpg",
       "paragraphs": [
         "The issue of whether famous entertainers and sportspeople should give up the right to privacy has triggered a heated debate in contemporary society. Many people claim that public attention is the price of fame. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that celebrities should not lose their basic right to privacy.",
         "To begin with, one of the most compelling reasons for the significance of protecting celebrity privacy is that famous people are still human beings. This plays a vital role because everyone needs private space, family time and emotional security. To illustrate, studies have shown that if photographers constantly follow a singer's children or publish private medical information, this behavior may cause serious mental pressure. Consequently, fame should not become a reason to harm personal dignity.",
@@ -1260,7 +1260,7 @@ window.WE_DATA = {
       "name": "Short Weeks",
       "topic": "In many countries unemployment among young people is a serious problem. One suggested solution is to shorten the working week. What do you think are the advantages and disadvantages? Do you think this policy should apply to just young workers or the whole workforce?",
       "position": "It has benefits and problems; it should apply to the whole workforce if used.",
-      "image": "./images/#166 Short Weeks.jpg",
+      "image": "./images/166-short-weeks.jpg",
       "paragraphs": [
         "The issue of shortening the working week to reduce youth unemployment has triggered a heated debate in contemporary society. Many people claim that this policy can create more jobs for young people. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that the policy has both advantages and disadvantages, and it should apply to the whole workforce if introduced.",
         "To begin with, one of the most compelling reasons for the significance of shorter working weeks is that they may share job opportunities more fairly. This plays a vital role because companies may need to hire more employees when each worker works fewer hours. To illustrate, studies have shown that if a company reduces weekly hours from five days to four, it may recruit additional staff to maintain service. Consequently, young people may have more chances to enter the job market.",
@@ -1300,7 +1300,7 @@ window.WE_DATA = {
       "name": "Compulsory Learning",
       "topic": "Some people think learning a foreign language at school should be compulsory. To what extent do you agree with it? Use your experience or examples to support your viewpoint.",
       "position": "Agree.",
-      "image": "./images/#170 Compulsory Learning.jpg",
+      "image": "./images/170-compulsory-learning.jpg",
       "paragraphs": [
         "The issue of whether learning a foreign language at school should be compulsory has triggered a heated debate in contemporary society. Many people claim that students should choose subjects according to their interests. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that foreign language learning should be compulsory at school.",
         "To begin with, one of the most compelling reasons for the significance of compulsory language learning is that it improves communication in a globalized world. This plays a vital role because people often need to study, work and travel across borders. To illustrate, studies have shown that students who learn English or another foreign language can access international information, communicate with foreigners and understand different cultures. Consequently, they may have more opportunities in the future.",
@@ -1340,7 +1340,7 @@ window.WE_DATA = {
       "name": "Old or Modern Buildings",
       "topic": "Many countries spend large amounts of money on the restoration of historic buildings rather than on modern housing. To what extent do you agree or disagree with this analysis? What are advantages and disadvantages of this?",
       "position": "Historic buildings should be protected, but modern housing also needs funding.",
-      "image": "./images/#171 Old or Modern Buildings.jpg",
+      "image": "./images/171-old-or-modern-buildings.jpg",
       "paragraphs": [
         "The issue of spending large amounts of money on restoring historic buildings rather than modern housing has triggered a heated debate in contemporary society. Many people claim that old buildings are less important than people's housing needs. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that historic buildings should be protected, but governments must also support modern housing.",
         "To begin with, one of the most compelling reasons for the significance of restoring historic buildings is that they preserve culture and identity. This plays a vital role because old buildings show a country's history, art and traditional values. To illustrate, studies have shown that restored temples, museums or old streets can help young people understand the past and attract tourists. Consequently, cultural heritage can also bring economic benefits.",
@@ -1380,7 +1380,7 @@ window.WE_DATA = {
       "name": "Harder Life",
       "topic": "It is harder for children to grow up in the 21st century than it was in the past. How far do you agree with this statement? Give your opinions.",
       "position": "Agree to a large extent.",
-      "image": "./images/#173 Harder Life.jpg",
+      "image": "./images/173-harder-life.jpg",
       "paragraphs": [
         "The issue of whether it is harder for children to grow up in the 21st century than in the past has triggered a heated debate in contemporary society. Many people claim that modern children enjoy better education and technology. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that growing up today is harder in many ways.",
         "To begin with, one of the most compelling reasons for the significance of a healthy childhood is that children now face stronger academic and social pressure. This plays a vital role because modern society is highly competitive. To illustrate, studies have shown that many children attend extra classes, prepare for exams and compare themselves with others from a very young age. Consequently, they may feel anxious and have less time for play, creativity and rest.",
@@ -1420,7 +1420,7 @@ window.WE_DATA = {
       "name": "Wage Cap",
       "topic": "Many people say there should be a maximum wage for high-paying jobs as some people are paid too much. Do you support that? Can you give your point of view or your own experience?",
       "position": "Partly support a reasonable limit on extreme pay.",
-      "image": "./images/#174 Wage Cap.jpg",
+      "image": "./images/174-wage-cap.jpg",
       "paragraphs": [
         "The issue of whether there should be a maximum wage for high-paying jobs has triggered a heated debate in contemporary society. Many people claim that high salaries are a fair reward for talent and hard work. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that a reasonable limit on extreme pay can be useful, but it should not remove incentives.",
         "To begin with, one of the most compelling reasons for the significance of a reasonable wage cap is that extreme income inequality can harm social fairness. This plays a vital role because some executives earn hundreds of times more than ordinary workers. To illustrate, studies have shown that if a company pays top managers huge bonuses while basic workers struggle with living costs, employees may feel unfairly treated. Consequently, morale and social trust may decline.",
@@ -1460,7 +1460,7 @@ window.WE_DATA = {
       "name": "City or Countryside",
       "topic": "Some people prefer to live in cities, while some people prefer to live in the countryside. Which is better for you? Give your reasons or experience.",
       "position": "Cities are better for me.",
-      "image": "./images/#183 City or Countryside.jpg",
+      "image": "./images/183-city-or-countryside.jpg",
       "paragraphs": [
         "The issue of whether living in cities or in the countryside is better has triggered a heated debate in contemporary society. Many people claim that the countryside is healthier and quieter. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that living in cities is better for me because of opportunities and convenience.",
         "To begin with, one of the most compelling reasons for the significance of city life is that they provide more educational and career opportunities. This plays a vital role because young people often need good schools, training centers and jobs to develop themselves. To illustrate, studies have shown that a city usually has universities, libraries, hospitals and companies in different fields. Consequently, residents can study, work and improve their skills more easily.",
@@ -1500,7 +1500,7 @@ window.WE_DATA = {
       "name": "Foreign Languages",
       "topic": "While artificial intelligence becomes so advanced, people can use computers to translate foreign languages. That makes learning a foreign language unnecessary. To what extent do you agree with it?",
       "position": "Disagree.",
-      "image": "./images/#184 Foreign Languages.jpg",
+      "image": "./images/184-foreign-languages.jpg",
       "paragraphs": [
         "The issue of whether artificial intelligence makes foreign language learning unnecessary has triggered a heated debate in contemporary society. Many people claim that translation software can replace language study. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that learning a foreign language is still necessary even though AI translation is useful.",
         "To begin with, one of the most compelling reasons for the significance of language learning is that communication is more than word translation. This plays a vital role because real communication includes tone, culture, emotion and context. To illustrate, studies have shown that when people negotiate, make friends or study abroad, they need to understand jokes, politeness and local habits. Consequently, depending only on a machine may create misunderstanding.",
@@ -1540,7 +1540,7 @@ window.WE_DATA = {
       "name": "Marketing in Companies",
       "topic": "Should marketing in companies which produce consumer goods, like food and clothing, place emphasis on the reputation of the company or short-term strategies like discounts and special offers? Why?",
       "position": "Companies should focus more on reputation.",
-      "image": "./images/#195 Marketing in Companies.jpg",
+      "image": "./images/195-marketing-in-companies.jpg",
       "paragraphs": [
         "The issue of whether consumer goods companies should emphasize reputation or short-term strategies such as discounts has triggered a heated debate in contemporary society. Many people claim that discounts are the fastest way to attract customers. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that companies should focus more on reputation.",
         "To begin with, one of the most compelling reasons for the significance of reputation is that it builds long-term trust. This plays a vital role because consumers buy food and clothing not only for low prices but also for safety and quality. To illustrate, studies have shown that if a food company is known for clean production and honest labeling, customers will return even when there is no discount. Consequently, reputation can create stable sales.",
@@ -1580,7 +1580,7 @@ window.WE_DATA = {
       "name": "Travel for Education",
       "topic": "Some believe the value of travel is highly overrated. \"One brilliant scholar never leaves the home bases.\" To what extent do you agree that travel is not a necessary component of a quality education?",
       "position": "Partly agree. Travel is valuable but not necessary for quality education.",
-      "image": "./images/#261 Travel for Education.jpg",
+      "image": "./images/261-travel-for-education.jpg",
       "paragraphs": [
         "The issue of whether travel is a necessary component of quality education has triggered a heated debate in contemporary society. Many people claim that travel is overrated because a brilliant scholar can learn without leaving home. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that travel is valuable, but it is not absolutely necessary for a good education.",
         "To begin with, one of the most compelling reasons for the significance of educational travel is that it provides direct experience. This plays a vital role because students can understand culture, history and society more vividly when they see real places. To illustrate, studies have shown that visiting a historical city may help students remember events better than only reading a textbook. Consequently, travel can broaden horizons and make learning more interesting.",
