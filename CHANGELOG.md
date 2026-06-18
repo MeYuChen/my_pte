@@ -10,6 +10,8 @@ All notable changes to this project are recorded here.
 - Added keyboard navigation in fullscreen image view with Left/Right arrows.
 - Added fullscreen image zoom with mouse wheel.
 - Added fullscreen image pan with left-button drag.
+- Added background image caching after opening the site to make fullscreen image navigation faster on GitHub Pages.
+- Added a Service Worker cache so previously loaded images can be reused across refreshes and later visits.
 
 ### Changed
 - Reworked the sidebar collapse control into a single toggle button.

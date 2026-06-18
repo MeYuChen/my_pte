@@ -33,6 +33,7 @@
 - `app.js`：全部交互逻辑，项目没有框架。
 - `practice-data.js`：题库数据，挂载到 `window.WE_DATA`。
 - `images/`：39 篇文章对应的关卡图片。
+- `sw.js`：Service Worker，用于缓存静态资源和关卡图片。
 - `CHANGELOG.md`：版本迭代记录，每次功能更新都要维护。
 - `README.md`：基础使用说明。
 
@@ -126,15 +127,21 @@
 - 点击上一张/下一张按钮时，快速连点不会触发双击退出。
 - 非按钮区域双击仍可退出全屏。
 - `Esc` 退出全屏。
+- 当前图片会优先预加载前后若干张；打开站点后会后台缓存全部关卡图片，改善 GitHub Pages 上快速翻图的等待时间。
+- `sw.js` 提供 Service Worker 缓存，图片命中缓存后刷新或再次访问也能更快加载。
+- 修改静态资源缓存策略时要更新 `sw.js` 里的缓存版本名，避免旧缓存继续生效。
 
 相关代码：
 
 - `openImageFullscreen()`
+- `preloadNeighborImages()`
+- `scheduleImageCacheWarmup()`
 - `handleImageWheel()`
 - `startImagePan()`
 - `moveImagePan()`
 - `showAdjacentImage()`
 - `handleImageViewerKeydown()`
+- `sw.js`
 
 相关 DOM/CSS：
 
@@ -224,4 +231,3 @@ git status --short
 - 合入 `master` 前更新 `CHANGELOG.md`。
 - 不要破坏用户已有 `localStorage` 数据结构，除非有迁移方案。
 - 如果改文章论点提取逻辑，必须用第 5 篇这类例子验证句号归属。
-
