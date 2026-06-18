@@ -14,14 +14,6 @@
             <h1>PTE WE</h1>
             <p id="progressSummary">0 / 39 已掌握</p>
           </div>
-          <button
-            class="sidebar-collapse-button"
-            id="sidebarCollapseButton"
-            type="button"
-            aria-label="收起左侧栏"
-          >
-            ‹
-          </button>
         </div>
 
         <div class="sidebar-tools">
@@ -44,13 +36,13 @@
         <nav class="level-list" id="levelList" aria-label="文章列表"></nav>
       </aside>
       <button
-        class="sidebar-expand-button"
-        id="sidebarExpandButton"
+        class="sidebar-toggle"
+        id="sidebarToggle"
         type="button"
-        aria-label="展开左侧栏"
-        hidden
+        aria-label="收起左侧栏"
+        aria-expanded="true"
       >
-        ›
+        ‹
       </button>
 
       <main class="workspace">
@@ -84,7 +76,9 @@
               <button class="ghost-button" id="toggleImageButton" type="button">展开</button>
             </div>
             <div class="image-frame" id="imageFrame">
+              <button class="image-nav-button previous" id="imagePreviousButton" type="button" aria-label="上一张图片">‹</button>
               <img id="levelImage" alt="">
+              <button class="image-nav-button next" id="imageNextButton" type="button" aria-label="下一张图片">›</button>
             </div>
           </div>
         </section>

@@ -29,3 +29,11 @@ http://127.0.0.1:8765/
 - 单篇考核
 - 综合考核
 - 最近 5 次滑动窗口熟练度统计
+
+## 更新记录
+
+见 [CHANGELOG.md](./CHANGELOG.md)。
+
+## AI 接手说明
+
+见 [AI_HANDOFF.md](./AI_HANDOFF.md)。
