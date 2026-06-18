@@ -106,6 +106,19 @@ const MASTERY_STEPS = [
 const data = window.WE_DATA;
 const articles = data?.articles || [];
 const template = data?.template;
+const preloadedImages = new Map();
+const articleImageUrls = new Set(articles.map((article) => assetUrl(article.image)).filter(Boolean));
+const IMAGE_PRELOAD_CONCURRENCY = 3;
+const IMAGE_CACHE_NAME = "pte-we-images-v1";
+const imagePreload = {
+  active: 0,
+  queue: [],
+  queued: new Set(),
+  loading: new Set(),
+  loaded: new Set(),
+  failed: new Set(),
+  allQueued: false
+};
 
 const persisted = readJson(STORAGE_KEY, {
   progress: {},
@@ -162,6 +175,7 @@ const els = {
   imageFrame: document.getElementById("imageFrame"),
   imagePreviousButton: document.getElementById("imagePreviousButton"),
   imageNextButton: document.getElementById("imageNextButton"),
+  imageViewerStatus: document.getElementById("imageViewerStatus"),
   toggleImageButton: document.getElementById("toggleImageButton"),
   practicePanel: document.getElementById("practicePanel"),
   practiceTitle: document.getElementById("practiceTitle"),
@@ -191,6 +205,7 @@ const els = {
 bindEvents();
 renderSidebarState();
 render();
+registerImageCacheWorker().finally(scheduleImageCacheWarmup);
 
 function bindEvents() {
   document.querySelectorAll(".mode-tab").forEach((button) => {
@@ -244,6 +259,8 @@ function bindEvents() {
   els.imageNextButton.addEventListener("dblclick", (event) => {
     event.stopPropagation();
   });
+  els.levelImage.addEventListener("load", handleLevelImageLoad);
+  els.levelImage.addEventListener("error", handleLevelImageError);
   els.levelImage.draggable = false;
 
   els.startTimerButton.addEventListener("click", () => {
@@ -417,8 +434,15 @@ function renderMain() {
       els.levelTitle.textContent = article.name;
       els.topicText.textContent = article.topic;
       els.positionText.textContent = article.position;
-      els.levelImage.src = assetUrl(article.image);
+      const imageUrl = assetUrl(article.image);
+      if (els.levelImage.getAttribute("src") !== imageUrl) {
+        showImageLoading(article);
+        els.levelImage.src = imageUrl;
+      } else {
+        updateImageViewerStatus(article, "");
+      }
       els.levelImage.alt = article.title;
+      preloadNeighborImages(article.id);
       els.practiceTitle.textContent = "文章论点默写";
       els.levelScore.textContent = scoreText(article.id);
       els.markMasteredButton.textContent = "重置进度";
@@ -807,6 +831,152 @@ function showAdjacentImage(direction) {
   els.revealAllButton.textContent = "显示答案";
   render();
   resetImageViewer();
+  preloadNeighborImages(next.id, 5);
+}
+
+async function registerImageCacheWorker() {
+  if (!("serviceWorker" in navigator)) return;
+  try {
+    await navigator.serviceWorker.register("./sw.js");
+  } catch {
+    // The page still works without the persistent cache worker.
+  }
+}
+
+function scheduleImageCacheWarmup() {
+  if (imagePreload.allQueued || !articleImageUrls.size) return;
+  const startWarmup = () => {
+    imagePreload.allQueued = true;
+    articles.forEach((article) => queueImagePreload(article.image, { priority: "normal" }));
+  };
+  if ("requestIdleCallback" in window) {
+    window.requestIdleCallback(startWarmup, { timeout: 1600 });
+  } else {
+    window.setTimeout(startWarmup, 600);
+  }
+}
+
+function preloadNeighborImages(articleId, radius = 3) {
+  if (!articles.length) return;
+  const index = articles.findIndex((article) => article.id === articleId);
+  if (index < 0) return;
+
+  for (let offset = -radius; offset <= radius; offset += 1) {
+    if (offset === 0) continue;
+    const article = articles[(index + offset + articles.length) % articles.length];
+    queueImagePreload(article?.image, { priority: "high" });
+  }
+}
+
+function queueImagePreload(path, options = {}) {
+  if (!path) return;
+  const url = assetUrl(path);
+  if (preloadedImages.has(url) || imagePreload.loaded.has(url) || imagePreload.loading.has(url)) return;
+  if (imagePreload.queued.has(url)) {
+    if (options.priority === "high") {
+      imagePreload.queue = [url, ...imagePreload.queue.filter((item) => item !== url)];
+    }
+    runImagePreloadQueue();
+    return;
+  }
+
+  imagePreload.queued.add(url);
+  if (options.priority === "high") imagePreload.queue.unshift(url);
+  else imagePreload.queue.push(url);
+  runImagePreloadQueue();
+}
+
+function runImagePreloadQueue() {
+  while (imagePreload.active < IMAGE_PRELOAD_CONCURRENCY && imagePreload.queue.length) {
+    const url = imagePreload.queue.shift();
+    imagePreload.queued.delete(url);
+    if (!url || preloadedImages.has(url) || imagePreload.loaded.has(url) || imagePreload.loading.has(url)) continue;
+    preloadImageUrl(url);
+  }
+}
+
+function preloadImageUrl(url) {
+  const image = new Image();
+  image.decoding = "async";
+  preloadedImages.set(url, image);
+  imagePreload.active += 1;
+  imagePreload.loading.add(url);
+
+  image.addEventListener("load", () => finishImagePreload(url, true), { once: true });
+  image.addEventListener("error", () => finishImagePreload(url, false), { once: true });
+  cacheImageUrl(url)
+    .then((cached) => {
+      if (cached) imagePreload.loaded.add(url);
+    })
+    .catch(() => {
+      // Cache Storage can fail in private browsing or low-storage conditions.
+    })
+    .finally(() => {
+      image.src = url;
+    });
+}
+
+async function cacheImageUrl(url) {
+  if (!("caches" in window)) return false;
+  const cache = await caches.open(IMAGE_CACHE_NAME);
+  if (await cache.match(url)) return true;
+  const response = await fetch(url, { cache: "force-cache" });
+  if (!response.ok) throw new Error(`Image cache failed: ${url}`);
+  await cache.put(url, response.clone());
+  return true;
+}
+
+function finishImagePreload(url, ok) {
+  imagePreload.active = Math.max(0, imagePreload.active - 1);
+  imagePreload.loading.delete(url);
+  if (ok) {
+    imagePreload.loaded.add(url);
+    imagePreload.failed.delete(url);
+  } else {
+    imagePreload.loaded.delete(url);
+    imagePreload.failed.add(url);
+    preloadedImages.delete(url);
+  }
+  updateImageViewerStatus(getActiveArticle(), imageStatusText(getActiveArticle()));
+  runImagePreloadQueue();
+}
+
+function showImageLoading(article) {
+  els.imageFrame.classList.add("is-image-loading");
+  els.levelImage.classList.add("is-loading");
+  updateImageViewerStatus(article, "加载中");
+}
+
+function handleLevelImageLoad() {
+  els.imageFrame.classList.remove("is-image-loading", "is-image-error");
+  els.levelImage.classList.remove("is-loading");
+  updateImageViewerStatus(getActiveArticle(), imageStatusText(getActiveArticle()));
+}
+
+function handleLevelImageError() {
+  els.imageFrame.classList.remove("is-image-loading");
+  els.imageFrame.classList.add("is-image-error");
+  els.levelImage.classList.remove("is-loading");
+  updateImageViewerStatus(getActiveArticle(), "图片加载失败");
+}
+
+function updateImageViewerStatus(article, stateText) {
+  if (!article) return;
+  const text = stateText
+    ? `${article.title} · ${stateText}`
+    : article.title;
+  els.imageViewerStatus.textContent = text;
+}
+
+function imageStatusText(article) {
+  if (!article || !articleImageUrls.size) return "";
+  const currentUrl = assetUrl(article.image);
+  if (imagePreload.failed.has(currentUrl)) return "图片加载失败";
+  const done = imagePreload.loaded.size;
+  const total = articleImageUrls.size;
+  if (imagePreload.allQueued && done < total) return `缓存中 ${done}/${total}`;
+  if (done >= total) return "图片已缓存";
+  return "";
 }
 
 function handleImageViewerKeydown(event) {
@@ -1235,6 +1405,7 @@ function handleImageFullscreenChange() {
   els.imageFrame.classList.toggle("is-viewing-fullscreen", isFullscreen);
   if (isFullscreen) {
     resetImageViewer();
+    updateImageViewerStatus(getActiveArticle(), els.imageFrame.classList.contains("is-image-loading") ? "加载中" : "");
   } else {
     endImagePan();
     resetImageViewer();
