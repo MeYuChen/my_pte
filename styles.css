@@ -1,5 +1,6 @@
 :root {
   color-scheme: light;
+  --sidebar-width: 336px;
   --bg: #f5f6f2;
   --surface: #ffffff;
   --surface-muted: #eef2ed;
@@ -45,7 +46,7 @@ button {
 
 .app-shell {
   display: grid;
-  grid-template-columns: 336px 1fr;
+  grid-template-columns: var(--sidebar-width) 1fr;
   min-height: 100vh;
   transition: grid-template-columns 160ms ease;
 }
@@ -66,13 +67,11 @@ button {
 }
 
 .sidebar-toggle {
-  position: sticky;
+  position: fixed;
+  left: var(--sidebar-width);
   top: 50vh;
   z-index: 5;
-  grid-column: 1;
-  justify-self: end;
-  align-self: start;
-  transform: translate(50%, -50%);
+  transform: translate(-50%, -50%);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -87,6 +86,7 @@ button {
   font-size: 28px;
   font-weight: 900;
   line-height: 1;
+  transition: left 160ms ease, transform 160ms ease;
 }
 
 .sidebar-toggle:hover {
@@ -95,9 +95,7 @@ button {
 }
 
 .app-shell.is-sidebar-collapsed .sidebar-toggle {
-  position: fixed;
   left: 0;
-  top: 50vh;
   border-left: 0;
   transform: translateY(-50%);
   border-radius: 0 10px 10px 0;
