@@ -132,6 +132,14 @@ const state = {
     endsAt: null,
     remaining: MODE_LIMITS.template,
     interval: null
+  },
+  imageViewer: {
+    scale: 1,
+    x: 0,
+    y: 0,
+    dragging: false,
+    lastX: 0,
+    lastY: 0
   }
 };
 
@@ -212,6 +220,14 @@ function bindEvents() {
     els.toggleImageButton.textContent = expanded ? "收起" : "展开";
   });
   els.imageFrame.addEventListener("dblclick", openImageFullscreen);
+  els.imageFrame.addEventListener("wheel", handleImageWheel, { passive: false });
+  els.imageFrame.addEventListener("pointerdown", startImagePan);
+  els.imageFrame.addEventListener("pointermove", moveImagePan);
+  els.imageFrame.addEventListener("pointerup", endImagePan);
+  els.imageFrame.addEventListener("pointercancel", endImagePan);
+  els.imageFrame.addEventListener("lostpointercapture", endImagePan);
+  document.addEventListener("fullscreenchange", handleImageFullscreenChange);
+  els.levelImage.draggable = false;
 
   els.startTimerButton.addEventListener("click", () => {
     if (state.mode === "template") startTimer(state.mode);
@@ -1164,12 +1180,85 @@ function openImageFullscreen() {
     return;
   }
   if (els.imageFrame.requestFullscreen) {
+    resetImageViewer();
     els.imageFrame.requestFullscreen().catch(() => {
       window.open(els.levelImage.src, "_blank", "noopener");
     });
   } else {
     window.open(els.levelImage.src, "_blank", "noopener");
   }
+}
+
+function handleImageFullscreenChange() {
+  const isFullscreen = document.fullscreenElement === els.imageFrame;
+  els.imageFrame.classList.toggle("is-viewing-fullscreen", isFullscreen);
+  if (isFullscreen) {
+    resetImageViewer();
+  } else {
+    endImagePan();
+    resetImageViewer();
+  }
+}
+
+function handleImageWheel(event) {
+  if (document.fullscreenElement !== els.imageFrame) return;
+  event.preventDefault();
+  const zoomFactor = event.deltaY < 0 ? 1.12 : 1 / 1.12;
+  const previousScale = state.imageViewer.scale;
+  const nextScale = clamp(previousScale * zoomFactor, 1, 6);
+  if (nextScale === previousScale) return;
+
+  const rect = els.imageFrame.getBoundingClientRect();
+  const pointerX = event.clientX - rect.left - rect.width / 2;
+  const pointerY = event.clientY - rect.top - rect.height / 2;
+  const ratio = nextScale / previousScale;
+
+  state.imageViewer.x = pointerX - (pointerX - state.imageViewer.x) * ratio;
+  state.imageViewer.y = pointerY - (pointerY - state.imageViewer.y) * ratio;
+  state.imageViewer.scale = nextScale;
+  applyImageViewerTransform();
+}
+
+function startImagePan(event) {
+  if (document.fullscreenElement !== els.imageFrame || event.button !== 0) return;
+  event.preventDefault();
+  state.imageViewer.dragging = true;
+  state.imageViewer.lastX = event.clientX;
+  state.imageViewer.lastY = event.clientY;
+  els.imageFrame.classList.add("is-panning");
+  els.imageFrame.setPointerCapture?.(event.pointerId);
+}
+
+function moveImagePan(event) {
+  if (!state.imageViewer.dragging) return;
+  event.preventDefault();
+  state.imageViewer.x += event.clientX - state.imageViewer.lastX;
+  state.imageViewer.y += event.clientY - state.imageViewer.lastY;
+  state.imageViewer.lastX = event.clientX;
+  state.imageViewer.lastY = event.clientY;
+  applyImageViewerTransform();
+}
+
+function endImagePan() {
+  state.imageViewer.dragging = false;
+  els.imageFrame.classList.remove("is-panning");
+}
+
+function resetImageViewer() {
+  state.imageViewer.scale = 1;
+  state.imageViewer.x = 0;
+  state.imageViewer.y = 0;
+  state.imageViewer.dragging = false;
+  applyImageViewerTransform();
+}
+
+function applyImageViewerTransform() {
+  const { scale, x, y } = state.imageViewer;
+  els.levelImage.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+}
+
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
 }
 
 function readJson(key, fallback) {
