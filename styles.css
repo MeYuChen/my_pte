@@ -47,6 +47,7 @@ button {
   display: grid;
   grid-template-columns: 336px 1fr;
   min-height: 100vh;
+  transition: grid-template-columns 160ms ease;
 }
 
 .app-shell.is-sidebar-collapsed {
@@ -64,39 +65,42 @@ button {
   background: #fbfcfa;
 }
 
-.sidebar-collapse-button,
-.sidebar-expand-button {
+.sidebar-toggle {
+  position: sticky;
+  top: 50vh;
+  z-index: 5;
+  grid-column: 1;
+  justify-self: end;
+  align-self: start;
+  transform: translate(50%, -50%);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 64px;
+  padding: 0;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 10px;
   background: var(--surface);
   color: var(--accent-strong);
-  font-size: 22px;
+  box-shadow: var(--shadow);
+  font-size: 28px;
   font-weight: 900;
   line-height: 1;
 }
 
-.sidebar-collapse-button:hover,
-.sidebar-expand-button:hover {
+.sidebar-toggle:hover {
   background: var(--accent-soft);
   color: var(--accent-strong);
 }
 
-.sidebar-expand-button {
+.app-shell.is-sidebar-collapsed .sidebar-toggle {
   position: fixed;
   left: 0;
   top: 50vh;
-  z-index: 5;
-  width: 28px;
-  height: 64px;
-  transform: translateY(-50%);
   border-left: 0;
+  transform: translateY(-50%);
   border-radius: 0 10px 10px 0;
-  box-shadow: var(--shadow);
 }
 
 .brand {
