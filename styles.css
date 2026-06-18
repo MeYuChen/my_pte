@@ -440,6 +440,7 @@ textarea:focus {
 }
 
 .image-frame {
+  position: relative;
   height: 260px;
   overflow: hidden;
   background: #f7f8f6;
@@ -489,6 +490,43 @@ textarea:focus {
 
 .image-frame.is-panning:fullscreen {
   cursor: grabbing;
+}
+
+.image-nav-button {
+  display: none;
+}
+
+.image-frame:fullscreen .image-nav-button {
+  position: fixed;
+  top: 50%;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 92px;
+  padding: 0;
+  transform: translateY(-50%);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(10, 13, 12, 0.72);
+  color: #fff;
+  border-radius: 10px;
+  font-size: 46px;
+  font-weight: 900;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.image-frame:fullscreen .image-nav-button:hover {
+  background: rgba(30, 107, 100, 0.86);
+}
+
+.image-frame:fullscreen .image-nav-button.previous {
+  left: 18px;
+}
+
+.image-frame:fullscreen .image-nav-button.next {
+  right: 18px;
 }
 
 .practice-panel,

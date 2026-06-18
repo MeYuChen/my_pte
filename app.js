@@ -160,6 +160,8 @@ const els = {
   imageSection: document.getElementById("imageSection"),
   levelImage: document.getElementById("levelImage"),
   imageFrame: document.getElementById("imageFrame"),
+  imagePreviousButton: document.getElementById("imagePreviousButton"),
+  imageNextButton: document.getElementById("imageNextButton"),
   toggleImageButton: document.getElementById("toggleImageButton"),
   practicePanel: document.getElementById("practicePanel"),
   practiceTitle: document.getElementById("practiceTitle"),
@@ -227,6 +229,21 @@ function bindEvents() {
   els.imageFrame.addEventListener("pointercancel", endImagePan);
   els.imageFrame.addEventListener("lostpointercapture", endImagePan);
   document.addEventListener("fullscreenchange", handleImageFullscreenChange);
+  document.addEventListener("keydown", handleImageViewerKeydown);
+  els.imagePreviousButton.addEventListener("click", (event) => {
+    event.stopPropagation();
+    showAdjacentImage(-1);
+  });
+  els.imagePreviousButton.addEventListener("dblclick", (event) => {
+    event.stopPropagation();
+  });
+  els.imageNextButton.addEventListener("click", (event) => {
+    event.stopPropagation();
+    showAdjacentImage(1);
+  });
+  els.imageNextButton.addEventListener("dblclick", (event) => {
+    event.stopPropagation();
+  });
   els.levelImage.draggable = false;
 
   els.startTimerButton.addEventListener("click", () => {
@@ -779,6 +796,30 @@ function goToNextArticle() {
   render();
 }
 
+function showAdjacentImage(direction) {
+  if (document.fullscreenElement !== els.imageFrame) return;
+  const currentIndex = articles.findIndex((article) => article.id === state.activeArticleId);
+  const next = articles[(currentIndex + direction + articles.length) % articles.length];
+  if (!next) return;
+  saveCurrentDrafts();
+  state.activeArticleId = next.id;
+  state.answersVisible = false;
+  els.revealAllButton.textContent = "显示答案";
+  render();
+  resetImageViewer();
+}
+
+function handleImageViewerKeydown(event) {
+  if (document.fullscreenElement !== els.imageFrame) return;
+  if (event.key === "ArrowRight") {
+    event.preventDefault();
+    showAdjacentImage(1);
+  } else if (event.key === "ArrowLeft") {
+    event.preventDefault();
+    showAdjacentImage(-1);
+  }
+}
+
 function startTimer(mode) {
   if (mode === "article") return;
   stopTimer(false);
@@ -1221,6 +1262,7 @@ function handleImageWheel(event) {
 
 function startImagePan(event) {
   if (document.fullscreenElement !== els.imageFrame || event.button !== 0) return;
+  if (event.target.closest(".image-nav-button")) return;
   event.preventDefault();
   state.imageViewer.dragging = true;
   state.imageViewer.lastX = event.clientX;
