@@ -721,6 +721,19 @@ textarea:focus {
   line-height: 1.35;
 }
 
+.memory-cn-input {
+  min-height: 78px;
+  margin-top: 8px;
+  padding: 8px 9px;
+  border-color: #b8cbed;
+  background: #fff;
+  color: #0b2458;
+  font-size: 15px;
+  font-weight: 850;
+  line-height: 1.35;
+  resize: vertical;
+}
+
 .memory-sections {
   display: grid;
   grid-template-columns: 1fr;
@@ -729,6 +742,13 @@ textarea:focus {
   border-top: 1px solid #d7e2f3;
   border-bottom: 1px solid #d7e2f3;
   background: #f5f7ff;
+}
+
+.memory-sections-heading {
+  padding: 0 0 2px;
+  color: #5a32a3;
+  font-size: 14px;
+  font-weight: 900;
 }
 
 .memory-section {
@@ -762,6 +782,7 @@ textarea:focus {
 .memory-item strong {
   font-size: 14px;
   line-height: 1.35;
+  font-weight: 650;
 }
 
 .memory-empty {

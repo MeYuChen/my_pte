@@ -618,6 +618,7 @@ function renderMemoryCard(article) {
         ${renderMemoryFlowNode(conclusionNode, "conclusion")}
       </section>
       <section class="memory-sections">
+        <div class="memory-sections-heading">原文核心句子 / Core Sentences</div>
         ${sectionHtml}
       </section>
       <section class="memory-mnemonic">
@@ -635,7 +636,7 @@ function renderMemoryFlowNode(item, type) {
   return `
     <div class="memory-flow-node ${type}">
       <span>${escapeHtml(item.label)}</span>
-      <strong>${escapeHtml(item.value)}</strong>
+      <textarea class="memory-cn-input" data-card-key="${escapeAttr(item.key || "")}" spellcheck="false" placeholder="填写中文速记">${escapeHtml(item.cn || "")}</textarea>
     </div>
   `;
 }
@@ -649,6 +650,13 @@ function saveMemoryCardMnemonic() {
     return;
   }
   const card = getMemoryCard(article);
+  card.flow = card.flow.map((item) => {
+    const field = els.memoryCardPreview.querySelector(`.memory-cn-input[data-card-key="${cssEscape(item.key || "")}"]`);
+    return {
+      ...item,
+      cn: normalizeForPractice(field?.value || item.cn || "")
+    };
+  });
   card.mnemonic = normalizeForPractice(input.value);
   card.status = "confirmed";
   card.updatedAt = new Date().toISOString();
@@ -659,7 +667,7 @@ function saveMemoryCardMnemonic() {
     writeUserArticles();
   }
   renderMemoryCard(article);
-  showToast("速记口诀已保存。");
+  showToast("中文速记和口诀已保存。");
 }
 
 function getMemoryCard(article) {
@@ -2423,9 +2431,10 @@ function normalizeMemoryCard(card) {
     : [];
   const flow = Array.isArray(card.flow)
     ? card.flow.map((item) => ({
-        key: normalizeForExact(item.key),
+        key: normalizeForExact(item.key) || inferMemoryFlowKey(item.label),
         label: normalizeForExact(item.label),
-        value: normalizeForPractice(item.value)
+        value: normalizeForPractice(item.value),
+        cn: normalizeForPractice(item.cn)
       })).filter((item) => item.label && item.value)
     : [];
   return {
@@ -2450,6 +2459,16 @@ function practiceModulesToFields(modules) {
   }, {});
 }
 
+function inferMemoryFlowKey(label) {
+  const text = normalizeForExact(label);
+  if (text.includes("题目")) return "topic";
+  if (text.includes("总论点") && !text.includes("推荐")) return "thesis";
+  if (text.includes("分论点1")) return "argument1";
+  if (text.includes("分论点2")) return "argument2";
+  if (text.includes("推荐") || text.includes("结论")) return "conclusion";
+  return "";
+}
+
 function buildMemoryCardDraft({ title, topic, position, practiceFields }) {
   const sections = MODULES.map(([key, label]) => ({
     key,
@@ -2463,11 +2482,11 @@ function buildMemoryCardDraft({ title, topic, position, practiceFields }) {
   const arg2 = sections.find((section) => section.key === "argument2")?.items || [];
   const conclusion = sections.find((section) => section.key === "conclusion")?.items || [];
   const flow = [
-    { key: "topic", label: "题目相关", value: compactPhrase(topic) },
-    { key: "thesis", label: "总论点", value: compactPhrase(position) },
-    { key: "argument1", label: "分论点1及原因", value: compactPhrase(joinAnswers(arg1.slice(0, 3))) },
-    { key: "argument2", label: "分论点2及原因", value: compactPhrase(joinAnswers(arg2.slice(0, 3))) },
-    { key: "conclusion", label: "总论点及推荐", value: compactPhrase(joinAnswers(conclusion.slice(-3))) }
+    { key: "topic", label: "题目相关", value: compactPhrase(topic), cn: "" },
+    { key: "thesis", label: "总论点", value: compactPhrase(position), cn: "" },
+    { key: "argument1", label: "分论点1及原因", value: compactPhrase(joinAnswers(arg1.slice(0, 3))), cn: "" },
+    { key: "argument2", label: "分论点2及原因", value: compactPhrase(joinAnswers(arg2.slice(0, 3))), cn: "" },
+    { key: "conclusion", label: "总论点及推荐", value: compactPhrase(joinAnswers(conclusion.slice(-3))), cn: "" }
   ].filter((item) => item.value);
   return {
     status: "draft",
@@ -2538,4 +2557,9 @@ function escapeHtml(value) {
 
 function escapeAttr(value) {
   return escapeHtml(value).replaceAll("\n", " ");
+}
+
+function cssEscape(value) {
+  if (window.CSS?.escape) return CSS.escape(String(value));
+  return String(value).replace(/["\\]/g, "\\$&");
 }
