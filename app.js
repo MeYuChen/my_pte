@@ -154,6 +154,7 @@ const state = {
   },
   pendingImport: null,
   templateConflictChoice: null,
+  articleView: "practice",
   imageViewer: {
     scale: 1,
     x: 0,
@@ -193,6 +194,11 @@ const els = {
   revealAllButton: document.getElementById("revealAllButton"),
   checkButton: document.getElementById("checkButton"),
   moduleGrid: document.getElementById("moduleGrid"),
+  articleViewTabs: document.getElementById("articleViewTabs"),
+  memoryCardPanel: document.getElementById("memoryCardPanel"),
+  memoryCardMeta: document.getElementById("memoryCardMeta"),
+  memoryCardPreview: document.getElementById("memoryCardPreview"),
+  saveMnemonicButton: document.getElementById("saveMnemonicButton"),
   examPanel: document.getElementById("examPanel"),
   examTitle: document.getElementById("examTitle"),
   examScore: document.getElementById("examScore"),
@@ -301,6 +307,14 @@ function bindEvents() {
   els.resetInputsButton.addEventListener("click", resetPracticeInputs);
   els.markMasteredButton.addEventListener("click", toggleMastered);
   els.nextLevelButton.addEventListener("click", goToNextArticle);
+  document.querySelectorAll(".article-view-tab").forEach((button) => {
+    button.addEventListener("click", () => {
+      saveCurrentDrafts();
+      state.articleView = button.dataset.articleView;
+      render();
+    });
+  });
+  els.saveMnemonicButton.addEventListener("click", saveMemoryCardMnemonic);
 
   els.singleExamModeButton.addEventListener("click", () => setExamType("single"));
   els.compositeExamModeButton.addEventListener("click", () => setExamType("composite"));
@@ -443,8 +457,11 @@ function renderMain() {
   if (!item) return;
   const activeArticle = getActiveArticle();
   const shouldShowArticleImage = state.mode === "article" && Boolean(activeArticle?.image);
+  const showArticleCard = state.mode === "article" && state.articleView === "card";
 
-  els.practicePanel.hidden = state.mode === "exam" || state.mode === "import";
+  els.articleViewTabs.hidden = state.mode !== "article";
+  els.practicePanel.hidden = state.mode === "exam" || state.mode === "import" || showArticleCard;
+  els.memoryCardPanel.hidden = !showArticleCard;
   els.examPanel.hidden = state.mode !== "exam";
   els.importPanel.hidden = state.mode !== "import";
   els.markMasteredButton.hidden = state.mode === "template" || state.mode === "exam" || state.mode === "import";
@@ -506,6 +523,10 @@ function renderMain() {
     renderExam(article);
   }
 
+  document.querySelectorAll(".article-view-tab").forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.articleView === state.articleView);
+  });
+  if (showArticleCard) renderMemoryCard(getActiveArticle());
   if (state.mode !== "exam" && state.mode !== "import") renderPractice(item);
 }
 
@@ -551,6 +572,88 @@ function renderPractice(item) {
   els.moduleGrid.querySelectorAll(".sentence-input").forEach((input) => {
     input.addEventListener("input", savePracticeDrafts);
   });
+}
+
+function renderMemoryCard(article) {
+  if (!article) return;
+  const card = getMemoryCard(article);
+  els.memoryCardMeta.textContent = card.status === "confirmed"
+    ? "口诀已保存。后续可继续编辑。"
+    : "自动生成的速记草稿，请确认底部口诀。";
+
+  const sectionHtml = card.sections.map((section) => `
+    <article class="memory-section">
+      <h4>${escapeHtml(section.title)}</h4>
+      <div class="memory-section-list">
+        ${section.items.length ? section.items.map((item) => `
+          <div class="memory-item">
+            <span>${escapeHtml(item.label)}</span>
+            <strong>${escapeHtml(item.answer)}</strong>
+          </div>
+        `).join("") : '<p class="memory-empty">暂无核心内容</p>'}
+      </div>
+    </article>
+  `).join("");
+
+  els.memoryCardPreview.innerHTML = `
+    <article class="memory-card">
+      <header class="memory-card-header">
+        <p>PTE WE Mind Map</p>
+        <h3>${escapeHtml(card.title)}</h3>
+      </header>
+      <section class="memory-flow">
+        ${card.flow.map((item) => `
+          <div class="memory-flow-node">
+            <span>${escapeHtml(item.label)}</span>
+            <strong>${escapeHtml(item.value)}</strong>
+          </div>
+        `).join("")}
+      </section>
+      <section class="memory-sections">
+        ${sectionHtml}
+      </section>
+      <section class="memory-mnemonic">
+        <label class="field">
+          <span>记忆口诀 / Memory Hook</span>
+          <textarea id="memoryMnemonicInput" spellcheck="false">${escapeHtml(card.mnemonic)}</textarea>
+        </label>
+      </section>
+    </article>
+  `;
+}
+
+function saveMemoryCardMnemonic() {
+  const article = getActiveArticle();
+  if (!article || state.mode !== "article") return;
+  const input = document.getElementById("memoryMnemonicInput");
+  if (!input) {
+    showToast("请先打开速记卡片。", true);
+    return;
+  }
+  const card = getMemoryCard(article);
+  card.mnemonic = normalizeForPractice(input.value);
+  card.status = "confirmed";
+  card.updatedAt = new Date().toISOString();
+  article.memoryCard = card;
+  const stored = userArticles.find((item) => item.id === article.id);
+  if (stored) {
+    stored.memoryCard = card;
+    writeUserArticles();
+  }
+  renderMemoryCard(article);
+  showToast("速记口诀已保存。");
+}
+
+function getMemoryCard(article) {
+  if (article.memoryCard) return normalizeMemoryCard(article.memoryCard) || article.memoryCard;
+  const card = buildMemoryCardDraft({
+    title: article.name || article.title,
+    topic: article.topic,
+    position: article.position,
+    practiceFields: practiceModulesToFields(articlePracticeModules(article))
+  });
+  article.memoryCard = card;
+  return card;
 }
 
 function renderExam(article) {
@@ -1056,6 +1159,7 @@ function confirmImportedArticle() {
   writeUserArticles();
   state.activeArticleId = article.id;
   state.mode = "article";
+  state.articleView = "card";
   state.answersVisible = false;
   document.querySelectorAll(".mode-tab").forEach((button) => {
     button.classList.toggle("is-active", button.dataset.mode === state.mode);
@@ -1343,6 +1447,12 @@ function buildImportedArticle({ baseArticle, paragraphs, match, position, positi
   }, {});
   const versionCount = userArticles.filter((article) => article.parentId === baseArticle.id).length + 1;
   const name = `${baseArticle.title} · 我的版本 ${versionCount}`;
+  const memoryCard = buildMemoryCardDraft({
+    title: name,
+    topic: baseArticle.topic,
+    position,
+    practiceFields: match.practiceFields
+  });
   return {
     id,
     title: `自定义 · ${name}`,
@@ -1356,6 +1466,7 @@ function buildImportedArticle({ baseArticle, paragraphs, match, position, positi
     paragraphs,
     modules,
     practiceFields: match.practiceFields,
+    memoryCard,
     essay: paragraphs.join("\n\n"),
     source: "user",
     parentId: baseArticle.id,
@@ -2238,6 +2349,7 @@ function normalizeImportedArticle(article) {
     return result;
   }, {});
   const practiceFields = normalizePracticeFields(article.practiceFields);
+  const memoryCard = normalizeMemoryCard(article.memoryCard);
 
   return {
     id: String(article.id || `custom:${Date.now().toString(36)}:${Math.random().toString(36).slice(2, 8)}`),
@@ -2252,6 +2364,7 @@ function normalizeImportedArticle(article) {
     paragraphs,
     modules,
     practiceFields,
+    memoryCard,
     essay: paragraphs.join("\n\n"),
     source: "user",
     parentId: article.parentId || "",
@@ -2275,6 +2388,93 @@ function normalizePracticeFields(fields) {
   }, {});
   const count = MODULES.reduce((sum, [key]) => sum + normalized[key].length, 0);
   return count ? normalized : null;
+}
+
+function normalizeMemoryCard(card) {
+  if (!card || typeof card !== "object") return null;
+  const sections = Array.isArray(card.sections)
+    ? card.sections.map((section, sectionIndex) => ({
+        title: normalizeForExact(section.title) || MODULES[sectionIndex]?.[1] || `Section ${sectionIndex + 1}`,
+        items: Array.isArray(section.items)
+          ? section.items.map((item, itemIndex) => ({
+              label: normalizeForExact(item.label) || `核心 ${itemIndex + 1}`,
+              answer: normalizeForPractice(item.answer)
+            })).filter((item) => item.answer)
+          : []
+      }))
+    : [];
+  const flow = Array.isArray(card.flow)
+    ? card.flow.map((item) => ({
+        label: normalizeForExact(item.label),
+        value: normalizeForPractice(item.value)
+      })).filter((item) => item.label && item.value)
+    : [];
+  return {
+    status: card.status === "confirmed" ? "confirmed" : "draft",
+    title: normalizeForExact(card.title),
+    topic: normalizeForExact(card.topic),
+    position: normalizeForPractice(card.position),
+    flow,
+    sections,
+    mnemonic: normalizeForPractice(card.mnemonic),
+    updatedAt: card.updatedAt || new Date().toISOString()
+  };
+}
+
+function practiceModulesToFields(modules) {
+  return MODULES.reduce((result, [key]) => {
+    result[key] = (modules[key] || []).map((field) => ({
+      label: field.label,
+      answer: field.answer
+    }));
+    return result;
+  }, {});
+}
+
+function buildMemoryCardDraft({ title, topic, position, practiceFields }) {
+  const sections = MODULES.map(([key, label]) => ({
+    key,
+    title: label,
+    items: (practiceFields?.[key] || []).map((field, index) => ({
+      label: normalizeForExact(field.label) || `核心 ${index + 1}`,
+      answer: normalizeForPractice(field.answer)
+    })).filter((item) => item.answer)
+  }));
+  const arg1 = sections.find((section) => section.key === "argument1")?.items || [];
+  const arg2 = sections.find((section) => section.key === "argument2")?.items || [];
+  const conclusion = sections.find((section) => section.key === "conclusion")?.items || [];
+  const flow = [
+    { label: "题目相关", value: compactPhrase(topic) },
+    { label: "总论点", value: compactPhrase(position) },
+    { label: "分论点1及原因", value: compactPhrase(joinAnswers(arg1.slice(0, 3))) },
+    { label: "分论点2及原因", value: compactPhrase(joinAnswers(arg2.slice(0, 3))) },
+    { label: "总论点及推荐", value: compactPhrase(joinAnswers(conclusion.slice(-3))) }
+  ].filter((item) => item.value);
+  return {
+    status: "draft",
+    title: normalizeForExact(title),
+    topic: normalizeForExact(topic),
+    position: normalizeForPractice(position),
+    flow,
+    sections,
+    mnemonic: buildMnemonicDraft(flow),
+    updatedAt: new Date().toISOString()
+  };
+}
+
+function joinAnswers(items) {
+  return items.map((item) => item.answer).filter(Boolean).join(" / ");
+}
+
+function compactPhrase(value, maxWords = 9) {
+  const words = String(value || "").match(/[A-Za-z0-9']+/g) || [];
+  if (!words.length) return "";
+  const compact = words.slice(0, maxWords).join(" ");
+  return words.length > maxWords ? `${compact}...` : compact;
+}
+
+function buildMnemonicDraft(flow) {
+  return flow.map((item) => item.value).filter(Boolean).join(" -> ");
 }
 
 function writeUserArticles() {

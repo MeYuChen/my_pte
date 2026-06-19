@@ -33,6 +33,7 @@
 
 - [x] Merge demo articles and imported articles in the article list.
 - [x] Reuse existing article fill-in practice for imported essays.
+- [x] Generate a memory card draft from extracted core fields after import confirmation.
 - [ ] Store drafts and progress by project ID plus essay ID.
 - [ ] Keep existing demo progress readable.
 

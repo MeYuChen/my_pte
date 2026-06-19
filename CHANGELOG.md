@@ -5,6 +5,7 @@ All notable changes to this project are recorded here.
 ## Unreleased
 
 ### Added
+- Added an article memory card preview generated from extracted core fields, with editable mnemonic hooks.
 - Added strong import auditing with issue cards that highlight problematic template or essay sentences before review generation.
 - Added a template conflict warning when an imported article uses a template different from the saved global template.
 - Added a review step for template-matched imports so users can confirm or manually enter each essay's Position before saving.

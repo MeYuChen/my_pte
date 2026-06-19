@@ -85,6 +85,11 @@
           </div>
         </section>
 
+        <div class="article-view-tabs" id="articleViewTabs" hidden>
+          <button class="article-view-tab is-active" type="button" data-article-view="practice">默写练习</button>
+          <button class="article-view-tab" type="button" data-article-view="card">速记卡片</button>
+        </div>
+
         <section class="practice-panel" id="practicePanel">
           <div class="panel-heading">
             <div>
@@ -99,6 +104,19 @@
             </div>
           </div>
           <div class="module-grid" id="moduleGrid"></div>
+        </section>
+
+        <section class="memory-card-panel" id="memoryCardPanel" hidden>
+          <div class="panel-heading">
+            <div>
+              <h3>速记卡片</h3>
+              <p id="memoryCardMeta">根据核心内容自动生成，可编辑底部口诀。</p>
+            </div>
+            <div class="panel-actions">
+              <button class="secondary-button" id="saveMnemonicButton" type="button">保存口诀</button>
+            </div>
+          </div>
+          <div class="memory-card-preview" id="memoryCardPreview"></div>
         </section>
 
         <section class="import-panel" id="importPanel" hidden>
