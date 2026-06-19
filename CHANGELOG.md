@@ -5,6 +5,7 @@ All notable changes to this project are recorded here.
 ## Unreleased
 
 ### Added
+- Added OpenSpec project guidelines and a change proposal for custom essay import and practice.
 - Added `AI_HANDOFF.md` to help future AI/developers quickly understand project context.
 - Added fullscreen image navigation with previous/next controls.
 - Added keyboard navigation in fullscreen image view with Left/Right arrows.
