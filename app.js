@@ -641,7 +641,7 @@ function renderMemoryCard(article) {
           ${renderMemoryFlowNode(argument2Node, "argument")}
         </div>
         ${renderMemoryFlowNode(conclusionNode, "conclusion")}
-        <button class="memory-card-next-button" type="button" aria-label="下一篇">下一篇 ›</button>
+        <button class="memory-card-next-button" type="button" aria-label="下一篇">›</button>
       </section>
         <section class="memory-sections">
           <div class="memory-sections-heading">原文核心句子 / Core Sentences</div>

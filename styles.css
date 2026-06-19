@@ -757,8 +757,8 @@ textarea:focus {
 
 .app-shell.is-memory-mode .memory-flow {
   flex: 0 0 auto;
-  min-height: 300px;
-  padding: 22px 24px;
+  min-height: 318px;
+  padding: 22px 24px 34px;
 }
 
 .memory-flow-node {
@@ -797,14 +797,15 @@ textarea:focus {
   grid-column: 8;
   justify-self: end;
   align-self: center;
-  width: 64px;
-  height: 52px;
+  width: 46px;
+  height: 72px;
   border: 1px solid #dd7a26;
-  border-radius: 10px;
+  border-radius: 999px;
   background: #fff8f0;
   color: #d95f00;
-  font-size: 13px;
+  font-size: 34px;
   font-weight: 900;
+  line-height: 1;
   box-shadow: 0 10px 22px rgba(217, 95, 0, 0.14);
 }
 
@@ -896,6 +897,7 @@ textarea:focus {
 .app-shell.is-memory-mode .memory-sections {
   flex: 1;
   min-height: 0;
+  padding-top: 20px;
   overflow: auto;
 }
 
@@ -909,6 +911,10 @@ textarea:focus {
   text-align: center;
   font-size: 16px;
   font-weight: 900;
+}
+
+.app-shell.is-memory-mode .memory-sections-heading {
+  margin: 0 auto 14px;
 }
 
 .memory-section-grid {

@@ -23,6 +23,7 @@ All notable changes to this project are recorded here.
 - Added a Service Worker cache so previously loaded images can be reused across refreshes and later visits.
 
 ### Changed
+- Refined immersive memory card spacing and changed next navigation to a compact arrow control.
 - Moved memory review next navigation into the card flow for faster one-handed review.
 - Made memory review mode read-only so cards can be browsed quickly without accidental edits.
 - Split article study into separate `速记` and `默写` main modes, with custom imports landing on the memory card first.
