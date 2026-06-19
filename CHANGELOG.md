@@ -21,6 +21,7 @@ All notable changes to this project are recorded here.
 - Added a Service Worker cache so previously loaded images can be reused across refreshes and later visits.
 
 ### Changed
+- Reworked memory card layout so argument 1 and argument 2 branch in parallel and core fields are listed vertically by paragraph.
 - Reworked the sidebar collapse control into a single toggle button.
 - Improved sidebar toggle positioning so the main content no longer gets extra top spacing.
 - Fullscreen image view now fits the image within the viewport before manual zooming.

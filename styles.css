@@ -635,30 +635,74 @@ textarea:focus {
 
 .memory-flow {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 10px;
-  padding: 16px;
+  grid-template-columns: minmax(160px, 0.9fr) 34px minmax(180px, 1fr) 34px minmax(260px, 1.35fr) 34px minmax(180px, 1fr);
+  align-items: center;
+  gap: 0;
+  padding: 18px;
   background: #fff;
 }
 
 .memory-flow-node {
   position: relative;
-  min-height: 92px;
-  padding: 12px;
+  min-height: 86px;
+  padding: 12px 14px;
   border: 1px solid #2e6fd0;
   border-radius: 10px;
   background: #f6faff;
 }
 
-.memory-flow-node:not(:last-child)::after {
+.memory-flow-node.topic {
+  grid-column: 1;
+}
+
+.memory-flow-node.thesis {
+  grid-column: 3;
+}
+
+.memory-branch-group {
+  position: relative;
+  grid-column: 5;
+  display: grid;
+  gap: 12px;
+}
+
+.memory-flow-node.conclusion {
+  grid-column: 7;
+}
+
+.memory-flow-node.topic::after,
+.memory-flow-node.thesis::after,
+.memory-branch-group::after {
   content: "→";
   position: absolute;
-  right: -13px;
+  right: -25px;
   top: 50%;
   z-index: 1;
   transform: translateY(-50%);
   color: #2455a4;
   font-weight: 900;
+}
+
+.memory-branch-group::before {
+  content: "";
+  position: absolute;
+  left: -18px;
+  top: 20px;
+  bottom: 20px;
+  width: 18px;
+  border-top: 2px solid #2455a4;
+  border-bottom: 2px solid #2455a4;
+  border-left: 2px solid #2455a4;
+  border-radius: 8px 0 0 8px;
+}
+
+.memory-branch-group .memory-flow-node::before {
+  content: "";
+  position: absolute;
+  left: -18px;
+  top: 50%;
+  width: 18px;
+  border-top: 2px solid #2455a4;
 }
 
 .memory-flow-node span,
@@ -679,39 +723,44 @@ textarea:focus {
 
 .memory-sections {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1px;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  padding: 16px;
   border-top: 1px solid #d7e2f3;
   border-bottom: 1px solid #d7e2f3;
-  background: #d7e2f3;
+  background: #f5f7ff;
 }
 
 .memory-section {
-  min-height: 250px;
-  padding: 14px;
+  min-height: 0;
+  padding: 14px 16px;
+  border: 1px solid #d7e2f3;
+  border-radius: 10px;
   background: #fff;
 }
 
 .memory-section h4 {
-  margin: 0 0 10px;
+  margin: 0 0 12px;
   color: #5a32a3;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .memory-section-list {
   display: grid;
-  gap: 8px;
+  gap: 10px;
 }
 
 .memory-item {
   display: grid;
-  gap: 3px;
-  padding-bottom: 8px;
+  grid-template-columns: 180px 1fr;
+  gap: 12px;
+  align-items: start;
+  padding: 9px 0;
   border-bottom: 1px dashed #d8d0ec;
 }
 
 .memory-item strong {
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.35;
 }
 

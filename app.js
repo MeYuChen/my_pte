@@ -595,6 +595,13 @@ function renderMemoryCard(article) {
     </article>
   `).join("");
 
+  const flowMap = Object.fromEntries(card.flow.map((item) => [item.key || item.label, item]));
+  const topicNode = flowMap.topic || card.flow[0];
+  const thesisNode = flowMap.thesis || card.flow[1];
+  const argument1Node = flowMap.argument1 || card.flow[2];
+  const argument2Node = flowMap.argument2 || card.flow[3];
+  const conclusionNode = flowMap.conclusion || card.flow[4];
+
   els.memoryCardPreview.innerHTML = `
     <article class="memory-card">
       <header class="memory-card-header">
@@ -602,12 +609,13 @@ function renderMemoryCard(article) {
         <h3>${escapeHtml(card.title)}</h3>
       </header>
       <section class="memory-flow">
-        ${card.flow.map((item) => `
-          <div class="memory-flow-node">
-            <span>${escapeHtml(item.label)}</span>
-            <strong>${escapeHtml(item.value)}</strong>
-          </div>
-        `).join("")}
+        ${renderMemoryFlowNode(topicNode, "topic")}
+        ${renderMemoryFlowNode(thesisNode, "thesis")}
+        <div class="memory-branch-group">
+          ${renderMemoryFlowNode(argument1Node, "argument")}
+          ${renderMemoryFlowNode(argument2Node, "argument")}
+        </div>
+        ${renderMemoryFlowNode(conclusionNode, "conclusion")}
       </section>
       <section class="memory-sections">
         ${sectionHtml}
@@ -619,6 +627,16 @@ function renderMemoryCard(article) {
         </label>
       </section>
     </article>
+  `;
+}
+
+function renderMemoryFlowNode(item, type) {
+  if (!item) return "";
+  return `
+    <div class="memory-flow-node ${type}">
+      <span>${escapeHtml(item.label)}</span>
+      <strong>${escapeHtml(item.value)}</strong>
+    </div>
   `;
 }
 
@@ -2405,6 +2423,7 @@ function normalizeMemoryCard(card) {
     : [];
   const flow = Array.isArray(card.flow)
     ? card.flow.map((item) => ({
+        key: normalizeForExact(item.key),
         label: normalizeForExact(item.label),
         value: normalizeForPractice(item.value)
       })).filter((item) => item.label && item.value)
@@ -2444,11 +2463,11 @@ function buildMemoryCardDraft({ title, topic, position, practiceFields }) {
   const arg2 = sections.find((section) => section.key === "argument2")?.items || [];
   const conclusion = sections.find((section) => section.key === "conclusion")?.items || [];
   const flow = [
-    { label: "题目相关", value: compactPhrase(topic) },
-    { label: "总论点", value: compactPhrase(position) },
-    { label: "分论点1及原因", value: compactPhrase(joinAnswers(arg1.slice(0, 3))) },
-    { label: "分论点2及原因", value: compactPhrase(joinAnswers(arg2.slice(0, 3))) },
-    { label: "总论点及推荐", value: compactPhrase(joinAnswers(conclusion.slice(-3))) }
+    { key: "topic", label: "题目相关", value: compactPhrase(topic) },
+    { key: "thesis", label: "总论点", value: compactPhrase(position) },
+    { key: "argument1", label: "分论点1及原因", value: compactPhrase(joinAnswers(arg1.slice(0, 3))) },
+    { key: "argument2", label: "分论点2及原因", value: compactPhrase(joinAnswers(arg2.slice(0, 3))) },
+    { key: "conclusion", label: "总论点及推荐", value: compactPhrase(joinAnswers(conclusion.slice(-3))) }
   ].filter((item) => item.value);
   return {
     status: "draft",
