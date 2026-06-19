@@ -4,6 +4,12 @@ All notable changes to this project are recorded here.
 
 ## Unreleased
 
+### Development Notes
+- Current active branch is `develop`; do not merge to `master` until the user explicitly approves.
+- Memory review is intentionally immersive and read-only: it hides the sidebar/header, fills the browser with the card, uses a compact `›` next control near the card flow, and runs a configurable per-card countdown.
+- The memory review countdown is stored locally under `pte-we-memory-review-seconds`; manual next resets the next card's timer, and timeout auto-advances.
+- Keep `速记` and `默写` separate: `速记` is for fast review only, while `默写` is for input practice.
+
 ### Added
 - Added immersive memory review with a full-screen card layout, custom per-card countdown, pause/resume, and early next navigation.
 - Added a dedicated memory review mode for fast card study with next-article navigation.

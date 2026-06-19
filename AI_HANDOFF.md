@@ -14,8 +14,9 @@
 
 1. 让用户尽快背完 39 篇 WE 高频作文。
 2. 默写后立刻指出具体错误位置，减少人工找错时间。
-3. 图片关卡可快速浏览、放大、拖拽，用于速记。
-4. 功能稳定后再考虑合入 `master` 和 GitHub Pages 发布。
+3. 速记模式要足够沉浸，像刷卡片一样快速过文章链路。
+4. 图片关卡可快速浏览、放大、拖拽，用于参考和复盘。
+5. 功能稳定后再考虑合入 `master` 和 GitHub Pages 发布。
 
 暂时不要优先做商业化、账号、支付、后端同步等功能。
 
@@ -39,6 +40,17 @@
 
 ## 核心功能现状
 
+### 主模式划分
+
+左侧主模式当前是：
+
+- `模板`：练完整四段模板。
+- `速记`：沉浸式只读刷卡，不允许编辑。
+- `默写`：文章核心句填空练习。
+- `考核`：整篇作文限时默写。
+
+不要把 `速记` 和 `默写` 重新合并成文章内二级 tab。用户明确要求二者分离：速记负责快速 next，默写负责输入检查。
+
 ### 模板练习
 
 练习完整模板句。用户输入必须与模板句一致，包括标点。入口在 `state.mode === "template"`。
@@ -48,6 +60,58 @@
 - `templatePracticeModules()`
 - `renderPractice()`
 - `checkPractice()`
+
+### 沉浸式速记模式
+
+`速记` 是当前用户很重视的核心体验。它不是编辑器，而是只读刷卡器。
+
+当前行为：
+
+- 进入 `速记` 后，`appShell` 添加 `.is-memory-mode`。
+- `.is-memory-mode` 会隐藏侧边栏、普通头部、题目提示、图片区、练习区、考核区、导入区。
+- `#memoryCardPanel` 变成 fixed 全屏沉浸层，卡片尽量铺满浏览器视野。
+- 顶部只保留小控制条：每篇分钟数、倒计时、暂停/继续、退出速记。
+- 每篇默认 2 分钟，用户可改为 0.25 到 30 分钟。
+- 倒计时配置保存在 `localStorage` 的 `pte-we-memory-review-seconds`。
+- 进入速记自动开始倒计时。
+- 时间到自动下一篇。
+- 用户可以提前点卡片里的 `›` next 控件。
+- 手动 next 后会重置下一篇倒计时。
+- `退出速记` 会切回 `默写`。
+
+重要产品约束：
+
+- 速记模式只读不写。不要在速记模式里放 `textarea`、可编辑中文钩子、保存按钮。
+- 卡片里的 next 控件必须像卡片流向的一部分，而不是普通大按钮。当前是紧挨结论节点右侧的胶囊形 `›`。
+- 紫色 `原文核心句子 / Core Sentences` 标题不要压住上方流程图。沉浸模式下已取消负 margin，并为 `.memory-sections` 加了上边距。
+- 顶部控制条可以存在，因为用户需要改每篇倒计时、暂停和退出；但不能抢占卡片主体空间。
+
+相关代码：
+
+- `renderMemoryCard()`
+- `renderMemoryFlowNode()`
+- `startMemoryReviewTimer()`
+- `stopMemoryReviewTimer()`
+- `toggleMemoryReviewTimer()`
+- `tickMemoryReviewTimer()`
+- `updateMemoryReviewMinutes()`
+- `renderMemoryReviewTimer()`
+- `goToNextArticle()`
+- `MEMORY_REVIEW_SECONDS_KEY`
+
+相关 DOM/CSS：
+
+- `#memoryCardPanel`
+- `#memoryCardPreview`
+- `#memoryMinutesInput`
+- `#memoryCountdown`
+- `#memoryTimerToggleButton`
+- `#exitMemoryButton`
+- `.app-shell.is-memory-mode`
+- `.memory-card`
+- `.memory-flow`
+- `.memory-card-next-button`
+- `.memory-sections-heading`
 
 ### 文章论点练习
 
@@ -164,6 +228,52 @@
 - `toggleSidebar()`
 - `renderSidebarState()`
 
+### 自定义导入与模板匹配
+
+用户后续商业化方向是：用户准备自己的模板和作文原文，系统根据模板 `()` 匹配出需要背写的核心句，并生成速记卡片和默写练习。
+
+当前状态：
+
+- 用户可在对应高频题目下导入自己的模板和作文原文。
+- 模板使用 `()` 标出需要背的内容。
+- 导入会先做强审核，再做模板匹配。
+- 如果导入模板和已保存通用模板不一致，会提示：
+  - 仅适配本文章
+  - 适配全部文章
+  - 使用原模板
+- 匹配通过后需要确认 Position。
+- 保存后生成自定义文章、练习字段和速记卡片。
+- 导入成功后优先进入 `速记`，不是直接进入默写。
+
+强审核当前覆盖：
+
+- 四段结构。
+- 模板/作文句数一致。
+- 模板匹配失败定位。
+- 英文标点格式。
+- 中文标点。
+- 连续空格。
+- 重复标点。
+- 括号/引号配对。
+- 句首大小写。
+- 句尾标点。
+- 作文原文残留 `()` 占位符。
+
+不靠 AI 难以稳定判断的内容，例如是否真正回应题目、是否完全跑题、是否堆不贴题背诵材料、语法拼写是否真正稳定、例子是否合理贴题，后续应作为人工审核或 AI 审核模块，不要伪装成纯规则已经可靠完成。
+
+相关代码：
+
+- `parseTemplateInput()`
+- `compileTemplateSentence()`
+- `matchEssayWithTemplate()`
+- `auditImportText()`
+- `auditTextSurface()`
+- `renderImportIssues()`
+- `renderImportReview()`
+- `confirmImportedArticle()`
+- `buildImportedArticle()`
+- `buildMemoryCardDraft()`
+
 ## 本地运行
 
 推荐用静态服务器：
@@ -205,14 +315,17 @@ git status --short
 - `body` 有 `min-width: 1120px`，当前主要面向电脑浏览器，移动端未适配。
 - 考核模式是严格全文匹配，容错很低，这是当前设计目标，不是 bug。
 - `ARTICLE_SLOT_PATTERNS` 依赖当前作文模板。如果标准答案模板变化，需要同步更新提取规则。
+- 沉浸式速记使用 fixed 全屏层和本地倒计时状态，改布局时要同时验证退出速记、暂停/继续、手动 next、时间到自动 next。
+- 速记卡片的中文钩子当前主要来自生成草稿/已有数据；速记模式本身不提供编辑入口。未来如果要编辑，应做单独的“整理/编辑卡片”流程。
 
 ## 后续优化方向
 
 优先考虑能直接提高背诵效率的功能：
 
+- 单独的速记卡片整理/编辑流程，用于修改中文链路和记忆口诀，然后进入只读速记。
 - 错题集中复习。
 - 只显示未熟练/错误高频的关卡。
-- 快捷键：检查、下一篇、显示答案、清空。
+- 快捷键：检查、下一篇、显示答案、清空；速记模式可考虑 Space 暂停、ArrowRight 下一篇。
 - 图片全屏查看器增加当前题号/标题显示。
 - 导出/导入 `localStorage` 练习记录，解决换设备丢进度问题。
 - 移动端布局适配。
@@ -229,5 +342,7 @@ git status --short
 - 功能改动尽量集中在 `app.js`、`styles.css`、`index.html`。
 - 每次用户确认功能后提交到 `develop`。
 - 合入 `master` 前更新 `CHANGELOG.md`。
+- 每次用户说“做好开发记录和 AI 必读”时，至少更新 `CHANGELOG.md` 和 `AI_HANDOFF.md`。
 - 不要破坏用户已有 `localStorage` 数据结构，除非有迁移方案。
 - 如果改文章论点提取逻辑，必须用第 5 篇这类例子验证句号归属。
+- 如果改速记模式，必须实际验证：进入速记是否隐藏侧栏、倒计时是否走、手动 next 是否保持速记并重置计时、暂停/继续是否正确、退出是否回到默写。
