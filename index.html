@@ -110,7 +110,7 @@
             <div class="panel-actions">
               <button class="secondary-button" id="clearImportButton" type="button">清空</button>
               <button class="secondary-button" id="saveTemplateButton" type="button">保存模板</button>
-              <button class="primary-button" id="saveImportButton" type="button">匹配并练习</button>
+              <button class="primary-button" id="saveImportButton" type="button">生成审核</button>
             </div>
           </div>
           <label class="field import-field">
@@ -122,6 +122,25 @@
             <textarea id="importEssayInput" class="import-essay-input" spellcheck="false" placeholder="The issue of ...&#10;&#10;To begin with, ...&#10;&#10;In addition, ...&#10;&#10;To sum up, ..."></textarea>
           </label>
           <div class="import-result" id="importResult" hidden></div>
+          <div class="import-review" id="importReview" hidden>
+            <div class="import-review-heading">
+              <div>
+                <h4>审核匹配结果</h4>
+                <p id="importReviewSummary"></p>
+              </div>
+              <button class="primary-button" id="confirmImportButton" type="button">确认保存并练习</button>
+            </div>
+            <div class="import-position-box">
+              <label class="field">
+                <span>选择这篇文章的 Position</span>
+                <div class="position-options" id="importPositionOptions"></div>
+              </label>
+              <label class="field">
+                <span>或手动输入 Position</span>
+                <input id="importManualPositionInput" type="text" autocomplete="off" placeholder="例如：written examinations are useful but incomplete.">
+              </label>
+            </div>
+          </div>
         </section>
 
         <section class="exam-panel" id="examPanel" hidden>

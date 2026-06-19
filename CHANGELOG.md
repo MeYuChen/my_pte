@@ -5,6 +5,7 @@ All notable changes to this project are recorded here.
 ## Unreleased
 
 ### Added
+- Added a review step for template-matched imports so users can confirm or manually enter each essay's Position before saving.
 - Added template-based custom essay importing that extracts memorization fields from `()` placeholders.
 - Added a local custom essay import flow that saves user essays and makes them practiceable in article mode.
 - Added OpenSpec project guidelines and a change proposal for custom essay import and practice.

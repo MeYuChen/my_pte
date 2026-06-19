@@ -152,6 +152,7 @@ const state = {
     remaining: MODE_LIMITS.template,
     interval: null
   },
+  pendingImport: null,
   imageViewer: {
     scale: 1,
     x: 0,
@@ -214,9 +215,14 @@ Object.assign(els, {
   importTemplateInput: document.getElementById("importTemplateInput"),
   importEssayInput: document.getElementById("importEssayInput"),
   importResult: document.getElementById("importResult"),
+  importReview: document.getElementById("importReview"),
+  importReviewSummary: document.getElementById("importReviewSummary"),
+  importPositionOptions: document.getElementById("importPositionOptions"),
+  importManualPositionInput: document.getElementById("importManualPositionInput"),
   clearImportButton: document.getElementById("clearImportButton"),
   saveTemplateButton: document.getElementById("saveTemplateButton"),
-  saveImportButton: document.getElementById("saveImportButton")
+  saveImportButton: document.getElementById("saveImportButton"),
+  confirmImportButton: document.getElementById("confirmImportButton")
 });
 
 els.importTemplateInput.value = userTemplate.raw;
@@ -300,6 +306,7 @@ function bindEvents() {
   els.clearImportButton.addEventListener("click", clearImportForm);
   els.saveTemplateButton.addEventListener("click", saveUserTemplate);
   els.saveImportButton.addEventListener("click", saveImportedArticle);
+  els.confirmImportButton.addEventListener("click", confirmImportedArticle);
 }
 
 function toggleSidebar() {
@@ -848,8 +855,13 @@ function clearExam() {
 
 function clearImportForm() {
   els.importEssayInput.value = "";
+  els.importManualPositionInput.value = "";
   els.importResult.hidden = true;
   els.importResult.textContent = "";
+  els.importReview.hidden = true;
+  els.importPositionOptions.replaceChildren();
+  els.importReviewSummary.textContent = "";
+  state.pendingImport = null;
 }
 
 function saveUserTemplate() {
@@ -901,10 +913,51 @@ function saveImportedArticle() {
   const match = matchEssayWithTemplate(parsedTemplate.modules, paragraphs);
   if (!match.ok) {
     renderImportResult(matchReportText(match), true);
+    els.importReview.hidden = true;
+    state.pendingImport = null;
     return;
   }
 
-  const article = buildImportedArticle({ baseArticle: activeArticle, paragraphs, match });
+  state.pendingImport = {
+    baseArticleId: activeArticle.id,
+    paragraphs,
+    match,
+    extractedFields: flattenPracticeFields(match.practiceFields)
+  };
+  renderImportReview(state.pendingImport);
+  renderImportResult("模板匹配成功。请确认 Position 后保存。");
+}
+
+function confirmImportedArticle() {
+  if (!state.pendingImport) {
+    renderImportResult("请先生成审核结果。", true);
+    return;
+  }
+
+  const baseArticle = articles.find((article) => article.id === state.pendingImport.baseArticleId);
+  if (!baseArticle) {
+    renderImportResult("未找到对应的高频题目，请重新选择题目后导入。", true);
+    return;
+  }
+
+  const selected = els.importPositionOptions.querySelector("input[name='importPositionChoice']:checked");
+  const manualPosition = normalizeForPractice(els.importManualPositionInput.value);
+  const selectedField = state.pendingImport.extractedFields[Number(selected?.value)];
+  const position = manualPosition || selectedField?.answer || "";
+  const positionSource = manualPosition ? "manual" : selectedField ? "selected" : "unset";
+
+  if (!position) {
+    renderImportResult("请选择一个核心内容作为 Position，或手动输入 Position。", true);
+    return;
+  }
+
+  const article = buildImportedArticle({
+    baseArticle,
+    paragraphs: state.pendingImport.paragraphs,
+    match: state.pendingImport.match,
+    position,
+    positionSource
+  });
   userArticles.push(article);
   articles.push(article);
   writeUserArticles();
@@ -913,10 +966,10 @@ function saveImportedArticle() {
   state.answersVisible = false;
   document.querySelectorAll(".mode-tab").forEach((button) => {
     button.classList.toggle("is-active", button.dataset.mode === state.mode);
-    });
+      });
   clearImportForm();
   render();
-  showToast("模板匹配成功，已生成核心句练习。");
+  showToast("已确认 Position，并生成核心句练习。");
 }
 
 function renderImportResult(message, warn = false) {
@@ -925,7 +978,60 @@ function renderImportResult(message, warn = false) {
   els.importResult.innerHTML = escapeHtml(message).replaceAll("\n", "<br>");
 }
 
-function buildImportedArticle({ baseArticle, paragraphs, match }) {
+function renderImportReview(pendingImport) {
+  const fields = pendingImport.extractedFields;
+  const recommendedIndex = recommendPositionIndex(fields);
+  els.importReview.hidden = false;
+  els.importReviewSummary.textContent = `匹配 ${pendingImport.match.matchedSentences}/${pendingImport.match.totalSentences} 句，抽取 ${pendingImport.match.extractedSlots} 个核心内容。Position 需要你确认。`;
+  els.importManualPositionInput.value = fields[recommendedIndex]?.answer || "";
+  els.importPositionOptions.replaceChildren(
+    ...fields.map((field, index) => {
+      const id = `importPositionChoice${index}`;
+      const label = document.createElement("label");
+      label.className = "position-option";
+      label.innerHTML = `
+        <input type="radio" name="importPositionChoice" value="${index}" ${index === recommendedIndex ? "checked" : ""}>
+        <span>
+          <strong>${escapeHtml(field.label)}${index === recommendedIndex ? " · 推荐" : ""}</strong>
+          <small>${escapeHtml(field.answer)}</small>
+        </span>
+      `;
+      label.querySelector("input").id = id;
+      label.querySelector("input").addEventListener("change", () => {
+        els.importManualPositionInput.value = field.answer;
+      });
+      return label;
+    })
+  );
+}
+
+function flattenPracticeFields(practiceFields) {
+  return MODULES.flatMap(([key]) => {
+    return (practiceFields[key] || []).map((field) => ({
+      ...field,
+      moduleKey: key
+    }));
+  });
+}
+
+function recommendPositionIndex(fields) {
+  const strongPattern = /point of view|believe|agree|disagree|argue|support|essay/i;
+  const strongIndex = fields.findIndex((field) => (
+    strongPattern.test(field.templateSentence || "") ||
+    strongPattern.test(field.label) ||
+    strongPattern.test(field.answer)
+  ));
+  if (strongIndex >= 0) return strongIndex;
+
+  const introFields = fields
+    .map((field, index) => ({ field, index }))
+    .filter(({ field }) => field.moduleKey === "introduction");
+  if (introFields.length) return introFields[introFields.length - 1].index;
+
+  return 0;
+}
+
+function buildImportedArticle({ baseArticle, paragraphs, match, position, positionSource }) {
   const id = `custom:${Date.now().toString(36)}:${Math.random().toString(36).slice(2, 8)}`;
   const modules = MODULES.reduce((result, [key], index) => {
     result[key] = splitParagraphIntoSentences(paragraphs[index] || "");
@@ -939,7 +1045,9 @@ function buildImportedArticle({ baseArticle, paragraphs, match }) {
     number: baseArticle.number || "自定义",
     name,
     topic: baseArticle.topic,
-    position: baseArticle.position,
+    position,
+    positionSource,
+    positionStatus: "confirmed",
     image: "",
     paragraphs,
     modules,
@@ -1035,7 +1143,8 @@ function matchEssayWithTemplate(templateModules, paragraphs) {
         extractedSlots += 1;
         practiceFields[key].push({
           answer: cleanAnswer,
-          label: `${label.replace(/\s*\/.*$/, "")} 第 ${sentenceIndex + 1} 句 · 核心 ${slotIndex + 1}`
+          label: `${label.replace(/\s*\/.*$/, "")} 第 ${sentenceIndex + 1} 句 · 核心 ${slotIndex + 1}`,
+          templateSentence: templateSentence.sentence
         });
       });
     });
@@ -1802,6 +1911,8 @@ function normalizeImportedArticle(article) {
     name: title,
     topic,
     position,
+    positionSource: article.positionSource || "legacy",
+    positionStatus: article.positionStatus || "confirmed",
     image: "",
     paragraphs,
     modules,
