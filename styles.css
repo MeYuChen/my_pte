@@ -720,7 +720,7 @@ textarea:focus {
   line-height: 1.35;
 }
 
-.memory-cn-input {
+.memory-cn-text {
   min-height: 82px;
   margin-top: 8px;
   padding: 8px 9px;
@@ -730,15 +730,14 @@ textarea:focus {
   font-size: 16px;
   font-weight: 850;
   line-height: 1.35;
-  resize: vertical;
   box-shadow: none;
 }
 
-.memory-flow-node.thesis .memory-cn-input {
+.memory-flow-node.thesis .memory-cn-text {
   color: #22552b;
 }
 
-.memory-flow-node.conclusion .memory-cn-input {
+.memory-flow-node.conclusion .memory-cn-text {
   color: #91440a;
 }
 
@@ -816,14 +815,23 @@ textarea:focus {
   background: #fff;
 }
 
-.memory-mnemonic textarea {
+.memory-mnemonic span {
+  display: block;
+  color: #d95f00;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.memory-mnemonic p {
   min-height: 46px;
+  margin: 6px 0 0;
+  padding: 10px 12px;
   border: 1px solid #f08a2b;
   border-radius: 8px;
   background: #fff8ef;
   color: #d95f00;
   font-weight: 800;
-  resize: vertical;
+  line-height: 1.45;
 }
 
 .import-panel {

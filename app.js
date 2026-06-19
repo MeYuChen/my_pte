@@ -198,7 +198,6 @@ const els = {
   memoryCardPanel: document.getElementById("memoryCardPanel"),
   memoryCardMeta: document.getElementById("memoryCardMeta"),
   memoryCardPreview: document.getElementById("memoryCardPreview"),
-  saveMnemonicButton: document.getElementById("saveMnemonicButton"),
   examPanel: document.getElementById("examPanel"),
   examTitle: document.getElementById("examTitle"),
   examScore: document.getElementById("examScore"),
@@ -311,7 +310,6 @@ function bindEvents() {
     saveCurrentDrafts();
     setMode("import");
   });
-  els.saveMnemonicButton.addEventListener("click", saveMemoryCardMnemonic);
 
   els.singleExamModeButton.addEventListener("click", () => setExamType("single"));
   els.compositeExamModeButton.addEventListener("click", () => setExamType("composite"));
@@ -572,8 +570,8 @@ function renderMemoryCard(article) {
   if (!article) return;
   const card = getMemoryCard(article);
   els.memoryCardMeta.textContent = card.status === "confirmed"
-    ? "口诀已保存。后续可继续编辑。"
-    : "自动生成的速记草稿，请确认底部口诀。";
+    ? "只读速记浏览，点“下一篇”快速切换。"
+    : "自动生成的速记草稿，建议先检查后再用于背诵。";
 
   const sectionHtml = card.sections.map((section) => `
     <article class="memory-section">
@@ -618,10 +616,8 @@ function renderMemoryCard(article) {
           </div>
         </section>
       <section class="memory-mnemonic">
-        <label class="field">
-          <span>记忆口诀 / Memory Hook</span>
-          <textarea id="memoryMnemonicInput" spellcheck="false">${escapeHtml(card.mnemonic)}</textarea>
-        </label>
+        <span>记忆口诀 / Memory Hook</span>
+        <p id="memoryMnemonicText">${escapeHtml(card.mnemonic || "暂无口诀")}</p>
       </section>
     </article>
   `;
@@ -632,38 +628,9 @@ function renderMemoryFlowNode(item, type) {
   return `
     <div class="memory-flow-node ${type}">
       <span>${escapeHtml(item.label)}</span>
-      <textarea class="memory-cn-input" data-card-key="${escapeAttr(item.key || "")}" spellcheck="false" placeholder="填写中文速记">${escapeHtml(item.cn || "")}</textarea>
+      <strong class="memory-cn-text" data-card-key="${escapeAttr(item.key || "")}">${escapeHtml(item.cn || "暂无中文速记")}</strong>
     </div>
   `;
-}
-
-function saveMemoryCardMnemonic() {
-  const article = getActiveArticle();
-  if (!article || state.mode !== "memory") return;
-  const input = document.getElementById("memoryMnemonicInput");
-  if (!input) {
-    showToast("请先打开速记卡片。", true);
-    return;
-  }
-  const card = getMemoryCard(article);
-  card.flow = card.flow.map((item) => {
-    const field = els.memoryCardPreview.querySelector(`.memory-cn-input[data-card-key="${cssEscape(item.key || "")}"]`);
-    return {
-      ...item,
-      cn: normalizeForPractice(field?.value || item.cn || "")
-    };
-  });
-  card.mnemonic = normalizeForPractice(input.value);
-  card.status = "confirmed";
-  card.updatedAt = new Date().toISOString();
-  article.memoryCard = card;
-  const stored = userArticles.find((item) => item.id === article.id);
-  if (stored) {
-    stored.memoryCard = card;
-    writeUserArticles();
-  }
-  renderMemoryCard(article);
-  showToast("中文速记和口诀已保存。");
 }
 
 function getMemoryCard(article) {
@@ -2552,9 +2519,4 @@ function escapeHtml(value) {
 
 function escapeAttr(value) {
   return escapeHtml(value).replaceAll("\n", " ");
-}
-
-function cssEscape(value) {
-  if (window.CSS?.escape) return CSS.escape(String(value));
-  return String(value).replace(/["\\]/g, "\\$&");
 }
