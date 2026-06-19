@@ -11,8 +11,8 @@
 
 - [x] Add an import entry point in the UI.
 - [ ] Allow input of project name.
-- [ ] Allow input of template paragraphs.
-- [x] Allow input of essay title, topic, position, and full essay text.
+- [x] Allow input of template paragraphs.
+- [x] Allow input of essay text under a selected high-frequency topic.
 - [x] Validate that the essay has four paragraphs.
 - [x] Normalize whitespace and paragraph breaks.
 
@@ -20,8 +20,10 @@
 
 - [x] Reuse existing `ARTICLE_SLOT_PATTERNS` for default-template essays.
 - [x] Surface extraction failures as editable fallback fields.
+- [x] Match custom templates with `()` placeholders against imported essays.
+- [x] Report template sentence mismatches instead of silently accepting bad imports.
 - [ ] Preserve manually edited extracted slots.
-- [ ] Avoid silently accepting empty or low-quality extraction output.
+- [x] Avoid silently accepting empty or low-quality extraction output.
 
 ## 4. Practice Compatibility
 
@@ -40,5 +42,5 @@
 
 - [ ] Update `README.md` when import flow exists.
 - [ ] Update `AI_HANDOFF.md` with the new architecture.
-- [ ] Update `CHANGELOG.md` for every merged change.
+- [x] Update `CHANGELOG.md` for every merged change.
 - [ ] Do not merge to `master` without explicit approval.

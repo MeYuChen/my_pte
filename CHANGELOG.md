@@ -5,6 +5,7 @@ All notable changes to this project are recorded here.
 ## Unreleased
 
 ### Added
+- Added template-based custom essay importing that extracts memorization fields from `()` placeholders.
 - Added a local custom essay import flow that saves user essays and makes them practiceable in article mode.
 - Added OpenSpec project guidelines and a change proposal for custom essay import and practice.
 - Added `AI_HANDOFF.md` to help future AI/developers quickly understand project context.

@@ -591,6 +591,10 @@ textarea:focus {
   min-height: 96px;
 }
 
+.import-template-input {
+  min-height: 190px;
+}
+
 .import-essay-input {
   min-height: 260px;
 }

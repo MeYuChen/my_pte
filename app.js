@@ -8,6 +8,7 @@ const MODULES = [
 const STORAGE_KEY = "pte-we-v2-state";
 const SIDEBAR_STATE_KEY = "pte-we-sidebar-collapsed";
 const USER_ARTICLES_KEY = "pte-we-user-articles-v1";
+const USER_TEMPLATE_KEY = "pte-we-user-template-v1";
 const MODE_LIMITS = {
   template: 300,
   article: 300,
@@ -110,6 +111,7 @@ const demoArticles = data?.articles || [];
 const userArticles = loadUserArticles();
 const articles = [...demoArticles, ...userArticles];
 const template = data?.template;
+const userTemplate = loadUserTemplate();
 const preloadedImages = new Map();
 const articleImageUrls = new Set(articles.map((article) => assetUrl(article.image)).filter(Boolean));
 const IMAGE_PRELOAD_CONCURRENCY = 3;
@@ -209,15 +211,15 @@ const els = {
 Object.assign(els, {
   importPanel: document.getElementById("importPanel"),
   importMeta: document.getElementById("importMeta"),
-  importTitleInput: document.getElementById("importTitleInput"),
-  importPositionInput: document.getElementById("importPositionInput"),
-  importTopicInput: document.getElementById("importTopicInput"),
+  importTemplateInput: document.getElementById("importTemplateInput"),
   importEssayInput: document.getElementById("importEssayInput"),
   importResult: document.getElementById("importResult"),
   clearImportButton: document.getElementById("clearImportButton"),
+  saveTemplateButton: document.getElementById("saveTemplateButton"),
   saveImportButton: document.getElementById("saveImportButton")
 });
 
+els.importTemplateInput.value = userTemplate.raw;
 bindEvents();
 renderSidebarState();
 render();
@@ -296,6 +298,7 @@ function bindEvents() {
   els.clearExamButton.addEventListener("click", clearExam);
   els.examInput.addEventListener("input", saveExamDraft);
   els.clearImportButton.addEventListener("click", clearImportForm);
+  els.saveTemplateButton.addEventListener("click", saveUserTemplate);
   els.saveImportButton.addEventListener("click", saveImportedArticle);
 }
 
@@ -366,7 +369,7 @@ function examHeaderLabel() {
 function renderLevelList() {
   const visibleArticles = articles.filter((article) => {
     const progress = getArticleProgress(article.id);
-    const haystack = `${article.title} ${article.topic} ${article.position}`.toLowerCase();
+    const haystack = `${article.number} ${article.title} ${article.name} ${article.topic} ${article.position} ${article.baseTitle || ""}`.toLowerCase();
     const matchesSearch = !state.search || haystack.includes(state.search);
     const matchesFilter =
       state.mode === "exam" ||
@@ -446,10 +449,11 @@ function renderMain() {
     els.practiceTitle.textContent = "5 分钟模板默写";
     els.levelScore.textContent = scoreText(template.id);
   } else if (state.mode === "import") {
+    const article = resolveBaseArticle(getActiveArticle());
     els.levelNumber.textContent = "自定义导入";
-    els.levelTitle.textContent = "导入作文";
+    els.levelTitle.textContent = "导入我的版本";
     els.timerDisplay.hidden = true;
-    els.importMeta.textContent = `已导入 ${userArticles.length} 篇自定义作文。保存后会进入文章论点模式。`;
+    els.importMeta.textContent = `当前题目：${article?.title || "未选择"}。已保存模板：${userTemplate.raw ? "有" : "无"}。自定义作文：${userArticles.length} 篇。`;
   } else {
     const article = state.mode === "exam" ? currentExamArticle() : getActiveArticle();
     if (state.mode === "exam") {
@@ -843,38 +847,64 @@ function clearExam() {
 }
 
 function clearImportForm() {
-  els.importTitleInput.value = "";
-  els.importPositionInput.value = "";
-  els.importTopicInput.value = "";
   els.importEssayInput.value = "";
   els.importResult.hidden = true;
   els.importResult.textContent = "";
 }
 
-function saveImportedArticle() {
-  const title = normalizeForExact(els.importTitleInput.value);
-  const topic = normalizeForExact(els.importTopicInput.value);
-  const position = normalizeForExact(els.importPositionInput.value);
-  const paragraphs = splitEssayInput(els.importEssayInput.value);
+function saveUserTemplate() {
+  const raw = normalizeForExact(els.importTemplateInput.value);
+  const parsed = parseTemplateInput(raw);
+  if (!raw) {
+    renderImportResult("请先粘贴你的作文模板。", true);
+    return;
+  }
+  if (parsed.errors.length) {
+    renderImportResult(parsed.errors.join("\n"), true);
+    return;
+  }
+  userTemplate.raw = raw;
+  userTemplate.parsed = parsed.modules;
+  writeUserTemplate();
+  renderImportResult(`模板已保存：${parsed.slotCount} 个核心空位，${parsed.sentenceCount} 个模板句。`);
+  render();
+}
 
-  if (!title) {
-    renderImportResult("请填写标题。", true);
+function saveImportedArticle() {
+  const activeArticle = resolveBaseArticle(getActiveArticle());
+  const rawTemplate = normalizeForExact(els.importTemplateInput.value) || userTemplate.raw;
+  const paragraphs = splitEssayInput(els.importEssayInput.value);
+  const parsedTemplate = parseTemplateInput(rawTemplate);
+
+  if (!activeArticle) {
+    renderImportResult("请先在左侧选择要导入的高频题目。", true);
     return;
   }
-  if (!topic) {
-    renderImportResult("请填写题目。", true);
+  if (!rawTemplate) {
+    renderImportResult("还没有作文模板。请先粘贴你的模板并点击“保存模板”。", true);
     return;
   }
-  if (!position) {
-    renderImportResult("请填写立场。", true);
+  if (parsedTemplate.errors.length) {
+    renderImportResult(parsedTemplate.errors.join("\n"), true);
     return;
   }
   if (paragraphs.length !== MODULES.length) {
     renderImportResult(`作文需要 ${MODULES.length} 段，当前识别到 ${paragraphs.length} 段。请用空行分隔段落。`, true);
     return;
   }
+  if (rawTemplate !== userTemplate.raw) {
+    userTemplate.raw = rawTemplate;
+    userTemplate.parsed = parsedTemplate.modules;
+    writeUserTemplate();
+  }
 
-  const article = buildImportedArticle({ title, topic, position, paragraphs });
+  const match = matchEssayWithTemplate(parsedTemplate.modules, paragraphs);
+  if (!match.ok) {
+    renderImportResult(matchReportText(match), true);
+    return;
+  }
+
+  const article = buildImportedArticle({ baseArticle: activeArticle, paragraphs, match });
   userArticles.push(article);
   articles.push(article);
   writeUserArticles();
@@ -883,38 +913,158 @@ function saveImportedArticle() {
   state.answersVisible = false;
   document.querySelectorAll(".mode-tab").forEach((button) => {
     button.classList.toggle("is-active", button.dataset.mode === state.mode);
-  });
+    });
   clearImportForm();
   render();
-  showToast("已导入自定义作文，并切换到文章论点练习。");
+  showToast("模板匹配成功，已生成核心句练习。");
 }
 
 function renderImportResult(message, warn = false) {
   els.importResult.hidden = false;
   els.importResult.classList.toggle("warn", warn);
-  els.importResult.textContent = message;
+  els.importResult.innerHTML = escapeHtml(message).replaceAll("\n", "<br>");
 }
 
-function buildImportedArticle({ title, topic, position, paragraphs }) {
+function buildImportedArticle({ baseArticle, paragraphs, match }) {
   const id = `custom:${Date.now().toString(36)}:${Math.random().toString(36).slice(2, 8)}`;
   const modules = MODULES.reduce((result, [key], index) => {
     result[key] = splitParagraphIntoSentences(paragraphs[index] || "");
     return result;
   }, {});
+  const versionCount = userArticles.filter((article) => article.parentId === baseArticle.id).length + 1;
+  const name = `${baseArticle.title} · 我的版本 ${versionCount}`;
   return {
     id,
-    title: `自定义 · ${title}`,
-    number: "自定义",
-    name: title,
-    topic,
-    position,
+    title: `自定义 · ${name}`,
+    number: baseArticle.number || "自定义",
+    name,
+    topic: baseArticle.topic,
+    position: baseArticle.position,
     image: "",
     paragraphs,
     modules,
+    practiceFields: match.practiceFields,
     essay: paragraphs.join("\n\n"),
     source: "user",
+    parentId: baseArticle.id,
+    baseTitle: baseArticle.title,
+    templateSnapshot: userTemplate.raw,
     createdAt: new Date().toISOString()
   };
+}
+
+function parseTemplateInput(raw) {
+  const paragraphs = splitEssayInput(raw);
+  const errors = [];
+  if (paragraphs.length !== MODULES.length) {
+    errors.push(`模板需要 ${MODULES.length} 段，当前识别到 ${paragraphs.length} 段。请用空行分隔段落。`);
+  }
+
+  let slotCount = 0;
+  let sentenceCount = 0;
+  const modules = MODULES.reduce((result, [key], paragraphIndex) => {
+    const sentences = splitParagraphIntoSentences(paragraphs[paragraphIndex] || "");
+    sentenceCount += sentences.length;
+    result[key] = sentences.map((sentence, sentenceIndex) => {
+      const compiled = compileTemplateSentence(sentence);
+      slotCount += compiled.slotCount;
+      return {
+        sentence,
+        sentenceIndex,
+        regex: compiled.regex,
+        slotCount: compiled.slotCount
+      };
+    });
+    return result;
+  }, {});
+
+  if (!slotCount) {
+    errors.push("模板里没有识别到 () 占位符。请用 () 标出需要背写的核心内容。");
+  }
+
+  return { modules, errors, slotCount, sentenceCount };
+}
+
+function compileTemplateSentence(sentence) {
+  const normalized = normalizeForPractice(sentence);
+  const parts = normalized.split(/\(\s*\)|（\s*）/g);
+  const slotCount = parts.length - 1;
+  const pattern = parts
+    .map((part) => escapeRegExp(normalizeForPractice(part)).replace(/\s+/g, "\\s+"))
+    .join("(.+?)");
+  return {
+    regex: new RegExp(`^${pattern}$`),
+    slotCount
+  };
+}
+
+function matchEssayWithTemplate(templateModules, paragraphs) {
+  const failures = [];
+  const practiceFields = {};
+  let matchedSentences = 0;
+  let totalSentences = 0;
+  let extractedSlots = 0;
+
+  MODULES.forEach(([key, label], paragraphIndex) => {
+    const templateSentences = templateModules[key] || [];
+    const essaySentences = splitParagraphIntoSentences(paragraphs[paragraphIndex] || "");
+    totalSentences += templateSentences.length;
+    practiceFields[key] = [];
+
+    if (templateSentences.length !== essaySentences.length) {
+      failures.push(`${label}：模板 ${templateSentences.length} 句，作文 ${essaySentences.length} 句，句子数量不一致。`);
+    }
+
+    templateSentences.forEach((templateSentence, sentenceIndex) => {
+      const essaySentence = normalizeForPractice(essaySentences[sentenceIndex] || "");
+      if (!essaySentence) {
+        failures.push(`${label} 第 ${sentenceIndex + 1} 句：作文缺少对应句子。`);
+        return;
+      }
+
+      const match = essaySentence.match(templateSentence.regex);
+      if (!match) {
+        failures.push(`${label} 第 ${sentenceIndex + 1} 句未匹配：${templateSentence.sentence}`);
+        return;
+      }
+
+      matchedSentences += 1;
+      match.slice(1).forEach((answer, slotIndex) => {
+        const cleanAnswer = normalizeForPractice(answer);
+        if (!cleanAnswer) return;
+        extractedSlots += 1;
+        practiceFields[key].push({
+          answer: cleanAnswer,
+          label: `${label.replace(/\s*\/.*$/, "")} 第 ${sentenceIndex + 1} 句 · 核心 ${slotIndex + 1}`
+        });
+      });
+    });
+  });
+
+  if (!extractedSlots) {
+    failures.push("没有抽取到核心内容。请确认模板里使用 () 标出了需要背写的部分。");
+  }
+
+  return {
+    ok: failures.length === 0,
+    failures,
+    practiceFields,
+    matchedSentences,
+    totalSentences,
+    extractedSlots
+  };
+}
+
+function matchReportText(match) {
+  return [
+    `模板未完全匹配：已匹配 ${match.matchedSentences}/${match.totalSentences} 个模板句，抽取 ${match.extractedSlots} 个核心空位。`,
+    "请检查以下位置：",
+    ...match.failures.map((failure) => `- ${failure}`)
+  ].join("\n");
+}
+
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function goToNextArticle() {
@@ -1219,6 +1369,18 @@ function templatePracticeModules(item) {
 }
 
 function articlePracticeModules(article) {
+  if (article.practiceFields) {
+    return MODULES.reduce((modules, [key]) => {
+      modules[key] = Array.isArray(article.practiceFields[key])
+        ? article.practiceFields[key].map((field, index) => ({
+            answer: normalizeForPractice(field.answer),
+            label: normalizeForExact(field.label) || `核心内容 ${index + 1}`
+          })).filter((field) => field.answer)
+        : [];
+      return modules;
+    }, {});
+  }
+
   return MODULES.reduce((modules, [key]) => {
     modules[key] = (article.modules[key] || []).flatMap((sentence, index) => {
       return extractArticleFields(key, sentence, index);
@@ -1355,6 +1517,11 @@ function isWordToken(token) {
 
 function getActiveArticle() {
   return articles.find((article) => article.id === state.activeArticleId) || articles[0];
+}
+
+function resolveBaseArticle(article) {
+  if (!article || article.source !== "user" || !article.parentId) return article;
+  return articles.find((item) => item.id === article.parentId) || article;
 }
 
 function currentExamArticle() {
@@ -1626,6 +1793,7 @@ function normalizeImportedArticle(article) {
       : splitParagraphIntoSentences(paragraphs[index] || "");
     return result;
   }, {});
+  const practiceFields = normalizePracticeFields(article.practiceFields);
 
   return {
     id: String(article.id || `custom:${Date.now().toString(36)}:${Math.random().toString(36).slice(2, 8)}`),
@@ -1637,14 +1805,47 @@ function normalizeImportedArticle(article) {
     image: "",
     paragraphs,
     modules,
+    practiceFields,
     essay: paragraphs.join("\n\n"),
     source: "user",
+    parentId: article.parentId || "",
+    baseTitle: article.baseTitle || "",
+    templateSnapshot: article.templateSnapshot || "",
     createdAt: article.createdAt || new Date().toISOString()
   };
 }
 
+function normalizePracticeFields(fields) {
+  if (!fields || typeof fields !== "object") return null;
+  const normalized = MODULES.reduce((result, [key]) => {
+    result[key] = Array.isArray(fields[key])
+      ? fields[key].map((field, index) => ({
+          answer: normalizeForPractice(field.answer),
+          label: normalizeForExact(field.label) || `核心内容 ${index + 1}`
+        })).filter((field) => field.answer)
+      : [];
+    return result;
+  }, {});
+  const count = MODULES.reduce((sum, [key]) => sum + normalized[key].length, 0);
+  return count ? normalized : null;
+}
+
 function writeUserArticles() {
   localStorage.setItem(USER_ARTICLES_KEY, JSON.stringify(userArticles));
+}
+
+function loadUserTemplate() {
+  const raw = readJson(USER_TEMPLATE_KEY, "");
+  const value = typeof raw === "string" ? raw : raw?.raw || "";
+  const parsed = parseTemplateInput(value);
+  return {
+    raw: value,
+    parsed: parsed.errors.length ? null : parsed.modules
+  };
+}
+
+function writeUserTemplate() {
+  localStorage.setItem(USER_TEMPLATE_KEY, JSON.stringify(userTemplate.raw));
 }
 
 function writeState() {
