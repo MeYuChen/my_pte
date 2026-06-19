@@ -11,6 +11,7 @@ const USER_ARTICLES_KEY = "pte-we-user-articles-v1";
 const USER_TEMPLATE_KEY = "pte-we-user-template-v1";
 const MODE_LIMITS = {
   template: 300,
+  memory: 0,
   article: 300,
   exam: 1200,
   import: 0
@@ -154,7 +155,6 @@ const state = {
   },
   pendingImport: null,
   templateConflictChoice: null,
-  articleView: "practice",
   imageViewer: {
     scale: 1,
     x: 0,
@@ -176,6 +176,7 @@ const els = {
   timerDisplay: document.getElementById("timerDisplay"),
   markMasteredButton: document.getElementById("markMasteredButton"),
   nextLevelButton: document.getElementById("nextLevelButton"),
+  importArticleButton: document.getElementById("importArticleButton"),
   promptPanel: document.getElementById("promptPanel"),
   topicText: document.getElementById("topicText"),
   positionText: document.getElementById("positionText"),
@@ -194,7 +195,6 @@ const els = {
   revealAllButton: document.getElementById("revealAllButton"),
   checkButton: document.getElementById("checkButton"),
   moduleGrid: document.getElementById("moduleGrid"),
-  articleViewTabs: document.getElementById("articleViewTabs"),
   memoryCardPanel: document.getElementById("memoryCardPanel"),
   memoryCardMeta: document.getElementById("memoryCardMeta"),
   memoryCardPreview: document.getElementById("memoryCardPreview"),
@@ -307,12 +307,9 @@ function bindEvents() {
   els.resetInputsButton.addEventListener("click", resetPracticeInputs);
   els.markMasteredButton.addEventListener("click", toggleMastered);
   els.nextLevelButton.addEventListener("click", goToNextArticle);
-  document.querySelectorAll(".article-view-tab").forEach((button) => {
-    button.addEventListener("click", () => {
-      saveCurrentDrafts();
-      state.articleView = button.dataset.articleView;
-      render();
-    });
+  els.importArticleButton.addEventListener("click", () => {
+    saveCurrentDrafts();
+    setMode("import");
   });
   els.saveMnemonicButton.addEventListener("click", saveMemoryCardMnemonic);
 
@@ -444,7 +441,7 @@ function renderLevelList() {
           state.compositeExam.active = false;
           els.examResult.hidden = true;
         }
-        if (state.mode === "template") setMode("article");
+        if (state.mode === "template" || state.mode === "import") setMode("memory");
         else render();
       });
       return button;
@@ -457,15 +454,15 @@ function renderMain() {
   if (!item) return;
   const activeArticle = getActiveArticle();
   const shouldShowArticleImage = state.mode === "article" && Boolean(activeArticle?.image);
-  const showArticleCard = state.mode === "article" && state.articleView === "card";
+  const showMemoryCard = state.mode === "memory";
 
-  els.articleViewTabs.hidden = state.mode !== "article";
-  els.practicePanel.hidden = state.mode === "exam" || state.mode === "import" || showArticleCard;
-  els.memoryCardPanel.hidden = !showArticleCard;
+  els.practicePanel.hidden = state.mode === "exam" || state.mode === "import" || showMemoryCard;
+  els.memoryCardPanel.hidden = !showMemoryCard;
   els.examPanel.hidden = state.mode !== "exam";
   els.importPanel.hidden = state.mode !== "import";
   els.markMasteredButton.hidden = state.mode === "template" || state.mode === "exam" || state.mode === "import";
   els.nextLevelButton.hidden = state.mode === "template" || state.mode === "exam" || state.mode === "import";
+  els.importArticleButton.hidden = state.mode === "template" || state.mode === "exam" || state.mode === "import";
   els.promptPanel.hidden = state.mode === "template" || state.mode === "exam" || state.mode === "import";
   els.imageSection.hidden = !shouldShowArticleImage;
   if (state.mode === "exam") {
@@ -501,7 +498,7 @@ function renderMain() {
       els.levelTitle.textContent = article.name;
       els.topicText.textContent = article.topic;
       els.positionText.textContent = article.position;
-      if (article.image) {
+      if (state.mode === "article" && article.image) {
         const imageUrl = assetUrl(article.image);
         if (els.levelImage.getAttribute("src") !== imageUrl) {
           showImageLoading(article);
@@ -523,11 +520,8 @@ function renderMain() {
     renderExam(article);
   }
 
-  document.querySelectorAll(".article-view-tab").forEach((button) => {
-    button.classList.toggle("is-active", button.dataset.articleView === state.articleView);
-  });
-  if (showArticleCard) renderMemoryCard(getActiveArticle());
-  if (state.mode !== "exam" && state.mode !== "import") renderPractice(item);
+  if (showMemoryCard) renderMemoryCard(getActiveArticle());
+  if (state.mode === "template" || state.mode === "article") renderPractice(item);
 }
 
 function renderPractice(item) {
@@ -645,7 +639,7 @@ function renderMemoryFlowNode(item, type) {
 
 function saveMemoryCardMnemonic() {
   const article = getActiveArticle();
-  if (!article || state.mode !== "article") return;
+  if (!article || state.mode !== "memory") return;
   const input = document.getElementById("memoryMnemonicInput");
   if (!input) {
     showToast("请先打开速记卡片。", true);
@@ -1186,15 +1180,14 @@ function confirmImportedArticle() {
   articles.push(article);
   writeUserArticles();
   state.activeArticleId = article.id;
-  state.mode = "article";
-  state.articleView = "card";
+  state.mode = "memory";
   state.answersVisible = false;
   document.querySelectorAll(".mode-tab").forEach((button) => {
     button.classList.toggle("is-active", button.dataset.mode === state.mode);
-      });
+  });
   clearImportForm();
   render();
-  showToast("已确认 Position，并生成核心句练习。");
+  showToast("已确认 Position，并生成速记卡片。");
 }
 
 function renderImportResult(message, warn = false) {
@@ -1832,7 +1825,7 @@ function handleImageViewerKeydown(event) {
 }
 
 function startTimer(mode) {
-  if (mode === "article") return;
+  if (mode === "article" || mode === "memory") return;
   stopTimer(false);
   const seconds = MODE_LIMITS[mode] || 300;
   state.timer = {
@@ -1896,7 +1889,7 @@ function renderTimer() {
   const mins = Math.floor(seconds / 60);
   const secs = seconds % 60;
   const showPracticeTimer = state.mode === "template";
-  els.timerDisplay.hidden = state.mode === "article" || state.mode === "import";
+  els.timerDisplay.hidden = state.mode === "article" || state.mode === "memory" || state.mode === "import";
   els.startTimerButton.hidden = !showPracticeTimer;
   els.timerDisplay.textContent = `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
   els.timerDisplay.classList.toggle("is-warning", seconds <= 60 && seconds > 0);
@@ -1910,7 +1903,7 @@ function renderTimer() {
 }
 
 function saveCurrentDrafts() {
-  if (state.mode === "import") return;
+  if (state.mode === "import" || state.mode === "memory") return;
   if (state.mode === "exam") saveExamDraft();
   else savePracticeDrafts();
 }

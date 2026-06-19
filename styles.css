@@ -578,34 +578,6 @@ textarea:focus {
   box-shadow: var(--shadow);
 }
 
-.article-view-tabs {
-  display: inline-grid;
-  grid-template-columns: repeat(2, auto);
-  gap: 6px;
-  margin: 0 0 14px;
-  padding: 4px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: var(--surface-muted);
-}
-
-.article-view-tab {
-  min-width: 92px;
-  height: 32px;
-  border: 0;
-  border-radius: 999px;
-  background: transparent;
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 850;
-}
-
-.article-view-tab.is-active {
-  background: var(--surface);
-  color: var(--accent-strong);
-  box-shadow: 0 1px 4px rgba(28, 39, 33, 0.08);
-}
-
 .memory-card-preview {
   overflow-x: auto;
   padding-bottom: 6px;

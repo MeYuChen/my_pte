@@ -19,9 +19,9 @@
         <div class="sidebar-tools">
           <div class="mode-tabs" role="tablist" aria-label="练习模式">
             <button class="mode-tab is-active" type="button" data-mode="template">模板</button>
-            <button class="mode-tab" type="button" data-mode="article">文章论点</button>
+            <button class="mode-tab" type="button" data-mode="memory">速记</button>
+            <button class="mode-tab" type="button" data-mode="article">默写</button>
             <button class="mode-tab" type="button" data-mode="exam">考核</button>
-            <button class="mode-tab" type="button" data-mode="import">导入</button>
           </div>
           <label class="field">
             <span>搜索文章</span>
@@ -54,6 +54,7 @@
           </div>
           <div class="header-actions">
             <div class="timer" id="timerDisplay">05:00</div>
+            <button class="secondary-button" id="importArticleButton" type="button">导入我的版本</button>
             <button class="secondary-button" id="markMasteredButton" type="button">标记已会</button>
             <button class="primary-button" id="nextLevelButton" type="button">下一篇</button>
           </div>
@@ -84,11 +85,6 @@
             </div>
           </div>
         </section>
-
-        <div class="article-view-tabs" id="articleViewTabs" hidden>
-          <button class="article-view-tab is-active" type="button" data-article-view="practice">默写练习</button>
-          <button class="article-view-tab" type="button" data-article-view="card">速记卡片</button>
-        </div>
 
         <section class="practice-panel" id="practicePanel">
           <div class="panel-heading">
@@ -156,7 +152,7 @@
                 <h4>审核匹配结果</h4>
                 <p id="importReviewSummary"></p>
               </div>
-              <button class="primary-button" id="confirmImportButton" type="button">确认保存并练习</button>
+              <button class="primary-button" id="confirmImportButton" type="button">确认保存并速记</button>
             </div>
             <div class="import-position-box">
               <label class="field">

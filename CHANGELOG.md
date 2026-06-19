@@ -5,6 +5,7 @@ All notable changes to this project are recorded here.
 ## Unreleased
 
 ### Added
+- Added a dedicated memory review mode for fast card study with next-article navigation.
 - Added an article memory card preview generated from extracted core fields, with editable mnemonic hooks.
 - Added strong import auditing with issue cards that highlight problematic template or essay sentences before review generation.
 - Added a template conflict warning when an imported article uses a template different from the saved global template.
@@ -21,6 +22,7 @@ All notable changes to this project are recorded here.
 - Added a Service Worker cache so previously loaded images can be reused across refreshes and later visits.
 
 ### Changed
+- Split article study into separate `速记` and `默写` main modes, with custom imports landing on the memory card first.
 - Reworked memory cards so the main mind-map nodes are editable Chinese memory hooks, with English core sentences moved below as reference.
 - Reworked memory card layout so argument 1 and argument 2 branch in parallel and core fields are listed vertically by paragraph.
 - Reworked the sidebar collapse control into a single toggle button.
