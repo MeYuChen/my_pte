@@ -22,6 +22,7 @@ All notable changes to this project are recorded here.
 - Added a Service Worker cache so previously loaded images can be reused across refreshes and later visits.
 
 ### Changed
+- Moved memory review next navigation into the card flow for faster one-handed review.
 - Made memory review mode read-only so cards can be browsed quickly without accidental edits.
 - Split article study into separate `速记` and `默写` main modes, with custom imports landing on the memory card first.
 - Reworked memory cards so the main mind-map nodes are editable Chinese memory hooks, with English core sentences moved below as reference.

@@ -629,7 +629,7 @@ textarea:focus {
 
 .memory-flow {
   display: grid;
-  grid-template-columns: 1.05fr 44px 0.9fr 44px 1.8fr 44px 1.05fr;
+  grid-template-columns: 1.02fr 40px 0.88fr 40px 1.68fr 40px 1.02fr 78px;
   align-items: center;
   gap: 0;
   min-height: 330px;
@@ -667,6 +667,27 @@ textarea:focus {
   grid-column: 7;
   border-color: #dd7a26;
   background: #fff8f0;
+}
+
+.memory-card-next-button {
+  grid-column: 8;
+  justify-self: end;
+  align-self: center;
+  width: 64px;
+  height: 52px;
+  border: 1px solid #dd7a26;
+  border-radius: 10px;
+  background: #fff8f0;
+  color: #d95f00;
+  font-size: 13px;
+  font-weight: 900;
+  box-shadow: 0 10px 22px rgba(217, 95, 0, 0.14);
+}
+
+.memory-card-next-button:hover {
+  background: #fff0dc;
+  border-color: #d95f00;
+  color: #a94a00;
 }
 
 .memory-flow-node.topic::after,

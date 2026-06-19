@@ -306,6 +306,9 @@ function bindEvents() {
   els.resetInputsButton.addEventListener("click", resetPracticeInputs);
   els.markMasteredButton.addEventListener("click", toggleMastered);
   els.nextLevelButton.addEventListener("click", goToNextArticle);
+  els.memoryCardPreview.addEventListener("click", (event) => {
+    if (event.target.closest(".memory-card-next-button")) goToNextArticle();
+  });
   els.importArticleButton.addEventListener("click", () => {
     saveCurrentDrafts();
     setMode("import");
@@ -459,7 +462,7 @@ function renderMain() {
   els.examPanel.hidden = state.mode !== "exam";
   els.importPanel.hidden = state.mode !== "import";
   els.markMasteredButton.hidden = state.mode === "template" || state.mode === "exam" || state.mode === "import";
-  els.nextLevelButton.hidden = state.mode === "template" || state.mode === "exam" || state.mode === "import";
+  els.nextLevelButton.hidden = state.mode === "template" || state.mode === "memory" || state.mode === "exam" || state.mode === "import";
   els.importArticleButton.hidden = state.mode === "template" || state.mode === "exam" || state.mode === "import";
   els.promptPanel.hidden = state.mode === "template" || state.mode === "exam" || state.mode === "import";
   els.imageSection.hidden = !shouldShowArticleImage;
@@ -608,6 +611,7 @@ function renderMemoryCard(article) {
           ${renderMemoryFlowNode(argument2Node, "argument")}
         </div>
         ${renderMemoryFlowNode(conclusionNode, "conclusion")}
+        <button class="memory-card-next-button" type="button" aria-label="下一篇">下一篇 ›</button>
       </section>
         <section class="memory-sections">
           <div class="memory-sections-heading">原文核心句子 / Core Sentences</div>
