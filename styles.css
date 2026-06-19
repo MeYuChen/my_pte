@@ -132,7 +132,7 @@ button {
 
 .mode-tabs {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 5px;
   margin-bottom: 14px;
 }
@@ -563,9 +563,53 @@ textarea:focus {
 }
 
 .practice-panel,
-.exam-panel {
+.exam-panel,
+.import-panel {
   padding: 18px;
   margin-bottom: 18px;
+}
+
+.import-panel {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.import-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.import-field {
+  margin-top: 14px;
+}
+
+.import-field textarea {
+  min-height: 96px;
+}
+
+.import-essay-input {
+  min-height: 260px;
+}
+
+.import-result {
+  margin-top: 14px;
+  padding: 10px 12px;
+  border-left: 3px solid var(--good);
+  background: var(--good-soft);
+  color: var(--good);
+  line-height: 1.45;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.import-result.warn {
+  border-left-color: var(--warn);
+  background: #fff5df;
+  color: var(--warn);
 }
 
 .panel-heading {

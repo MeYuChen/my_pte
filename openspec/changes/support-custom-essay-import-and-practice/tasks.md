@@ -4,36 +4,36 @@
 
 - [ ] Define a `StudyProject` shape.
 - [ ] Wrap the existing `window.WE_DATA` as the default demo project.
-- [ ] Define imported essay IDs so they cannot collide with demo article IDs.
-- [ ] Define localStorage keys for custom projects and imported essays.
+- [x] Define imported essay IDs so they cannot collide with demo article IDs.
+- [x] Define localStorage keys for custom projects and imported essays.
 
 ## 2. Import Flow
 
-- [ ] Add an import entry point in the UI.
+- [x] Add an import entry point in the UI.
 - [ ] Allow input of project name.
 - [ ] Allow input of template paragraphs.
-- [ ] Allow input of essay title, topic, position, and full essay text.
-- [ ] Validate that the essay has four paragraphs.
-- [ ] Normalize whitespace and paragraph breaks.
+- [x] Allow input of essay title, topic, position, and full essay text.
+- [x] Validate that the essay has four paragraphs.
+- [x] Normalize whitespace and paragraph breaks.
 
 ## 3. Slot Extraction
 
-- [ ] Reuse existing `ARTICLE_SLOT_PATTERNS` for default-template essays.
-- [ ] Surface extraction failures as editable fallback fields.
+- [x] Reuse existing `ARTICLE_SLOT_PATTERNS` for default-template essays.
+- [x] Surface extraction failures as editable fallback fields.
 - [ ] Preserve manually edited extracted slots.
 - [ ] Avoid silently accepting empty or low-quality extraction output.
 
 ## 4. Practice Compatibility
 
-- [ ] Merge demo articles and imported articles in the article list.
-- [ ] Reuse existing article fill-in practice for imported essays.
+- [x] Merge demo articles and imported articles in the article list.
+- [x] Reuse existing article fill-in practice for imported essays.
 - [ ] Store drafts and progress by project ID plus essay ID.
 - [ ] Keep existing demo progress readable.
 
 ## 5. Persistence
 
-- [ ] Save imported projects locally.
-- [ ] Load imported projects on startup.
+- [x] Save imported projects locally.
+- [x] Load imported projects on startup.
 - [ ] Add basic delete/export capability for user data.
 
 ## 6. Documentation and Release

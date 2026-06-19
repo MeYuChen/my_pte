@@ -7,10 +7,12 @@ const MODULES = [
 
 const STORAGE_KEY = "pte-we-v2-state";
 const SIDEBAR_STATE_KEY = "pte-we-sidebar-collapsed";
+const USER_ARTICLES_KEY = "pte-we-user-articles-v1";
 const MODE_LIMITS = {
   template: 300,
   article: 300,
-  exam: 1200
+  exam: 1200,
+  import: 0
 };
 
 const ARTICLE_SLOT_PATTERNS = {
@@ -104,7 +106,9 @@ const MASTERY_STEPS = [
 ];
 
 const data = window.WE_DATA;
-const articles = data?.articles || [];
+const demoArticles = data?.articles || [];
+const userArticles = loadUserArticles();
+const articles = [...demoArticles, ...userArticles];
 const template = data?.template;
 const preloadedImages = new Map();
 const articleImageUrls = new Set(articles.map((article) => assetUrl(article.image)).filter(Boolean));
@@ -202,6 +206,18 @@ const els = {
   examResult: document.getElementById("examResult")
 };
 
+Object.assign(els, {
+  importPanel: document.getElementById("importPanel"),
+  importMeta: document.getElementById("importMeta"),
+  importTitleInput: document.getElementById("importTitleInput"),
+  importPositionInput: document.getElementById("importPositionInput"),
+  importTopicInput: document.getElementById("importTopicInput"),
+  importEssayInput: document.getElementById("importEssayInput"),
+  importResult: document.getElementById("importResult"),
+  clearImportButton: document.getElementById("clearImportButton"),
+  saveImportButton: document.getElementById("saveImportButton")
+});
+
 bindEvents();
 renderSidebarState();
 render();
@@ -279,6 +295,8 @@ function bindEvents() {
   els.submitExamButton.addEventListener("click", () => submitExam({ auto: false }));
   els.clearExamButton.addEventListener("click", clearExam);
   els.examInput.addEventListener("input", saveExamDraft);
+  els.clearImportButton.addEventListener("click", clearImportForm);
+  els.saveImportButton.addEventListener("click", saveImportedArticle);
 }
 
 function toggleSidebar() {
@@ -332,7 +350,8 @@ function render() {
 
 function renderSummary() {
   const mastered = articles.filter((article) => masteryLevel(getArticleProgress(article.id)).key === "skilled").length;
-  els.progressSummary.textContent = `${mastered} / ${articles.length} 已掌握`;
+  const customCount = userArticles.length ? ` · 自定义 ${userArticles.length}` : "";
+  els.progressSummary.textContent = `${mastered} / ${articles.length} 已掌握${customCount}`;
 }
 
 function examHeaderLabel() {
@@ -371,7 +390,7 @@ function renderLevelList() {
           <span class="level-item-meta">${
             state.mode === "exam"
               ? "可选考核题目"
-              : `${practiceFieldCount(article)} 空 · 近5次 ${windowCorrectCount(progress)}/5`
+              : `${article.source === "user" ? "自定义 · " : ""}${practiceFieldCount(article)} 空 · 近5次 ${windowCorrectCount(progress)}/5`
           }</span>
         </span>
         <span class="status-pill ${level.key}">
@@ -401,13 +420,16 @@ function renderLevelList() {
 function renderMain() {
   const item = currentPracticeItem();
   if (!item) return;
+  const activeArticle = getActiveArticle();
+  const shouldShowArticleImage = state.mode === "article" && Boolean(activeArticle?.image);
 
-  els.practicePanel.hidden = state.mode === "exam";
+  els.practicePanel.hidden = state.mode === "exam" || state.mode === "import";
   els.examPanel.hidden = state.mode !== "exam";
-  els.markMasteredButton.hidden = state.mode === "template" || state.mode === "exam";
-  els.nextLevelButton.hidden = state.mode === "template" || state.mode === "exam";
-  els.promptPanel.hidden = state.mode === "template" || state.mode === "exam";
-  els.imageSection.hidden = state.mode === "template" || state.mode === "exam" || !item.image;
+  els.importPanel.hidden = state.mode !== "import";
+  els.markMasteredButton.hidden = state.mode === "template" || state.mode === "exam" || state.mode === "import";
+  els.nextLevelButton.hidden = state.mode === "template" || state.mode === "exam" || state.mode === "import";
+  els.promptPanel.hidden = state.mode === "template" || state.mode === "exam" || state.mode === "import";
+  els.imageSection.hidden = !shouldShowArticleImage;
   if (state.mode === "exam") {
     els.levelImage.removeAttribute("src");
     els.topicText.textContent = "";
@@ -423,6 +445,11 @@ function renderMain() {
     els.levelTitle.textContent = template.title;
     els.practiceTitle.textContent = "5 分钟模板默写";
     els.levelScore.textContent = scoreText(template.id);
+  } else if (state.mode === "import") {
+    els.levelNumber.textContent = "自定义导入";
+    els.levelTitle.textContent = "导入作文";
+    els.timerDisplay.hidden = true;
+    els.importMeta.textContent = `已导入 ${userArticles.length} 篇自定义作文。保存后会进入文章论点模式。`;
   } else {
     const article = state.mode === "exam" ? currentExamArticle() : getActiveArticle();
     if (state.mode === "exam") {
@@ -434,15 +461,21 @@ function renderMain() {
       els.levelTitle.textContent = article.name;
       els.topicText.textContent = article.topic;
       els.positionText.textContent = article.position;
-      const imageUrl = assetUrl(article.image);
-      if (els.levelImage.getAttribute("src") !== imageUrl) {
-        showImageLoading(article);
-        els.levelImage.src = imageUrl;
+      if (article.image) {
+        const imageUrl = assetUrl(article.image);
+        if (els.levelImage.getAttribute("src") !== imageUrl) {
+          showImageLoading(article);
+          els.levelImage.src = imageUrl;
+        } else {
+          updateImageViewerStatus(article, "");
+        }
+        els.levelImage.alt = article.title;
+        preloadNeighborImages(article.id);
       } else {
+        els.levelImage.removeAttribute("src");
+        els.levelImage.alt = "";
         updateImageViewerStatus(article, "");
       }
-      els.levelImage.alt = article.title;
-      preloadNeighborImages(article.id);
       els.practiceTitle.textContent = "文章论点默写";
       els.levelScore.textContent = scoreText(article.id);
       els.markMasteredButton.textContent = "重置进度";
@@ -450,7 +483,7 @@ function renderMain() {
     renderExam(article);
   }
 
-  if (state.mode !== "exam") renderPractice(item);
+  if (state.mode !== "exam" && state.mode !== "import") renderPractice(item);
 }
 
 function renderPractice(item) {
@@ -809,6 +842,81 @@ function clearExam() {
   writeState();
 }
 
+function clearImportForm() {
+  els.importTitleInput.value = "";
+  els.importPositionInput.value = "";
+  els.importTopicInput.value = "";
+  els.importEssayInput.value = "";
+  els.importResult.hidden = true;
+  els.importResult.textContent = "";
+}
+
+function saveImportedArticle() {
+  const title = normalizeForExact(els.importTitleInput.value);
+  const topic = normalizeForExact(els.importTopicInput.value);
+  const position = normalizeForExact(els.importPositionInput.value);
+  const paragraphs = splitEssayInput(els.importEssayInput.value);
+
+  if (!title) {
+    renderImportResult("请填写标题。", true);
+    return;
+  }
+  if (!topic) {
+    renderImportResult("请填写题目。", true);
+    return;
+  }
+  if (!position) {
+    renderImportResult("请填写立场。", true);
+    return;
+  }
+  if (paragraphs.length !== MODULES.length) {
+    renderImportResult(`作文需要 ${MODULES.length} 段，当前识别到 ${paragraphs.length} 段。请用空行分隔段落。`, true);
+    return;
+  }
+
+  const article = buildImportedArticle({ title, topic, position, paragraphs });
+  userArticles.push(article);
+  articles.push(article);
+  writeUserArticles();
+  state.activeArticleId = article.id;
+  state.mode = "article";
+  state.answersVisible = false;
+  document.querySelectorAll(".mode-tab").forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.mode === state.mode);
+  });
+  clearImportForm();
+  render();
+  showToast("已导入自定义作文，并切换到文章论点练习。");
+}
+
+function renderImportResult(message, warn = false) {
+  els.importResult.hidden = false;
+  els.importResult.classList.toggle("warn", warn);
+  els.importResult.textContent = message;
+}
+
+function buildImportedArticle({ title, topic, position, paragraphs }) {
+  const id = `custom:${Date.now().toString(36)}:${Math.random().toString(36).slice(2, 8)}`;
+  const modules = MODULES.reduce((result, [key], index) => {
+    result[key] = splitParagraphIntoSentences(paragraphs[index] || "");
+    return result;
+  }, {});
+  return {
+    id,
+    title: `自定义 · ${title}`,
+    number: "自定义",
+    name: title,
+    topic,
+    position,
+    image: "",
+    paragraphs,
+    modules,
+    essay: paragraphs.join("\n\n"),
+    source: "user",
+    createdAt: new Date().toISOString()
+  };
+}
+
 function goToNextArticle() {
   const index = articles.findIndex((article) => article.id === state.activeArticleId);
   const next = articles[(index + 1) % articles.length];
@@ -1055,7 +1163,7 @@ function renderTimer() {
   const mins = Math.floor(seconds / 60);
   const secs = seconds % 60;
   const showPracticeTimer = state.mode === "template";
-  els.timerDisplay.hidden = state.mode === "article";
+  els.timerDisplay.hidden = state.mode === "article" || state.mode === "import";
   els.startTimerButton.hidden = !showPracticeTimer;
   els.timerDisplay.textContent = `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
   els.timerDisplay.classList.toggle("is-warning", seconds <= 60 && seconds > 0);
@@ -1069,6 +1177,7 @@ function renderTimer() {
 }
 
 function saveCurrentDrafts() {
+  if (state.mode === "import") return;
   if (state.mode === "exam") saveExamDraft();
   else savePracticeDrafts();
 }
@@ -1364,6 +1473,13 @@ function splitEssayInput(value) {
     .filter(Boolean);
 }
 
+function splitParagraphIntoSentences(value) {
+  const text = normalizeForPractice(value);
+  return text.match(/[^.!?]+[.!?]+(?:["”])?|[^.!?]+$/g)
+    ?.map((sentence) => normalizeForPractice(sentence))
+    .filter(Boolean) || [];
+}
+
 function normalizeForExact(value) {
   return String(value || "").trim();
 }
@@ -1481,6 +1597,54 @@ function readJson(key, fallback) {
   } catch {
     return fallback;
   }
+}
+
+function loadUserArticles() {
+  const raw = readJson(USER_ARTICLES_KEY, []);
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .map(normalizeImportedArticle)
+    .filter(Boolean);
+}
+
+function normalizeImportedArticle(article) {
+  if (!article || typeof article !== "object") return null;
+  const paragraphs = Array.isArray(article.paragraphs)
+    ? article.paragraphs.map(normalizeForExact).filter(Boolean)
+    : splitEssayInput(article.essay || "");
+  if (paragraphs.length !== MODULES.length) return null;
+
+  const title = normalizeForExact(article.name || String(article.title || "").replace(/^自定义 · /, ""));
+  const topic = normalizeForExact(article.topic);
+  const position = normalizeForExact(article.position);
+  if (!title || !topic || !position) return null;
+
+  const modules = MODULES.reduce((result, [key], index) => {
+    const existing = article.modules?.[key];
+    result[key] = Array.isArray(existing) && existing.length
+      ? existing.map(normalizeForPractice).filter(Boolean)
+      : splitParagraphIntoSentences(paragraphs[index] || "");
+    return result;
+  }, {});
+
+  return {
+    id: String(article.id || `custom:${Date.now().toString(36)}:${Math.random().toString(36).slice(2, 8)}`),
+    title: `自定义 · ${title}`,
+    number: "自定义",
+    name: title,
+    topic,
+    position,
+    image: "",
+    paragraphs,
+    modules,
+    essay: paragraphs.join("\n\n"),
+    source: "user",
+    createdAt: article.createdAt || new Date().toISOString()
+  };
+}
+
+function writeUserArticles() {
+  localStorage.setItem(USER_ARTICLES_KEY, JSON.stringify(userArticles));
 }
 
 function writeState() {

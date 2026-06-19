@@ -21,6 +21,7 @@
             <button class="mode-tab is-active" type="button" data-mode="template">模板</button>
             <button class="mode-tab" type="button" data-mode="article">文章论点</button>
             <button class="mode-tab" type="button" data-mode="exam">考核</button>
+            <button class="mode-tab" type="button" data-mode="import">导入</button>
           </div>
           <label class="field">
             <span>搜索文章</span>
@@ -98,6 +99,38 @@
             </div>
           </div>
           <div class="module-grid" id="moduleGrid"></div>
+        </section>
+
+        <section class="import-panel" id="importPanel" hidden>
+          <div class="panel-heading">
+            <div>
+              <h3>导入自定义作文</h3>
+              <p id="importMeta">粘贴一篇四段 WE 作文，保存后会加入文章论点练习列表。</p>
+            </div>
+            <div class="panel-actions">
+              <button class="secondary-button" id="clearImportButton" type="button">清空</button>
+              <button class="primary-button" id="saveImportButton" type="button">保存并练习</button>
+            </div>
+          </div>
+          <div class="import-grid">
+            <label class="field">
+              <span>标题</span>
+              <input id="importTitleInput" type="text" autocomplete="off" placeholder="Formal Written Examination">
+            </label>
+            <label class="field">
+              <span>立场</span>
+              <input id="importPositionInput" type="text" autocomplete="off" placeholder="Written examinations are useful but incomplete.">
+            </label>
+          </div>
+          <label class="field import-field">
+            <span>题目</span>
+            <textarea id="importTopicInput" spellcheck="false" placeholder="粘贴题目..."></textarea>
+          </label>
+          <label class="field import-field">
+            <span>完整作文（必须四段，段落之间空一行）</span>
+            <textarea id="importEssayInput" class="import-essay-input" spellcheck="false" placeholder="The issue of ...&#10;&#10;To begin with, ...&#10;&#10;In addition, ...&#10;&#10;To sum up, ..."></textarea>
+          </label>
+          <div class="import-result" id="importResult" hidden></div>
         </section>
 
         <section class="exam-panel" id="examPanel" hidden>
