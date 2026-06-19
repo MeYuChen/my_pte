@@ -606,15 +606,37 @@ textarea:focus {
   box-shadow: 0 1px 4px rgba(28, 39, 33, 0.08);
 }
 
+.memory-card-preview {
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+.memory-card-preview::-webkit-scrollbar {
+  height: 10px;
+}
+
+.memory-card-preview::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: #c4d3ea;
+}
+
+.memory-card-preview::-webkit-scrollbar-track {
+  background: #edf3fb;
+}
+
 .memory-card {
+  width: 100%;
+  min-width: 1360px;
+  max-width: 1500px;
+  margin: 0 auto;
   border: 2px solid #255aa8;
-  border-radius: 14px;
+  border-radius: 12px;
   overflow: hidden;
-  background: #f8fbff;
+  background: #fff;
 }
 
 .memory-card-header {
-  padding: 18px 22px;
+  padding: 18px 22px 20px;
   text-align: center;
   background: linear-gradient(180deg, #ffffff 0%, #eff5ff 100%);
   border-bottom: 1px solid #b8cbed;
@@ -630,24 +652,25 @@ textarea:focus {
 .memory-card-header h3 {
   margin: 5px 0 0;
   color: #0b2458;
-  font-size: 26px;
+  font-size: 30px;
 }
 
 .memory-flow {
   display: grid;
-  grid-template-columns: minmax(160px, 0.9fr) 34px minmax(180px, 1fr) 34px minmax(260px, 1.35fr) 34px minmax(180px, 1fr);
+  grid-template-columns: 1.05fr 44px 0.9fr 44px 1.8fr 44px 1.05fr;
   align-items: center;
   gap: 0;
-  padding: 18px;
+  min-height: 330px;
+  padding: 26px 24px;
   background: #fff;
 }
 
 .memory-flow-node {
   position: relative;
-  min-height: 86px;
-  padding: 12px 14px;
+  min-height: 118px;
+  padding: 14px 16px;
   border: 1px solid #2e6fd0;
-  border-radius: 10px;
+  border-radius: 9px;
   background: #f6faff;
 }
 
@@ -657,17 +680,21 @@ textarea:focus {
 
 .memory-flow-node.thesis {
   grid-column: 3;
+  border-color: #2f7d3d;
+  background: #f5fbf3;
 }
 
 .memory-branch-group {
   position: relative;
   grid-column: 5;
   display: grid;
-  gap: 12px;
+  gap: 18px;
 }
 
 .memory-flow-node.conclusion {
   grid-column: 7;
+  border-color: #dd7a26;
+  background: #fff8f0;
 }
 
 .memory-flow-node.topic::after,
@@ -722,47 +749,68 @@ textarea:focus {
 }
 
 .memory-cn-input {
-  min-height: 78px;
+  min-height: 82px;
   margin-top: 8px;
   padding: 8px 9px;
-  border-color: #b8cbed;
+  border: 0;
   background: #fff;
-  color: #0b2458;
-  font-size: 15px;
+  color: var(--ink);
+  font-size: 16px;
   font-weight: 850;
   line-height: 1.35;
   resize: vertical;
+  box-shadow: none;
+}
+
+.memory-flow-node.thesis .memory-cn-input {
+  color: #22552b;
+}
+
+.memory-flow-node.conclusion .memory-cn-input {
+  color: #91440a;
 }
 
 .memory-sections {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-  padding: 16px;
+  display: block;
+  padding: 0 16px 16px;
   border-top: 1px solid #d7e2f3;
-  border-bottom: 1px solid #d7e2f3;
-  background: #f5f7ff;
+  background: #fbf8ff;
 }
 
 .memory-sections-heading {
-  padding: 0 0 2px;
-  color: #5a32a3;
-  font-size: 14px;
+  width: min(560px, 80%);
+  margin: -14px auto 12px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  background: #6f45b7;
+  color: #fff;
+  text-align: center;
+  font-size: 16px;
   font-weight: 900;
+}
+
+.memory-section-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  border: 1px solid #bda4df;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #c8b4e3;
 }
 
 .memory-section {
   min-height: 0;
   padding: 14px 16px;
-  border: 1px solid #d7e2f3;
-  border-radius: 10px;
+  border: 0;
+  border-radius: 0;
   background: #fff;
 }
 
 .memory-section h4 {
   margin: 0 0 12px;
   color: #5a32a3;
-  font-size: 16px;
+  font-size: 15px;
 }
 
 .memory-section-list {
@@ -772,15 +820,15 @@ textarea:focus {
 
 .memory-item {
   display: grid;
-  grid-template-columns: 180px 1fr;
-  gap: 12px;
+  grid-template-columns: 82px 1fr;
+  gap: 10px;
   align-items: start;
-  padding: 9px 0;
+  padding: 8px 0;
   border-bottom: 1px dashed #d8d0ec;
 }
 
 .memory-item strong {
-  font-size: 14px;
+  font-size: 12px;
   line-height: 1.35;
   font-weight: 650;
 }
@@ -792,15 +840,18 @@ textarea:focus {
 }
 
 .memory-mnemonic {
-  padding: 14px 16px 16px;
-  background: #fff8ef;
+  padding: 12px 16px 16px;
+  background: #fff;
 }
 
 .memory-mnemonic textarea {
-  min-height: 74px;
-  border-color: #efc77f;
-  color: #7a3b00;
+  min-height: 46px;
+  border: 1px solid #f08a2b;
+  border-radius: 8px;
+  background: #fff8ef;
+  color: #d95f00;
   font-weight: 800;
+  resize: vertical;
 }
 
 .import-panel {

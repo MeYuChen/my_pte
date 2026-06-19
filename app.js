@@ -617,10 +617,12 @@ function renderMemoryCard(article) {
         </div>
         ${renderMemoryFlowNode(conclusionNode, "conclusion")}
       </section>
-      <section class="memory-sections">
-        <div class="memory-sections-heading">原文核心句子 / Core Sentences</div>
-        ${sectionHtml}
-      </section>
+        <section class="memory-sections">
+          <div class="memory-sections-heading">原文核心句子 / Core Sentences</div>
+          <div class="memory-section-grid">
+          ${sectionHtml}
+          </div>
+        </section>
       <section class="memory-mnemonic">
         <label class="field">
           <span>记忆口诀 / Memory Hook</span>
