@@ -644,6 +644,72 @@ textarea:focus {
   color: var(--warn);
 }
 
+.import-issues {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.import-issue {
+  padding: 12px;
+  border: 1px solid #f2b8b3;
+  border-left: 4px solid var(--bad);
+  border-radius: 8px;
+  background: var(--bad-soft);
+}
+
+.import-issue-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.import-issue-title strong {
+  color: var(--bad);
+  font-size: 14px;
+}
+
+.import-issue-title span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.import-issue p {
+  margin: 8px 0 0;
+  line-height: 1.45;
+  font-size: 13px;
+}
+
+.issue-quote {
+  display: grid;
+  gap: 5px;
+  margin-top: 9px;
+}
+
+.issue-quote b {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.issue-quote mark {
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: #fff2a8;
+  color: #251c00;
+  line-height: 1.45;
+}
+
+.issue-quote.original mark {
+  background: #ffd8d5;
+}
+
+.issue-locate-button {
+  margin-top: 9px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
 .import-review {
   margin-top: 14px;
   padding: 14px;

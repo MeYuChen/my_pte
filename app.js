@@ -220,6 +220,7 @@ Object.assign(els, {
   restoreTemplateButton: document.getElementById("restoreTemplateButton"),
   importEssayInput: document.getElementById("importEssayInput"),
   importResult: document.getElementById("importResult"),
+  importIssues: document.getElementById("importIssues"),
   importReview: document.getElementById("importReview"),
   importReviewSummary: document.getElementById("importReviewSummary"),
   importPositionOptions: document.getElementById("importPositionOptions"),
@@ -316,6 +317,7 @@ function bindEvents() {
   els.useArticleTemplateButton.addEventListener("click", () => resolveTemplateConflict("article"));
   els.useGlobalTemplateButton.addEventListener("click", () => resolveTemplateConflict("global"));
   els.restoreTemplateButton.addEventListener("click", () => resolveTemplateConflict("restore"));
+  els.importIssues.addEventListener("click", handleImportIssueClick);
 }
 
 function toggleSidebar() {
@@ -868,6 +870,8 @@ function clearImportForm() {
   els.importManualPositionInput.value = "";
   els.importResult.hidden = true;
   els.importResult.textContent = "";
+  els.importIssues.hidden = true;
+  els.importIssues.replaceChildren();
   els.importReview.hidden = true;
   els.importPositionOptions.replaceChildren();
   els.importReviewSummary.textContent = "";
@@ -880,6 +884,8 @@ function handleImportTemplateChange() {
   state.templateConflictChoice = null;
   state.pendingImport = null;
   els.importReview.hidden = true;
+  els.importIssues.hidden = true;
+  els.importIssues.replaceChildren();
   renderTemplateConflict();
 }
 
@@ -957,10 +963,21 @@ function saveImportedArticle() {
   }
   if (parsedTemplate.errors.length) {
     renderImportResult(parsedTemplate.errors.join("\n"), true);
+    renderImportIssues(parsedTemplate.errors.map((message) => ({
+      severity: "error",
+      title: "模板格式问题",
+      message
+    })));
     return;
   }
   if (paragraphs.length !== MODULES.length) {
-    renderImportResult(`作文需要 ${MODULES.length} 段，当前识别到 ${paragraphs.length} 段。请用空行分隔段落。`, true);
+    const issue = {
+      severity: "error",
+      title: "作文段落数量不正确",
+      message: `作文需要 ${MODULES.length} 段，当前识别到 ${paragraphs.length} 段。请用空行分隔段落。`
+    };
+    renderImportResult("强审核未通过，请先修改作文格式。", true);
+    renderImportIssues([issue]);
     return;
   }
   if (state.templateConflictChoice === "global" && rawTemplate !== userTemplate.raw) {
@@ -970,9 +987,19 @@ function saveImportedArticle() {
     renderTemplateConflict();
   }
 
+  const auditIssues = auditImportText(rawTemplate, els.importEssayInput.value, parsedTemplate.modules);
+  if (auditIssues.length) {
+    renderImportResult("强审核未通过，请先修改模板或作文原文。", true);
+    renderImportIssues(auditIssues);
+    els.importReview.hidden = true;
+    state.pendingImport = null;
+    return;
+  }
+
   const match = matchEssayWithTemplate(parsedTemplate.modules, paragraphs);
   if (!match.ok) {
     renderImportResult(matchReportText(match), true);
+    renderImportIssues(match.failures);
     els.importReview.hidden = true;
     state.pendingImport = null;
     return;
@@ -988,6 +1015,8 @@ function saveImportedArticle() {
   };
   renderImportReview(state.pendingImport);
   renderImportResult("模板匹配成功。请确认 Position 后保存。");
+  els.importIssues.hidden = true;
+  els.importIssues.replaceChildren();
 }
 
 function confirmImportedArticle() {
@@ -1042,6 +1071,91 @@ function renderImportResult(message, warn = false) {
   els.importResult.innerHTML = escapeHtml(message).replaceAll("\n", "<br>");
 }
 
+function renderImportIssues(issues) {
+  const normalizedIssues = issues
+    .map((issue) => typeof issue === "string" ? { severity: "error", title: "审核问题", message: issue } : issue)
+    .filter(Boolean);
+
+  els.importIssues.hidden = normalizedIssues.length === 0;
+  els.importIssues.replaceChildren(
+    ...normalizedIssues.map((issue, index) => {
+      const card = document.createElement("article");
+      card.className = `import-issue ${issue.severity || "error"}`;
+      const location = issue.moduleLabel
+        ? `${issue.moduleLabel}${Number.isInteger(issue.sentenceIndex) ? ` · 第 ${issue.sentenceIndex + 1} 句` : ""}`
+        : "";
+      card.innerHTML = `
+        <div class="import-issue-title">
+          <strong>${escapeHtml(issue.title || "审核问题")}</strong>
+          ${location ? `<span>${escapeHtml(location)}</span>` : ""}
+        </div>
+        <p>${escapeHtml(issue.message || "")}</p>
+        ${issue.templateSentence ? `
+          <div class="issue-quote">
+            <b>模板句</b>
+            <mark>${escapeHtml(issue.templateSentence)}</mark>
+          </div>
+        ` : ""}
+        ${issue.essaySentence ? `
+          <div class="issue-quote original">
+            <b>${issue.targetInput === "template" ? "模板原文处" : "作文原文处"}</b>
+            <mark>${escapeHtml(issue.essaySentence)}</mark>
+          </div>
+          <button class="ghost-button issue-locate-button" type="button" data-issue-index="${index}">定位原文</button>
+        ` : ""}
+      `;
+      return card;
+    })
+  );
+  els.importIssues.dataset.issues = JSON.stringify(normalizedIssues.map((issue) => ({
+    essaySentence: issue.essaySentence || "",
+    targetInput: issue.targetInput || "essay"
+  })));
+}
+
+function handleImportIssueClick(event) {
+  const button = event.target.closest(".issue-locate-button");
+  if (!button) return;
+  const index = Number(button.dataset.issueIndex);
+  const issues = readIssuesFromDataset();
+  const issue = issues[index];
+  const sentence = issue?.essaySentence;
+  if (!sentence) return;
+  focusImportText(issue.targetInput === "template" ? els.importTemplateInput : els.importEssayInput, sentence);
+}
+
+function readIssuesFromDataset() {
+  try {
+    return JSON.parse(els.importIssues.dataset.issues || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function focusImportText(input, sentence) {
+  const raw = input.value;
+  const normalizedNeedle = normalizeForPractice(sentence);
+  const directIndex = raw.indexOf(sentence);
+  const index = directIndex >= 0 ? directIndex : findNormalizedTextIndex(raw, normalizedNeedle);
+  input.focus();
+  if (index < 0) return;
+  const end = Math.min(raw.length, index + sentence.length);
+  input.setSelectionRange(index, end);
+}
+
+function findNormalizedTextIndex(raw, normalizedNeedle) {
+  if (!normalizedNeedle) return -1;
+  for (let start = 0; start < raw.length; start += 1) {
+    for (let end = start + 1; end <= raw.length; end += 1) {
+      const slice = raw.slice(start, end);
+      const normalized = normalizeForPractice(slice);
+      if (normalized.length > normalizedNeedle.length + 8) break;
+      if (normalized === normalizedNeedle) return start;
+    }
+  }
+  return -1;
+}
+
 function renderImportReview(pendingImport) {
   const fields = pendingImport.extractedFields;
   const recommendedIndex = recommendPositionIndex(fields);
@@ -1067,6 +1181,132 @@ function renderImportReview(pendingImport) {
       return label;
     })
   );
+}
+
+function auditImportText(rawTemplate, rawEssay, templateModules) {
+  return [
+    ...auditTextSurface(rawTemplate, "模板", splitEssayInput(rawTemplate), templateModules, { allowPlaceholders: true }),
+    ...auditTextSurface(rawEssay, "作文原文", splitEssayInput(rawEssay), null, { allowPlaceholders: false })
+  ];
+}
+
+function auditTextSurface(rawText, sourceLabel, paragraphs, templateModules, options = {}) {
+  const issues = [];
+  if (/\s+[,.!?;:]/.test(rawText)) {
+    issues.push({
+      severity: "error",
+      title: `${sourceLabel}标点前有多余空格`,
+      message: "英文标点前不应有空格，例如应写成 word, 而不是 word ,。"
+    });
+  }
+  if (/[，。！？；：]/.test(rawText)) {
+    issues.push({
+      severity: "error",
+      title: `${sourceLabel}包含中文标点`,
+      message: "WE 英文作文建议统一使用英文标点，避免背诵时格式混乱。"
+    });
+  }
+  if (/[!?.,;:]{2,}/.test(rawText)) {
+    issues.push({
+      severity: "error",
+      title: `${sourceLabel}包含重复标点`,
+      message: "发现连续标点，请检查是否误粘贴或漏改。"
+    });
+  }
+  if (/ {2,}/.test(rawText)) {
+    issues.push({
+      severity: "error",
+      title: `${sourceLabel}包含连续空格`,
+      message: "发现连续空格，请统一为单个空格，避免影响模板匹配和背诵。"
+    });
+  }
+  if (!hasBalancedPairs(rawText, "(", ")") || !hasBalancedPairs(rawText, "（", "）")) {
+    issues.push({
+      severity: "error",
+      title: `${sourceLabel}括号不成对`,
+      message: "发现括号数量不一致，请检查是否漏删或漏补。"
+    });
+  }
+  if (!hasEvenCount(rawText, "\"") || !hasBalancedPairs(rawText, "“", "”")) {
+    issues.push({
+      severity: "error",
+      title: `${sourceLabel}引号可能不成对`,
+      message: "发现引号数量异常，请检查引用符号。"
+    });
+  }
+
+  paragraphs.forEach((paragraph, paragraphIndex) => {
+    const module = MODULES[paragraphIndex];
+    const moduleKey = module?.[0] || "";
+    const moduleLabel = module?.[1] || `第 ${paragraphIndex + 1} 段`;
+    const sentences = splitParagraphIntoSentences(paragraph);
+    sentences.forEach((sentence, sentenceIndex) => {
+      const clean = normalizeForPractice(sentence);
+      if (!/[.!?]$/.test(clean)) {
+        issues.push(sentenceIssue({
+          sourceLabel,
+          title: "句子缺少结尾标点",
+          message: "句子应以英文句号、问号或感叹号结尾。",
+          moduleKey,
+          moduleLabel,
+          paragraphIndex,
+          sentenceIndex,
+          sentence: clean
+        }));
+      }
+      const firstLetter = clean.match(/[A-Za-z]/)?.[0];
+      if (firstLetter && firstLetter !== firstLetter.toUpperCase()) {
+        issues.push(sentenceIssue({
+          sourceLabel,
+          title: "句子可能没有大写开头",
+          message: "句子首个英文字母应大写，请检查是否漏了大写或句子切分有误。",
+          moduleKey,
+          moduleLabel,
+          paragraphIndex,
+          sentenceIndex,
+          sentence: clean
+        }));
+      }
+      if (!options.allowPlaceholders && /\(\s*\)|（\s*）/.test(clean)) {
+        issues.push(sentenceIssue({
+          sourceLabel,
+          title: "作文原文仍包含模板占位符",
+          message: "作文原文里不应出现 ()，请补全后再导入。",
+          moduleKey,
+          moduleLabel,
+          paragraphIndex,
+          sentenceIndex,
+          sentence: clean
+        }));
+      }
+    });
+  });
+
+  return issues;
+}
+
+function sentenceIssue({ sourceLabel, title, message, moduleKey, moduleLabel, paragraphIndex, sentenceIndex, sentence }) {
+  return {
+    severity: "error",
+    title: `${sourceLabel}${title}`,
+    message,
+    moduleKey,
+    moduleLabel,
+    paragraphIndex,
+    sentenceIndex,
+    essaySentence: sentence,
+    targetInput: sourceLabel === "模板" ? "template" : "essay"
+  };
+}
+
+function hasBalancedPairs(value, open, close) {
+  const opens = String(value).split(open).length - 1;
+  const closes = String(value).split(close).length - 1;
+  return opens === closes;
+}
+
+function hasEvenCount(value, token) {
+  return (String(value).split(token).length - 1) % 2 === 0;
 }
 
 function flattenPracticeFields(practiceFields) {
@@ -1180,26 +1420,52 @@ function matchEssayWithTemplate(templateModules, paragraphs) {
 
   MODULES.forEach(([key, label], paragraphIndex) => {
     const templateSentences = templateModules[key] || [];
-    const essaySentences = splitParagraphIntoSentences(paragraphs[paragraphIndex] || "");
-    totalSentences += templateSentences.length;
-    practiceFields[key] = [];
+      const essaySentences = splitParagraphIntoSentences(paragraphs[paragraphIndex] || "");
+      totalSentences += templateSentences.length;
+      practiceFields[key] = [];
 
-    if (templateSentences.length !== essaySentences.length) {
-      failures.push(`${label}：模板 ${templateSentences.length} 句，作文 ${essaySentences.length} 句，句子数量不一致。`);
-    }
+      if (templateSentences.length !== essaySentences.length) {
+        failures.push({
+          severity: "error",
+          title: "句子数量不一致",
+          moduleKey: key,
+          moduleLabel: label,
+          paragraphIndex,
+          message: `${label}：模板 ${templateSentences.length} 句，作文 ${essaySentences.length} 句，句子数量不一致。`
+        });
+      }
 
     templateSentences.forEach((templateSentence, sentenceIndex) => {
-      const essaySentence = normalizeForPractice(essaySentences[sentenceIndex] || "");
-      if (!essaySentence) {
-        failures.push(`${label} 第 ${sentenceIndex + 1} 句：作文缺少对应句子。`);
-        return;
-      }
+        const essaySentence = normalizeForPractice(essaySentences[sentenceIndex] || "");
+        if (!essaySentence) {
+          failures.push({
+            severity: "error",
+            title: "作文缺少对应句子",
+            moduleKey: key,
+            moduleLabel: label,
+            paragraphIndex,
+            sentenceIndex,
+            templateSentence: templateSentence.sentence,
+            message: `${label} 第 ${sentenceIndex + 1} 句：作文缺少对应句子。`
+          });
+          return;
+        }
 
-      const match = essaySentence.match(templateSentence.regex);
-      if (!match) {
-        failures.push(`${label} 第 ${sentenceIndex + 1} 句未匹配：${templateSentence.sentence}`);
-        return;
-      }
+        const match = essaySentence.match(templateSentence.regex);
+        if (!match) {
+          failures.push({
+            severity: "error",
+            title: "模板句未匹配原文",
+            moduleKey: key,
+            moduleLabel: label,
+            paragraphIndex,
+            sentenceIndex,
+            templateSentence: templateSentence.sentence,
+            essaySentence,
+            message: `${label} 第 ${sentenceIndex + 1} 句未匹配。`
+          });
+          return;
+        }
 
       matchedSentences += 1;
       match.slice(1).forEach((answer, slotIndex) => {
@@ -1216,7 +1482,11 @@ function matchEssayWithTemplate(templateModules, paragraphs) {
   });
 
   if (!extractedSlots) {
-    failures.push("没有抽取到核心内容。请确认模板里使用 () 标出了需要背写的部分。");
+    failures.push({
+      severity: "error",
+      title: "未抽取到核心内容",
+      message: "没有抽取到核心内容。请确认模板里使用 () 标出了需要背写的部分。"
+    });
   }
 
   return {
@@ -1233,7 +1503,7 @@ function matchReportText(match) {
   return [
     `模板未完全匹配：已匹配 ${match.matchedSentences}/${match.totalSentences} 个模板句，抽取 ${match.extractedSlots} 个核心空位。`,
     "请检查以下位置：",
-    ...match.failures.map((failure) => `- ${failure}`)
+    ...match.failures.map((failure) => `- ${failure.message || failure}`)
   ].join("\n");
 }
 

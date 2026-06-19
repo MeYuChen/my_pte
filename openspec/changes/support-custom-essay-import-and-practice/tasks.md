@@ -25,6 +25,7 @@
 - [x] Add a review step before saving matched imports.
 - [x] Let users confirm or manually enter the imported essay position.
 - [x] Warn when a pasted template differs from the saved global template and require a scope choice.
+- [x] Highlight import audit failures with editable source locations.
 - [ ] Preserve manually edited extracted slots.
 - [x] Avoid silently accepting empty or low-quality extraction output.
 
