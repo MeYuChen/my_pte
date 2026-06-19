@@ -5,6 +5,7 @@ All notable changes to this project are recorded here.
 ## Unreleased
 
 ### Added
+- Added immersive memory review with a full-screen card layout, custom per-card countdown, pause/resume, and early next navigation.
 - Added a dedicated memory review mode for fast card study with next-article navigation.
 - Added an article memory card preview generated from extracted core fields, with editable mnemonic hooks.
 - Added strong import auditing with issue cards that highlight problematic template or essay sentences before review generation.

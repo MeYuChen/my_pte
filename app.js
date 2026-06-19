@@ -9,6 +9,8 @@ const STORAGE_KEY = "pte-we-v2-state";
 const SIDEBAR_STATE_KEY = "pte-we-sidebar-collapsed";
 const USER_ARTICLES_KEY = "pte-we-user-articles-v1";
 const USER_TEMPLATE_KEY = "pte-we-user-template-v1";
+const MEMORY_REVIEW_SECONDS_KEY = "pte-we-memory-review-seconds";
+const DEFAULT_MEMORY_REVIEW_SECONDS = 120;
 const MODE_LIMITS = {
   template: 300,
   memory: 0,
@@ -153,6 +155,13 @@ const state = {
     remaining: MODE_LIMITS.template,
     interval: null
   },
+  memoryReview: {
+    seconds: readJson(MEMORY_REVIEW_SECONDS_KEY, DEFAULT_MEMORY_REVIEW_SECONDS),
+    remaining: readJson(MEMORY_REVIEW_SECONDS_KEY, DEFAULT_MEMORY_REVIEW_SECONDS),
+    active: false,
+    endsAt: null,
+    interval: null
+  },
   pendingImport: null,
   templateConflictChoice: null,
   imageViewer: {
@@ -198,6 +207,10 @@ const els = {
   memoryCardPanel: document.getElementById("memoryCardPanel"),
   memoryCardMeta: document.getElementById("memoryCardMeta"),
   memoryCardPreview: document.getElementById("memoryCardPreview"),
+  memoryMinutesInput: document.getElementById("memoryMinutesInput"),
+  memoryCountdown: document.getElementById("memoryCountdown"),
+  memoryTimerToggleButton: document.getElementById("memoryTimerToggleButton"),
+  exitMemoryButton: document.getElementById("exitMemoryButton"),
   examPanel: document.getElementById("examPanel"),
   examTitle: document.getElementById("examTitle"),
   examScore: document.getElementById("examScore"),
@@ -236,6 +249,9 @@ Object.assign(els, {
   confirmImportButton: document.getElementById("confirmImportButton")
 });
 
+state.memoryReview.seconds = clampMemoryReviewSeconds(state.memoryReview.seconds);
+state.memoryReview.remaining = state.memoryReview.seconds;
+els.memoryMinutesInput.value = formatMemoryMinutes(state.memoryReview.seconds);
 els.importTemplateInput.value = userTemplate.raw;
 bindEvents();
 renderSidebarState();
@@ -309,6 +325,12 @@ function bindEvents() {
   els.memoryCardPreview.addEventListener("click", (event) => {
     if (event.target.closest(".memory-card-next-button")) goToNextArticle();
   });
+  els.memoryMinutesInput.addEventListener("change", updateMemoryReviewMinutes);
+  els.memoryMinutesInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") updateMemoryReviewMinutes();
+  });
+  els.memoryTimerToggleButton.addEventListener("click", toggleMemoryReviewTimer);
+  els.exitMemoryButton.addEventListener("click", () => setMode("article"));
   els.importArticleButton.addEventListener("click", () => {
     saveCurrentDrafts();
     setMode("import");
@@ -346,6 +368,7 @@ function renderSidebarState() {
 }
 
 function setMode(mode) {
+  const previousMode = state.mode;
   state.mode = mode;
   state.answersVisible = false;
   if (mode === "exam") {
@@ -354,6 +377,11 @@ function setMode(mode) {
   }
   stopTimer(false);
   state.timer.remaining = MODE_LIMITS[mode];
+  if (mode === "memory" && previousMode !== "memory") {
+    startMemoryReviewTimer({ reset: true });
+  } else if (mode !== "memory") {
+    stopMemoryReviewTimer(false);
+  }
   document.querySelectorAll(".mode-tab").forEach((button) => {
     button.classList.toggle("is-active", button.dataset.mode === mode);
   });
@@ -457,6 +485,7 @@ function renderMain() {
   const shouldShowArticleImage = state.mode === "article" && Boolean(activeArticle?.image);
   const showMemoryCard = state.mode === "memory";
 
+  els.appShell.classList.toggle("is-memory-mode", showMemoryCard);
   els.practicePanel.hidden = state.mode === "exam" || state.mode === "import" || showMemoryCard;
   els.memoryCardPanel.hidden = !showMemoryCard;
   els.examPanel.hidden = state.mode !== "exam";
@@ -575,6 +604,7 @@ function renderMemoryCard(article) {
   els.memoryCardMeta.textContent = card.status === "confirmed"
     ? "只读速记浏览，点“下一篇”快速切换。"
     : "自动生成的速记草稿，建议先检查后再用于背诵。";
+  renderMemoryReviewTimer();
 
   const sectionHtml = card.sections.map((section) => `
     <article class="memory-section">
@@ -1153,6 +1183,7 @@ function confirmImportedArticle() {
   state.activeArticleId = article.id;
   state.mode = "memory";
   state.answersVisible = false;
+  startMemoryReviewTimer({ reset: true });
   document.querySelectorAll(".mode-tab").forEach((button) => {
     button.classList.toggle("is-active", button.dataset.mode === state.mode);
   });
@@ -1623,6 +1654,7 @@ function goToNextArticle() {
   state.answersVisible = false;
   els.revealAllButton.textContent = "显示答案";
   render();
+  if (state.mode === "memory" && state.memoryReview.active) startMemoryReviewTimer({ reset: true });
 }
 
 function showAdjacentImage(direction) {
@@ -1871,6 +1903,78 @@ function renderTimer() {
       ? "开始 5 分钟"
       : "开始计时";
   els.startExamButton.textContent = state.timer.interval && state.mode === "exam" ? "计时中" : "开始";
+}
+
+function startMemoryReviewTimer(options = {}) {
+  if (state.memoryReview.interval) window.clearInterval(state.memoryReview.interval);
+  const shouldReset = options.reset || !state.memoryReview.remaining;
+  state.memoryReview.remaining = shouldReset
+    ? state.memoryReview.seconds
+    : Math.min(state.memoryReview.remaining, state.memoryReview.seconds);
+  state.memoryReview.active = true;
+  state.memoryReview.endsAt = Date.now() + state.memoryReview.remaining * 1000;
+  state.memoryReview.interval = window.setInterval(tickMemoryReviewTimer, 250);
+  renderMemoryReviewTimer();
+}
+
+function stopMemoryReviewTimer(reset = false) {
+  if (state.memoryReview.interval) window.clearInterval(state.memoryReview.interval);
+  state.memoryReview.interval = null;
+  state.memoryReview.active = false;
+  state.memoryReview.endsAt = null;
+  if (reset) state.memoryReview.remaining = state.memoryReview.seconds;
+  renderMemoryReviewTimer();
+}
+
+function toggleMemoryReviewTimer() {
+  if (state.memoryReview.active) {
+    stopMemoryReviewTimer(false);
+    return;
+  }
+  startMemoryReviewTimer({ reset: state.memoryReview.remaining <= 0 });
+}
+
+function tickMemoryReviewTimer() {
+  const remaining = Math.max(0, Math.ceil((state.memoryReview.endsAt - Date.now()) / 1000));
+  state.memoryReview.remaining = remaining;
+  renderMemoryReviewTimer();
+  if (remaining > 0) return;
+  if (state.memoryReview.interval) window.clearInterval(state.memoryReview.interval);
+  state.memoryReview.interval = null;
+  state.memoryReview.active = true;
+  showToast("速记时间到，自动进入下一篇。");
+  goToNextArticle();
+}
+
+function updateMemoryReviewMinutes() {
+  const seconds = clampMemoryReviewSeconds(Number(els.memoryMinutesInput.value) * 60);
+  state.memoryReview.seconds = seconds;
+  state.memoryReview.remaining = seconds;
+  localStorage.setItem(MEMORY_REVIEW_SECONDS_KEY, JSON.stringify(seconds));
+  els.memoryMinutesInput.value = formatMemoryMinutes(seconds);
+  if (state.mode === "memory") startMemoryReviewTimer({ reset: true });
+  else renderMemoryReviewTimer();
+}
+
+function renderMemoryReviewTimer() {
+  if (!els.memoryCountdown) return;
+  const seconds = Math.max(0, Math.round(state.memoryReview.remaining || state.memoryReview.seconds));
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  els.memoryCountdown.textContent = `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+  els.memoryCountdown.classList.toggle("is-warning", seconds <= 15 && seconds > 0);
+  els.memoryCountdown.classList.toggle("is-ended", seconds === 0);
+  els.memoryTimerToggleButton.textContent = state.memoryReview.active ? "暂停" : "继续";
+}
+
+function clampMemoryReviewSeconds(value) {
+  const seconds = Number.isFinite(value) ? Math.round(value) : DEFAULT_MEMORY_REVIEW_SECONDS;
+  return Math.min(1800, Math.max(15, seconds));
+}
+
+function formatMemoryMinutes(seconds) {
+  const minutes = seconds / 60;
+  return Number.isInteger(minutes) ? String(minutes) : String(Number(minutes.toFixed(2)));
 }
 
 function saveCurrentDrafts() {

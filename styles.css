@@ -578,9 +578,118 @@ textarea:focus {
   box-shadow: var(--shadow);
 }
 
+.memory-review-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.memory-minutes-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.memory-minutes-field input {
+  width: 68px;
+  height: 34px;
+  text-align: center;
+  font-weight: 900;
+}
+
+.memory-countdown {
+  min-width: 88px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #dd7a26;
+  border-radius: 8px;
+  background: #fff8f0;
+  color: #d95f00;
+  font-size: 18px;
+  font-weight: 950;
+  font-variant-numeric: tabular-nums;
+}
+
+.memory-countdown.is-warning {
+  background: #fff5df;
+  color: var(--warn);
+}
+
+.memory-countdown.is-ended {
+  background: var(--bad-soft);
+  color: var(--bad);
+}
+
+.app-shell.is-memory-mode {
+  display: block;
+  min-height: 100vh;
+  background: #eef2ed;
+}
+
+.app-shell.is-memory-mode .sidebar,
+.app-shell.is-memory-mode .sidebar-toggle,
+.app-shell.is-memory-mode .level-header,
+.app-shell.is-memory-mode .prompt-panel,
+.app-shell.is-memory-mode .reference-band,
+.app-shell.is-memory-mode .practice-panel,
+.app-shell.is-memory-mode .exam-panel,
+.app-shell.is-memory-mode .import-panel {
+  display: none !important;
+}
+
+.app-shell.is-memory-mode .workspace {
+  height: 100vh;
+  padding: 0;
+  overflow: hidden;
+}
+
+.app-shell.is-memory-mode .memory-card-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 12px 14px;
+  border: 0;
+  border-radius: 0;
+  background: #f5f6f2;
+  box-shadow: none;
+}
+
+.app-shell.is-memory-mode .memory-card-panel .panel-heading {
+  flex: 0 0 auto;
+  min-height: 52px;
+  padding: 0 4px 10px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+.app-shell.is-memory-mode .memory-card-panel .panel-heading h3 {
+  font-size: 18px;
+}
+
+.app-shell.is-memory-mode .memory-card-panel .panel-heading p {
+  margin-top: 3px;
+}
+
 .memory-card-preview {
   overflow-x: auto;
   padding-bottom: 6px;
+}
+
+.app-shell.is-memory-mode .memory-card-preview {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 0;
 }
 
 .memory-card-preview::-webkit-scrollbar {
@@ -605,6 +714,15 @@ textarea:focus {
   border-radius: 12px;
   overflow: hidden;
   background: #fff;
+}
+
+.app-shell.is-memory-mode .memory-card {
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .memory-card-header {
@@ -635,6 +753,12 @@ textarea:focus {
   min-height: 330px;
   padding: 26px 24px;
   background: #fff;
+}
+
+.app-shell.is-memory-mode .memory-flow {
+  flex: 0 0 auto;
+  min-height: 300px;
+  padding: 22px 24px;
 }
 
 .memory-flow-node {
@@ -767,6 +891,12 @@ textarea:focus {
   padding: 0 16px 16px;
   border-top: 1px solid #d7e2f3;
   background: #fbf8ff;
+}
+
+.app-shell.is-memory-mode .memory-sections {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
 }
 
 .memory-sections-heading {

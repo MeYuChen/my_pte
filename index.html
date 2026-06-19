@@ -108,6 +108,16 @@
               <h3>速记卡片</h3>
               <p id="memoryCardMeta">只读速记浏览，点“下一篇”快速切换。</p>
             </div>
+            <div class="memory-review-controls">
+              <label class="memory-minutes-field">
+                <span>每篇</span>
+                <input id="memoryMinutesInput" type="number" min="0.25" max="30" step="0.25" value="2">
+                <span>分钟</span>
+              </label>
+              <div class="memory-countdown" id="memoryCountdown">02:00</div>
+              <button class="secondary-button" id="memoryTimerToggleButton" type="button">暂停</button>
+              <button class="secondary-button" id="exitMemoryButton" type="button">退出速记</button>
+            </div>
           </div>
           <div class="memory-card-preview" id="memoryCardPreview"></div>
         </section>
