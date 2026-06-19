@@ -5,6 +5,7 @@ All notable changes to this project are recorded here.
 ## Unreleased
 
 ### Added
+- Added a template conflict warning when an imported article uses a template different from the saved global template.
 - Added a review step for template-matched imports so users can confirm or manually enter each essay's Position before saving.
 - Added template-based custom essay importing that extracts memorization fields from `()` placeholders.
 - Added a local custom essay import flow that saves user essays and makes them practiceable in article mode.

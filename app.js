@@ -153,6 +153,7 @@ const state = {
     interval: null
   },
   pendingImport: null,
+  templateConflictChoice: null,
   imageViewer: {
     scale: 1,
     x: 0,
@@ -213,6 +214,10 @@ Object.assign(els, {
   importPanel: document.getElementById("importPanel"),
   importMeta: document.getElementById("importMeta"),
   importTemplateInput: document.getElementById("importTemplateInput"),
+  templateConflict: document.getElementById("templateConflict"),
+  useArticleTemplateButton: document.getElementById("useArticleTemplateButton"),
+  useGlobalTemplateButton: document.getElementById("useGlobalTemplateButton"),
+  restoreTemplateButton: document.getElementById("restoreTemplateButton"),
   importEssayInput: document.getElementById("importEssayInput"),
   importResult: document.getElementById("importResult"),
   importReview: document.getElementById("importReview"),
@@ -307,6 +312,10 @@ function bindEvents() {
   els.saveTemplateButton.addEventListener("click", saveUserTemplate);
   els.saveImportButton.addEventListener("click", saveImportedArticle);
   els.confirmImportButton.addEventListener("click", confirmImportedArticle);
+  els.importTemplateInput.addEventListener("input", handleImportTemplateChange);
+  els.useArticleTemplateButton.addEventListener("click", () => resolveTemplateConflict("article"));
+  els.useGlobalTemplateButton.addEventListener("click", () => resolveTemplateConflict("global"));
+  els.restoreTemplateButton.addEventListener("click", () => resolveTemplateConflict("restore"));
 }
 
 function toggleSidebar() {
@@ -461,6 +470,7 @@ function renderMain() {
     els.levelTitle.textContent = "导入我的版本";
     els.timerDisplay.hidden = true;
     els.importMeta.textContent = `当前题目：${article?.title || "未选择"}。已保存模板：${userTemplate.raw ? "有" : "无"}。自定义作文：${userArticles.length} 篇。`;
+    renderTemplateConflict();
   } else {
     const article = state.mode === "exam" ? currentExamArticle() : getActiveArticle();
     if (state.mode === "exam") {
@@ -862,6 +872,48 @@ function clearImportForm() {
   els.importPositionOptions.replaceChildren();
   els.importReviewSummary.textContent = "";
   state.pendingImport = null;
+  state.templateConflictChoice = null;
+  renderTemplateConflict();
+}
+
+function handleImportTemplateChange() {
+  state.templateConflictChoice = null;
+  state.pendingImport = null;
+  els.importReview.hidden = true;
+  renderTemplateConflict();
+}
+
+function resolveTemplateConflict(choice) {
+  if (choice === "restore") {
+    els.importTemplateInput.value = userTemplate.raw;
+    state.templateConflictChoice = null;
+    renderTemplateConflict();
+    renderImportResult("已恢复为已保存的通用模板。");
+    return;
+  }
+
+  state.templateConflictChoice = choice;
+  renderTemplateConflict();
+  if (choice === "article") {
+    renderImportResult("本次将仅用当前模板适配这篇文章，不会修改通用模板。");
+  } else {
+    renderImportResult("本次将把当前模板保存为新的通用模板，用于后续文章。");
+  }
+}
+
+function hasTemplateConflict() {
+  const current = normalizeForExact(els.importTemplateInput.value);
+  return Boolean(userTemplate.raw && current && current !== userTemplate.raw);
+}
+
+function resolveImportTemplateForMatch() {
+  if (hasTemplateConflict() && state.templateConflictChoice === "restore") return userTemplate.raw;
+  return normalizeForExact(els.importTemplateInput.value) || userTemplate.raw;
+}
+
+function renderTemplateConflict(force = false) {
+  const show = force || (hasTemplateConflict() && !state.templateConflictChoice);
+  els.templateConflict.hidden = !show;
 }
 
 function saveUserTemplate() {
@@ -877,14 +929,16 @@ function saveUserTemplate() {
   }
   userTemplate.raw = raw;
   userTemplate.parsed = parsed.modules;
+  state.templateConflictChoice = null;
   writeUserTemplate();
+  renderTemplateConflict();
   renderImportResult(`模板已保存：${parsed.slotCount} 个核心空位，${parsed.sentenceCount} 个模板句。`);
   render();
 }
 
 function saveImportedArticle() {
   const activeArticle = resolveBaseArticle(getActiveArticle());
-  const rawTemplate = normalizeForExact(els.importTemplateInput.value) || userTemplate.raw;
+  const rawTemplate = resolveImportTemplateForMatch();
   const paragraphs = splitEssayInput(els.importEssayInput.value);
   const parsedTemplate = parseTemplateInput(rawTemplate);
 
@@ -896,6 +950,11 @@ function saveImportedArticle() {
     renderImportResult("还没有作文模板。请先粘贴你的模板并点击“保存模板”。", true);
     return;
   }
+  if (hasTemplateConflict() && !state.templateConflictChoice) {
+    renderTemplateConflict(true);
+    renderImportResult("检测到当前模板和已保存的通用模板不一致，请先选择模板适配方式。", true);
+    return;
+  }
   if (parsedTemplate.errors.length) {
     renderImportResult(parsedTemplate.errors.join("\n"), true);
     return;
@@ -904,10 +963,11 @@ function saveImportedArticle() {
     renderImportResult(`作文需要 ${MODULES.length} 段，当前识别到 ${paragraphs.length} 段。请用空行分隔段落。`, true);
     return;
   }
-  if (rawTemplate !== userTemplate.raw) {
+  if (state.templateConflictChoice === "global" && rawTemplate !== userTemplate.raw) {
     userTemplate.raw = rawTemplate;
     userTemplate.parsed = parsedTemplate.modules;
     writeUserTemplate();
+    renderTemplateConflict();
   }
 
   const match = matchEssayWithTemplate(parsedTemplate.modules, paragraphs);
@@ -922,6 +982,8 @@ function saveImportedArticle() {
     baseArticleId: activeArticle.id,
     paragraphs,
     match,
+    templateSnapshot: rawTemplate,
+    templateScope: state.templateConflictChoice === "article" ? "article" : "global",
     extractedFields: flattenPracticeFields(match.practiceFields)
   };
   renderImportReview(state.pendingImport);
@@ -956,7 +1018,9 @@ function confirmImportedArticle() {
     paragraphs: state.pendingImport.paragraphs,
     match: state.pendingImport.match,
     position,
-    positionSource
+    positionSource,
+    templateSnapshot: state.pendingImport.templateSnapshot,
+    templateScope: state.pendingImport.templateScope
   });
   userArticles.push(article);
   articles.push(article);
@@ -1031,7 +1095,7 @@ function recommendPositionIndex(fields) {
   return 0;
 }
 
-function buildImportedArticle({ baseArticle, paragraphs, match, position, positionSource }) {
+function buildImportedArticle({ baseArticle, paragraphs, match, position, positionSource, templateSnapshot, templateScope }) {
   const id = `custom:${Date.now().toString(36)}:${Math.random().toString(36).slice(2, 8)}`;
   const modules = MODULES.reduce((result, [key], index) => {
     result[key] = splitParagraphIntoSentences(paragraphs[index] || "");
@@ -1056,7 +1120,8 @@ function buildImportedArticle({ baseArticle, paragraphs, match, position, positi
     source: "user",
     parentId: baseArticle.id,
     baseTitle: baseArticle.title,
-    templateSnapshot: userTemplate.raw,
+    templateSnapshot,
+    templateScope,
     createdAt: new Date().toISOString()
   };
 }
@@ -1922,6 +1987,7 @@ function normalizeImportedArticle(article) {
     parentId: article.parentId || "",
     baseTitle: article.baseTitle || "",
     templateSnapshot: article.templateSnapshot || "",
+    templateScope: article.templateScope || "global",
     createdAt: article.createdAt || new Date().toISOString()
   };
 }

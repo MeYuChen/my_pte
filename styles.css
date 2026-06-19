@@ -599,6 +599,34 @@ textarea:focus {
   min-height: 260px;
 }
 
+.template-conflict {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border: 1px solid #efc77f;
+  border-left: 4px solid var(--warn);
+  border-radius: 8px;
+  background: #fff8e8;
+  color: #563400;
+}
+
+.template-conflict strong {
+  display: block;
+  font-size: 14px;
+}
+
+.template-conflict p {
+  margin: 7px 0 10px;
+  line-height: 1.5;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.template-conflict-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .import-result {
   margin-top: 14px;
   padding: 10px 12px;

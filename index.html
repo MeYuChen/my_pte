@@ -113,11 +113,20 @@
               <button class="primary-button" id="saveImportButton" type="button">生成审核</button>
             </div>
           </div>
-          <label class="field import-field">
-            <span>我的模板（用 () 表示需要背的内容）</span>
-            <textarea id="importTemplateInput" class="import-template-input" spellcheck="false" placeholder="The issue of () has triggered a heated debate in contemporary society.&#10;Many people claim that ().&#10;..."></textarea>
-          </label>
-          <label class="field import-field">
+            <label class="field import-field">
+              <span>我的模板（用 () 表示需要背的内容）</span>
+              <textarea id="importTemplateInput" class="import-template-input" spellcheck="false" placeholder="The issue of () has triggered a heated debate in contemporary society.&#10;Many people claim that ().&#10;..."></textarea>
+            </label>
+            <div class="template-conflict" id="templateConflict" hidden>
+              <strong>当前模板和已保存的通用模板不一致</strong>
+              <p>提醒：沉浸式刷题最好所有文章使用同一套模板。每篇文章使用个性化模板会增加练习难度，也更容易混淆背诵节奏。</p>
+              <div class="template-conflict-actions">
+                <button class="secondary-button" id="useArticleTemplateButton" type="button">仅适配本文章</button>
+                <button class="secondary-button" id="useGlobalTemplateButton" type="button">适配全部文章</button>
+                <button class="secondary-button" id="restoreTemplateButton" type="button">使用原模板</button>
+              </div>
+            </div>
+            <label class="field import-field">
             <span>当前题目的完整作文（必须四段，段落之间空一行）</span>
             <textarea id="importEssayInput" class="import-essay-input" spellcheck="false" placeholder="The issue of ...&#10;&#10;To begin with, ...&#10;&#10;In addition, ...&#10;&#10;To sum up, ..."></textarea>
           </label>
