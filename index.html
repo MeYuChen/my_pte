@@ -20,16 +20,21 @@
           <div class="mode-tabs" role="tablist" aria-label="练习模式">
             <button class="mode-tab is-active" type="button" data-mode="template">模板</button>
             <button class="mode-tab" type="button" data-mode="article">文章论点</button>
+            <button class="mode-tab" type="button" data-mode="memory">速记</button>
             <button class="mode-tab" type="button" data-mode="exam">考核</button>
           </div>
           <label class="field">
             <span>搜索文章</span>
             <input id="searchInput" type="search" autocomplete="off" placeholder="#17 / topic">
           </label>
-          <div class="segmented" role="group" aria-label="状态筛选">
+          <div class="segmented" id="statusFilterPanel" role="group" aria-label="状态筛选">
             <button class="segment is-active" type="button" data-filter="all">全部</button>
             <button class="segment" type="button" data-filter="todo">未过</button>
             <button class="segment" type="button" data-filter="mastered">已掌握</button>
+          </div>
+          <div class="memory-filter-panel" id="memoryFilterPanel" hidden>
+            <span>速记范围</span>
+            <div class="memory-filter-list" id="memoryFilterList"></div>
           </div>
         </div>
 
@@ -66,6 +71,21 @@
           <div class="prompt-block">
             <span>Position</span>
             <p id="positionText"></p>
+          </div>
+        </section>
+
+        <section class="memory-meta-panel" id="memoryMetaPanel" hidden>
+          <div>
+            <span>母逻辑</span>
+            <p id="memoryParentLogicText"></p>
+          </div>
+          <div>
+            <span>中文钩子</span>
+            <p id="memoryHookText"></p>
+          </div>
+          <div>
+            <span>写作逻辑</span>
+            <p id="memoryWritingLogicText"></p>
           </div>
         </section>
 

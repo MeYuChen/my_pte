@@ -132,7 +132,7 @@ button {
 
 .mode-tabs {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 5px;
   margin-bottom: 14px;
 }
@@ -197,6 +197,42 @@ textarea:focus {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--surface-muted);
+}
+
+.memory-filter-panel {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.memory-filter-panel > span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.memory-filter-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.memory-filter-button {
+  min-height: 28px;
+  padding: 5px 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.memory-filter-button:hover,
+.memory-filter-button.is-active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent-strong);
 }
 
 .segment {
@@ -388,6 +424,7 @@ textarea:focus {
 }
 
 .prompt-panel,
+.memory-meta-panel,
 .image-pane,
 .practice-panel,
 .exam-panel {
@@ -395,6 +432,35 @@ textarea:focus {
   border-radius: 8px;
   background: var(--surface);
   box-shadow: var(--shadow);
+}
+
+.memory-meta-panel {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr 0.75fr;
+  gap: 1px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  background: var(--line);
+}
+
+.memory-meta-panel > div {
+  padding: 14px 16px;
+  background: var(--surface);
+}
+
+.memory-meta-panel span {
+  color: var(--accent-strong);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.memory-meta-panel p {
+  margin: 7px 0 0;
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.45;
+  font-weight: 750;
 }
 
 .prompt-panel {
@@ -449,6 +515,11 @@ textarea:focus {
 .image-frame.is-expanded {
   height: 620px;
   overflow: auto;
+}
+
+.app-shell.is-memory-mode .image-frame.is-expanded {
+  height: calc(100vh - 260px);
+  min-height: 640px;
 }
 
 .image-frame:fullscreen {
