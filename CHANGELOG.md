@@ -1,11 +1,14 @@
-# Changelog
+﻿# Changelog
 
 All notable changes to this project are recorded here.
 
 ## Unreleased
 
 ### Added
-- Added `AI_HANDOFF.md` to help future AI/developers quickly understand project context.
+- Added image-based `memory` mode on `master_hot_dev` for fast WE card review.
+- Added 39 memory card images under `images/memory-cards/`.
+- Added memory-only filters for rounds, mother-logic categories, and balanced topics.
+- Added memory-mode mother logic, Chinese hook, and writing logic prompts above the card image.- Added `AI_HANDOFF.md` to help future AI/developers quickly understand project context.
 - Added fullscreen image navigation with previous/next controls.
 - Added keyboard navigation in fullscreen image view with Left/Right arrows.
 - Added fullscreen image zoom with mouse wheel.
