@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="zh-CN">
   <head>
     <meta charset="utf-8">
@@ -89,10 +89,24 @@
           </div>
         </section>
 
+        <section class="article-source-panel" id="articleSourcePanel" hidden>
+          <div class="article-source-toolbar">
+            <div>
+              <span>作文原文</span>
+              <p>只读预览，黄色高亮为模板外需要重点记忆的核心句。</p>
+            </div>
+            <button class="ghost-button" id="toggleArticleSourceButton" type="button">收起</button>
+          </div>
+          <div class="article-source-body" id="articleSourceBody"></div>
+        </section>
+
         <section class="reference-band" id="imageSection">
           <div class="image-pane">
             <div class="image-toolbar">
-              <span>关卡图片</span>
+              <div>
+                <span>关卡图片</span>
+                <p>速记卡片预览，双击图片可放大查看。</p>
+              </div>
               <button class="ghost-button" id="toggleImageButton" type="button">展开</button>
             </div>
             <div class="image-frame" id="imageFrame">
@@ -103,7 +117,6 @@
             </div>
           </div>
         </section>
-
         <section class="practice-panel" id="practicePanel">
           <div class="panel-heading">
             <div>
