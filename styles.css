@@ -645,17 +645,17 @@ textarea:focus {
 }
 
 .app-shell.is-article-mode .image-frame.is-expanded {
-  height: min(44vw, 520px);
-  min-height: 360px;
+  height: auto;
+  min-height: 0;
   overflow: hidden;
 }
 
 .app-shell.is-article-mode .image-frame.is-expanded img {
   width: 100%;
   min-width: 0;
-  height: 100%;
-  object-fit: cover;
-  object-position: center center;
+  height: auto;
+  object-fit: contain;
+  object-position: top center;
 }
 
 .app-shell.is-memory-mode .image-frame.is-expanded {
