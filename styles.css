@@ -602,6 +602,27 @@ textarea:focus {
   margin-bottom: 18px;
 }
 
+.reference-band.is-collapsed .image-pane {
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+}
+
+.reference-band.is-collapsed .image-toolbar {
+  height: auto;
+  justify-content: flex-start;
+  padding: 0;
+  border-bottom: 0;
+}
+
+.reference-band.is-collapsed .image-toolbar span {
+  display: none;
+}
+
+.reference-band.is-collapsed .image-frame {
+  display: none;
+}
+
 .image-toolbar {
   height: 44px;
   padding: 0 14px;
@@ -633,7 +654,8 @@ textarea:focus {
   width: 100%;
   min-width: 0;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
+  object-position: center center;
 }
 
 .app-shell.is-memory-mode .image-frame.is-expanded {
@@ -674,6 +696,7 @@ textarea:focus {
   max-height: 100vh;
   height: auto;
   object-fit: contain;
+  object-position: center center;
   transform-origin: center center;
   will-change: transform;
 }

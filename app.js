@@ -284,6 +284,7 @@ const state = {
   filter: "all",
   memoryFilter: "all",
   articleSourceCollapsed: false,
+  imageCollapsed: false,
   search: "",
   answersVisible: false,
   compositeExam: {
@@ -406,8 +407,8 @@ function bindEvents() {
   });
 
   els.toggleImageButton.addEventListener("click", () => {
-    const expanded = els.imageFrame.classList.toggle("is-expanded");
-    els.toggleImageButton.textContent = expanded ? "收起" : "展开";
+    state.imageCollapsed = !state.imageCollapsed;
+    renderImagePanelState();
   });
   els.toggleArticleSourceButton.addEventListener("click", () => {
     state.articleSourceCollapsed = !state.articleSourceCollapsed;
@@ -696,8 +697,7 @@ function renderMain() {
     renderMemoryMeta(null);
   }
   if (!els.imageSection.hidden) {
-    els.imageFrame.classList.add("is-expanded");
-    els.toggleImageButton.textContent = "收起";
+    renderImagePanelState();
   }
 
   if (state.mode === "template") {
@@ -740,6 +740,13 @@ function renderMain() {
 
   if (state.mode !== "exam" && !isMemoryMode) renderPractice(item);
   renderArticleSourceState();
+}
+
+function renderImagePanelState() {
+  if (!els.imageSection) return;
+  els.imageSection.classList.toggle("is-collapsed", state.imageCollapsed);
+  els.imageFrame.classList.toggle("is-expanded", !state.imageCollapsed);
+  els.toggleImageButton.textContent = state.imageCollapsed ? "展开关卡图片" : "收起";
 }
 
 function renderArticleSourceState() {
