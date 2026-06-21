@@ -1,4 +1,4 @@
-const MODULES = [
+﻿const MODULES = [
   ["introduction", "第一段 / Introduction"],
   ["argument1", "第二段 / Argument 1"],
   ["argument2", "第三段 / Argument 2"],
@@ -281,6 +281,7 @@ const state = {
   sidebarCollapsed: readJson(SIDEBAR_STATE_KEY, false),
   filter: "all",
   memoryFilter: "all",
+  articleSourceCollapsed: false,
   search: "",
   answersVisible: false,
   compositeExam: {
@@ -327,6 +328,9 @@ const els = {
   memoryHookText: document.getElementById("memoryHookText"),
   memoryWritingLogicText: document.getElementById("memoryWritingLogicText"),
   imageSection: document.getElementById("imageSection"),
+  articleSourcePanel: document.getElementById("articleSourcePanel"),
+  articleSourceBody: document.getElementById("articleSourceBody"),
+  toggleArticleSourceButton: document.getElementById("toggleArticleSourceButton"),
   levelImage: document.getElementById("levelImage"),
   imageFrame: document.getElementById("imageFrame"),
   imagePreviousButton: document.getElementById("imagePreviousButton"),
@@ -393,7 +397,8 @@ function bindEvents() {
     const button = event.target.closest(".memory-filter-button");
     if (!button) return;
     state.memoryFilter = button.dataset.memoryFilter;
-    const next = memoryArticles()[0];
+    const source = navigationArticles();
+    const next = source[0];
     if (next) state.activeArticleId = next.id;
     render();
   });
@@ -401,6 +406,10 @@ function bindEvents() {
   els.toggleImageButton.addEventListener("click", () => {
     const expanded = els.imageFrame.classList.toggle("is-expanded");
     els.toggleImageButton.textContent = expanded ? "收起" : "展开";
+  });
+  els.toggleArticleSourceButton.addEventListener("click", () => {
+    state.articleSourceCollapsed = !state.articleSourceCollapsed;
+    renderArticleSourceState();
   });
   els.imageFrame.addEventListener("dblclick", openImageFullscreen);
   els.imageFrame.addEventListener("wheel", handleImageWheel, { passive: false });
@@ -480,6 +489,10 @@ function setMode(mode) {
     const first = memoryArticles()[0];
     if (first) state.activeArticleId = first.id;
   }
+  if (mode === "article" && !articleArticles().some((article) => article.id === state.activeArticleId)) {
+    const first = articleArticles()[0];
+    if (first) state.activeArticleId = first.id;
+  }
   if (mode === "exam") {
     state.search = "";
     els.searchInput.value = "";
@@ -520,13 +533,13 @@ function renderSummary() {
 }
 
 function renderMemoryFilterState() {
-  els.memoryFilterPanel.hidden = state.mode !== "memory";
+  const showsMemoryFilters = state.mode === "memory" || state.mode === "article";
+  els.memoryFilterPanel.hidden = !showsMemoryFilters;
   els.statusFilterPanel.hidden = state.mode === "memory";
   document.querySelectorAll(".memory-filter-button").forEach((button) => {
     button.classList.toggle("is-active", button.dataset.memoryFilter === state.memoryFilter);
   });
 }
-
 function renderMemoryMeta(article) {
   if (!article) {
     els.memoryParentLogicText.textContent = "";
@@ -552,10 +565,12 @@ function examHeaderLabel() {
   return "单篇考核";
 }
 
-function memoryArticles() {
+function filteredByMemoryRange({ requireMemoryCard = false } = {}) {
   const filter = MEMORY_FILTERS.find((item) => item.key === state.memoryFilter) || MEMORY_FILTERS[0];
   return articles.filter((article) => {
-    if (!memoryCardImagePath(article)) return false;
+    const hasMemoryCard = Boolean(memoryCardImagePath(article));
+    if (requireMemoryCard && !hasMemoryCard) return false;
+    if (!hasMemoryCard && filter.key !== "all") return false;
     const number = article.number;
     const meta = memoryMeta(article);
     if (filter.ids) return filter.ids.includes(number);
@@ -565,10 +580,19 @@ function memoryArticles() {
   });
 }
 
-function navigationArticles() {
-  return state.mode === "memory" ? memoryArticles() : articles;
+function memoryArticles() {
+  return filteredByMemoryRange({ requireMemoryCard: true });
 }
 
+function articleArticles() {
+  return filteredByMemoryRange();
+}
+
+function navigationArticles() {
+  if (state.mode === "memory") return memoryArticles();
+  if (state.mode === "article") return articleArticles();
+  return articles;
+}
 function memoryMeta(article) {
   return MEMORY_CARD_META[article?.number] || null;
 }
@@ -578,9 +602,10 @@ function memoryCardImagePath(article) {
 }
 
 function displayImagePath(article) {
-  return state.mode === "memory" ? memoryCardImagePath(article) : article?.image;
+  if (state.mode === "memory") return memoryCardImagePath(article);
+  if (state.mode === "article") return memoryCardImagePath(article) || article?.image;
+  return article?.image;
 }
-
 function memoryLevelMeta(article) {
   const meta = memoryMeta(article);
   const labels = meta?.categories?.map((key) => MEMORY_CATEGORIES[key]?.label).filter(Boolean) || [];
@@ -589,7 +614,7 @@ function memoryLevelMeta(article) {
 }
 
 function renderLevelList() {
-  const sourceArticles = state.mode === "memory" ? memoryArticles() : articles;
+  const sourceArticles = navigationArticles();
   const visibleArticles = sourceArticles.filter((article) => {
     const progress = getArticleProgress(article.id);
     const meta = memoryMeta(article);
@@ -653,7 +678,9 @@ function renderMain() {
   const isMemoryMode = state.mode === "memory";
 
   els.appShell.classList.toggle("is-memory-mode", isMemoryMode);
+  els.appShell.classList.toggle("is-article-mode", state.mode === "article");
   els.practicePanel.hidden = state.mode === "exam" || isMemoryMode;
+  els.articleSourcePanel.hidden = state.mode !== "article";
   els.examPanel.hidden = state.mode !== "exam";
   els.markMasteredButton.hidden = state.mode === "template" || state.mode === "exam";
   els.nextLevelButton.hidden = state.mode === "template" || state.mode === "exam";
@@ -689,6 +716,7 @@ function renderMain() {
       els.topicText.textContent = article.topic;
       els.positionText.textContent = article.position;
       renderMemoryMeta(isMemoryMode ? article : null);
+      renderArticleSource(state.mode === "article" ? article : null);
       const imageUrl = assetUrl(displayImagePath(article));
       if (els.levelImage.getAttribute("src") !== imageUrl) {
         showImageLoading(article);
@@ -696,7 +724,7 @@ function renderMain() {
       } else {
         updateImageViewerStatus(article, "");
       }
-      els.levelImage.alt = isMemoryMode ? `${article.title} 速记卡片` : article.title;
+      els.levelImage.alt = isMemoryMode || state.mode === "article" ? `${article.title} 速记卡片` : article.title;
       preloadNeighborImages(article.id);
       els.practiceTitle.textContent = isMemoryMode ? "图片速记" : "文章论点默写";
       els.levelScore.textContent = scoreText(article.id);
@@ -709,6 +737,82 @@ function renderMain() {
   }
 
   if (state.mode !== "exam" && !isMemoryMode) renderPractice(item);
+  renderArticleSourceState();
+}
+
+function renderArticleSourceState() {
+  if (!els.articleSourcePanel) return;
+  els.articleSourcePanel.classList.toggle("is-collapsed", state.articleSourceCollapsed);
+  els.toggleArticleSourceButton.textContent = state.articleSourceCollapsed ? "展开" : "收起";
+  els.articleSourceBody.hidden = state.articleSourceCollapsed;
+}
+
+function renderArticleSource(article) {
+  if (!els.articleSourceBody) return;
+  if (!article || state.mode !== "article") {
+    els.articleSourceBody.replaceChildren();
+    return;
+  }
+
+  const paragraphs = article.paragraphs || MODULES.map(([key]) => (article.modules[key] || []).join(" ")).filter(Boolean);
+  els.articleSourceBody.replaceChildren(
+    ...paragraphs.map((paragraph, index) => {
+      const paragraphEl = document.createElement("p");
+      paragraphEl.className = "article-source-paragraph";
+      paragraphEl.innerHTML = highlightArticleParagraph(article, paragraph, index);
+      return paragraphEl;
+    })
+  );
+}
+
+function highlightArticleParagraph(article, paragraph, paragraphIndex) {
+  const moduleKey = MODULES[paragraphIndex]?.[0];
+  const sentences = article.modules[moduleKey] || [];
+  const ranges = [];
+
+  sentences.forEach((sentence, sentenceIndex) => {
+    const sentenceStart = paragraph.indexOf(sentence);
+    if (sentenceStart < 0) return;
+    const fields = extractArticleFields(moduleKey, sentence, sentenceIndex);
+    fields.forEach((field) => {
+      const answer = field.answer.trim();
+      if (!answer) return;
+      const localStart = sentence.indexOf(answer);
+      if (localStart < 0) return;
+      ranges.push({
+        start: sentenceStart + localStart,
+        end: sentenceStart + localStart + answer.length
+      });
+    });
+  });
+
+  if (!ranges.length) return escapeHtml(paragraph);
+  return renderHighlightedText(paragraph, ranges);
+}
+
+function renderHighlightedText(text, ranges) {
+  const normalized = ranges
+    .filter((range) => range.end > range.start)
+    .sort((a, b) => a.start - b.start)
+    .reduce((items, range) => {
+      const previous = items[items.length - 1];
+      if (previous && range.start <= previous.end) {
+        previous.end = Math.max(previous.end, range.end);
+      } else {
+        items.push({ ...range });
+      }
+      return items;
+    }, []);
+
+  let cursor = 0;
+  let html = "";
+  normalized.forEach((range) => {
+    html += escapeHtml(text.slice(cursor, range.start));
+    html += `<mark class="core-sentence-highlight">${escapeHtml(text.slice(range.start, range.end))}</mark>`;
+    cursor = range.end;
+  });
+  html += escapeHtml(text.slice(cursor));
+  return html;
 }
 
 function renderPractice(item) {
