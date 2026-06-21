@@ -259,7 +259,7 @@ const articleImageUrls = new Set([
   ...articles.map((article) => assetUrl(memoryCardImagePath(article))).filter(Boolean)
 ]);
 const IMAGE_PRELOAD_CONCURRENCY = 3;
-const IMAGE_CACHE_NAME = "pte-we-images-v1";
+const IMAGE_CACHE_NAME = "pte-we-images-v2";
 const imagePreload = {
   active: 0,
   queue: [],
@@ -399,6 +399,10 @@ function bindEvents() {
   els.memoryFilterList.addEventListener("click", (event) => {
     const button = event.target.closest(".memory-filter-button");
     if (!button) return;
+    if (state.mode === "exam" && state.examType === "composite" && state.compositeExam.active) {
+      showToast("综合考核进行中，请先完成当前考核再切换分类。", true);
+      return;
+    }
     state.memoryFilter = button.dataset.memoryFilter;
     const source = navigationArticles();
     const next = source[0];
@@ -496,6 +500,10 @@ function setMode(mode) {
     const first = articleArticles()[0];
     if (first) state.activeArticleId = first.id;
   }
+  if (mode === "exam" && !examArticles().some((article) => article.id === state.activeArticleId)) {
+    const first = examArticles()[0];
+    if (first) state.activeArticleId = first.id;
+  }
   if (mode === "exam") {
     state.search = "";
     els.searchInput.value = "";
@@ -536,12 +544,16 @@ function renderSummary() {
 }
 
 function renderMemoryFilterState() {
-  const showsMemoryFilters = state.mode === "memory" || state.mode === "article";
+  const showsMemoryFilters = usesMemoryCatalog();
   els.memoryFilterPanel.hidden = !showsMemoryFilters;
-  els.statusFilterPanel.hidden = state.mode === "memory";
+  els.statusFilterPanel.hidden = showsMemoryFilters;
   document.querySelectorAll(".memory-filter-button").forEach((button) => {
     button.classList.toggle("is-active", button.dataset.memoryFilter === state.memoryFilter);
   });
+}
+
+function usesMemoryCatalog() {
+  return state.mode === "memory" || state.mode === "article" || state.mode === "exam";
 }
 function renderMemoryMeta(article) {
   if (!article) {
@@ -591,9 +603,14 @@ function articleArticles() {
   return filteredByMemoryRange();
 }
 
+function examArticles() {
+  return filteredByMemoryRange();
+}
+
 function navigationArticles() {
   if (state.mode === "memory") return memoryArticles();
   if (state.mode === "article") return articleArticles();
+  if (state.mode === "exam") return examArticles();
   return articles;
 }
 function memoryMeta(article) {
@@ -644,11 +661,9 @@ function renderLevelList() {
         <span>
           <span class="level-item-title">${escapeHtml(article.title)}</span>
           <span class="level-item-meta">${
-            state.mode === "exam"
-              ? "可选考核题目"
-              : state.mode === "memory"
-                ? memoryLevelMeta(article)
-                : `${practiceFieldCount(article)} 空 · 近5次 ${windowCorrectCount(progress)}/5`
+            usesMemoryCatalog()
+              ? memoryLevelMeta(article)
+              : `${practiceFieldCount(article)} 空 · 近5次 ${windowCorrectCount(progress)}/5`
           }</span>
         </span>
         <span class="status-pill ${level.key}">
@@ -688,13 +703,12 @@ function renderMain() {
   els.markMasteredButton.hidden = state.mode === "template" || state.mode === "exam";
   els.nextLevelButton.hidden = state.mode === "template" || state.mode === "exam";
   els.promptPanel.hidden = state.mode === "template" || state.mode === "exam" || isMemoryMode;
-  els.memoryMetaPanel.hidden = !isMemoryMode;
+  els.memoryMetaPanel.hidden = !usesMemoryCatalog();
   els.imageSection.hidden = state.mode === "template" || state.mode === "exam" || !displayImagePath(item);
   if (state.mode === "exam") {
     els.levelImage.removeAttribute("src");
     els.topicText.textContent = "";
     els.positionText.textContent = "";
-    renderMemoryMeta(null);
   }
   if (!els.imageSection.hidden) {
     renderImagePanelState();
@@ -711,13 +725,14 @@ function renderMain() {
       els.levelNumber.textContent = examHeaderLabel();
       els.levelTitle.textContent = state.examType === "composite" ? "综合考核" : article.title;
       els.examTopicText.textContent = article.topic;
+      renderMemoryMeta(article);
     } else {
       const meta = memoryMeta(article);
       els.levelNumber.textContent = isMemoryMode ? "图片速记" : article.number;
       els.levelTitle.textContent = isMemoryMode ? article.title : article.name;
       els.topicText.textContent = article.topic;
       els.positionText.textContent = article.position;
-      renderMemoryMeta(isMemoryMode ? article : null);
+      renderMemoryMeta(usesMemoryCatalog() ? article : null);
       renderArticleSource(state.mode === "article" ? article : null);
       const imageUrl = assetUrl(displayImagePath(article));
       if (els.levelImage.getAttribute("src") !== imageUrl) {
@@ -926,7 +941,10 @@ function renderExam(article) {
   els.examTopicText.textContent = current.topic;
   els.singleExamModeButton.classList.toggle("is-active", state.examType === "single");
   els.compositeExamModeButton.classList.toggle("is-active", state.examType === "composite");
-  els.nextCompositeExamButton.hidden = state.examType !== "composite" || !state.compositeExam.active || state.compositeExam.currentIndex >= 3;
+  els.nextCompositeExamButton.hidden =
+    state.examType !== "composite" ||
+    !state.compositeExam.active ||
+    state.compositeExam.currentIndex >= state.compositeExam.articleIds.length - 1;
   els.startExamButton.hidden = false;
   els.clearExamButton.hidden = false;
   els.submitExamButton.textContent = state.examType === "composite" ? "提交考核" : "提交考核";
@@ -971,7 +989,7 @@ function startCompositeExam() {
   state.examType = "composite";
   state.compositeExam = {
     active: true,
-    articleIds: shuffledArticles().slice(0, 4).map((article) => article.id),
+    articleIds: shuffledArticles(examArticles()).slice(0, 4).map((article) => article.id),
     currentIndex: 0,
     results: []
   };
@@ -1098,7 +1116,8 @@ function submitCompositeExam() {
   renderLevelList();
   renderCompositeResult();
   const passedCount = results.filter((result) => result.passed).length;
-  showToast(`综合考核已提交：${passedCount}/4 篇通过，${compositeScore(passedCount)} 分。`, passedCount < 4);
+  const totalCount = state.compositeExam.articleIds.length || 4;
+  showToast(`综合考核已提交：${passedCount}/${totalCount} 篇通过，${compositeScore(passedCount, totalCount)} 分。`, passedCount < totalCount);
 }
 
 function gradeEssay(article, value) {
@@ -1151,7 +1170,8 @@ function renderCompositeResult() {
   els.examResult.hidden = false;
   const results = state.compositeExam.results;
   const passedCount = results.filter((result) => result.passed).length;
-  const score = compositeScore(passedCount);
+  const totalCount = state.compositeExam.articleIds.length || 4;
+  const score = compositeScore(passedCount, totalCount);
   const complete = results.length >= state.compositeExam.articleIds.length;
   els.examResult.innerHTML = `
     <div class="exam-result-header ${score === 100 ? "pass" : "fail"}">
@@ -1734,17 +1754,19 @@ function windowCorrectCount(progress) {
   return recentResults(progress).filter(Boolean).length;
 }
 
-function shuffledArticles() {
-  return [...articles]
+function shuffledArticles(source = articles) {
+  return [...source]
     .map((article) => ({ article, sort: Math.random() }))
     .sort((a, b) => a.sort - b.sort)
     .map(({ article }) => article);
 }
 
-function compositeScore(passedCount) {
-  if (passedCount >= 4) return 100;
-  if (passedCount === 3) return 75;
-  if (passedCount === 2) return 50;
+function compositeScore(passedCount, totalCount = 4) {
+  if (!totalCount) return 0;
+  const ratio = passedCount / totalCount;
+  if (ratio >= 1) return 100;
+  if (ratio >= 0.75) return 75;
+  if (ratio >= 0.5) return 50;
   return 0;
 }
 
