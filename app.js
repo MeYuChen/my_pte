@@ -158,6 +158,8 @@ const MEMORY_FILTERS = [
   { key: "balanced", label: "正反平衡题", balanced: true }
 ];
 
+const ARTICLE_TRANSLATIONS = {};
+
 const ARTICLE_SLOT_PATTERNS = {
   introduction: [
     {
@@ -757,15 +759,33 @@ function renderArticleSource(article) {
   const paragraphs = article.paragraphs || MODULES.map(([key]) => (article.modules[key] || []).join(" ")).filter(Boolean);
   els.articleSourceBody.replaceChildren(
     ...paragraphs.map((paragraph, index) => {
-      const paragraphEl = document.createElement("p");
+      const paragraphEl = document.createElement("article");
       paragraphEl.className = "article-source-paragraph";
-      paragraphEl.innerHTML = highlightArticleParagraph(article, paragraph, index);
+      paragraphEl.innerHTML = articleSourceParagraphHtml(article, paragraph, index);
       return paragraphEl;
     })
   );
 }
 
-function highlightArticleParagraph(article, paragraph, paragraphIndex) {
+function articleSourceParagraphHtml(article, paragraph, paragraphIndex) {
+  const englishHtml = renderHighlightedText(paragraph, articleCoreRanges(article, paragraph, paragraphIndex));
+  const chinese = translatedParagraph(article, paragraphIndex);
+  const chineseHtml = chinese
+    ? renderHighlightedText(chinese.text, chinese.ranges, "core-sentence-highlight zh")
+    : '<span class="translation-missing">暂无中文翻译，待导入校对版译文后显示。</span>';
+  return `
+    <div class="article-source-row">
+      <span class="article-source-label">EN</span>
+      <p>${englishHtml}</p>
+    </div>
+    <div class="article-source-row zh-row">
+      <span class="article-source-label">中</span>
+      <p>${chineseHtml}</p>
+    </div>
+  `;
+}
+
+function articleCoreRanges(article, paragraph, paragraphIndex) {
   const moduleKey = MODULES[paragraphIndex]?.[0];
   const sentences = article.modules[moduleKey] || [];
   const ranges = [];
@@ -786,11 +806,40 @@ function highlightArticleParagraph(article, paragraph, paragraphIndex) {
     });
   });
 
-  if (!ranges.length) return escapeHtml(paragraph);
-  return renderHighlightedText(paragraph, ranges);
+  return ranges;
 }
 
-function renderHighlightedText(text, ranges) {
+function translatedParagraph(article, paragraphIndex) {
+  const translation = ARTICLE_TRANSLATIONS[article?.number];
+  if (!translation) return null;
+
+  const moduleKey = MODULES[paragraphIndex]?.[0];
+  const translatedSentences = translation.modules?.[moduleKey];
+  const paragraph = translatedSentences?.join("") || translation.paragraphs?.[paragraphIndex];
+  if (!paragraph) return null;
+
+  const ranges = [];
+  const coreTranslations = translation.core?.[moduleKey] || [];
+  let searchFrom = 0;
+  translatedSentences?.forEach((sentence, sentenceIndex) => {
+    const sentenceStart = paragraph.indexOf(sentence, searchFrom);
+    if (sentenceStart < 0) return;
+    searchFrom = sentenceStart + sentence.length;
+    (coreTranslations[sentenceIndex] || []).forEach((answer) => {
+      if (!answer) return;
+      const localStart = sentence.indexOf(answer);
+      if (localStart < 0) return;
+      ranges.push({
+        start: sentenceStart + localStart,
+        end: sentenceStart + localStart + answer.length
+      });
+    });
+  });
+
+  return { text: paragraph, ranges };
+}
+
+function renderHighlightedText(text, ranges, className = "core-sentence-highlight") {
   const normalized = ranges
     .filter((range) => range.end > range.start)
     .sort((a, b) => a.start - b.start)
@@ -808,7 +857,7 @@ function renderHighlightedText(text, ranges) {
   let html = "";
   normalized.forEach((range) => {
     html += escapeHtml(text.slice(cursor, range.start));
-    html += `<mark class="core-sentence-highlight">${escapeHtml(text.slice(range.start, range.end))}</mark>`;
+    html += `<mark class="${className}">${escapeHtml(text.slice(range.start, range.end))}</mark>`;
     cursor = range.end;
   });
   html += escapeHtml(text.slice(cursor));
