@@ -158,7 +158,7 @@ const MEMORY_FILTERS = [
   { key: "balanced", label: "正反平衡题", balanced: true }
 ];
 
-const ARTICLE_TRANSLATIONS = {};
+const ARTICLE_TRANSLATIONS = window.WE_TRANSLATIONS || {};
 
 const ARTICLE_SLOT_PATTERNS = {
   introduction: [
@@ -835,30 +835,63 @@ function translatedParagraph(article, paragraphIndex) {
   const translation = ARTICLE_TRANSLATIONS[article?.number];
   if (!translation) return null;
 
-  const moduleKey = MODULES[paragraphIndex]?.[0];
-  const translatedSentences = translation.modules?.[moduleKey];
-  const paragraph = translatedSentences?.join("") || translation.paragraphs?.[paragraphIndex];
+  const paragraph = translation.paragraphs?.[paragraphIndex];
   if (!paragraph) return null;
 
-  const ranges = [];
-  const coreTranslations = translation.core?.[moduleKey] || [];
-  let searchFrom = 0;
-  translatedSentences?.forEach((sentence, sentenceIndex) => {
-    const sentenceStart = paragraph.indexOf(sentence, searchFrom);
-    if (sentenceStart < 0) return;
-    searchFrom = sentenceStart + sentence.length;
-    (coreTranslations[sentenceIndex] || []).forEach((answer) => {
-      if (!answer) return;
-      const localStart = sentence.indexOf(answer);
-      if (localStart < 0) return;
-      ranges.push({
-        start: sentenceStart + localStart,
-        end: sentenceStart + localStart + answer.length
-      });
-    });
-  });
+  return { text: paragraph, ranges: chineseCoreRanges(paragraph, paragraphIndex) };
+}
 
-  return { text: paragraph, ranges };
+function chineseCoreRanges(paragraph, paragraphIndex) {
+  if (paragraphIndex === 0) return chineseIntroductionRanges(paragraph);
+  if (paragraphIndex === 3) return chineseConclusionRanges(paragraph);
+  return chineseBodyRanges(paragraph);
+}
+
+function chineseIntroductionRanges(paragraph) {
+  const ranges = [];
+  addBetweenRange(ranges, paragraph, "关于", "，这一问题");
+  addBetweenRange(ranges, paragraph, "许多人认为", "。");
+  addAfterRange(ranges, paragraph, "在这篇文章中，我将阐述我的观点：", "。");
+  return ranges;
+}
+
+function chineseBodyRanges(paragraph) {
+  const ranges = [];
+  addAfterRange(ranges, paragraph, "重要性的一个最有说服力的原因是，", "。");
+  addAfterRange(ranges, paragraph, "不可忽视的关键因素是，", "。");
+  addAfterRange(ranges, paragraph, "因为", "。");
+  addAfterRange(ranges, paragraph, "研究表明，", "。");
+  addAfterRange(ranges, paragraph, "根据我的经验，", "。");
+  addAfterRange(ranges, paragraph, "因此，", "。");
+  return ranges;
+}
+
+function chineseConclusionRanges(paragraph) {
+  const ranges = [];
+  addBetweenRange(ranges, paragraph, "所有证据都表明，", "，主要是因为");
+  addBetweenRange(ranges, paragraph, "主要是因为", "。");
+  addAfterRange(ranges, paragraph, "我强烈建议", "。");
+  return ranges;
+}
+
+function addAfterRange(ranges, text, marker, endMarker, startFrom = 0) {
+  const markerIndex = text.indexOf(marker, startFrom);
+  if (markerIndex < 0) return false;
+  const start = markerIndex + marker.length;
+  const end = text.indexOf(endMarker, start);
+  if (end <= start) return false;
+  ranges.push({ start, end });
+  return true;
+}
+
+function addBetweenRange(ranges, text, startMarker, endMarker, startFrom = 0) {
+  const markerIndex = text.indexOf(startMarker, startFrom);
+  if (markerIndex < 0) return false;
+  const start = markerIndex + startMarker.length;
+  const end = text.indexOf(endMarker, start);
+  if (end <= start) return false;
+  ranges.push({ start, end });
+  return true;
 }
 
 function renderHighlightedText(text, ranges, className = "core-sentence-highlight") {
