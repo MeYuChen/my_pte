@@ -89,21 +89,6 @@
           </div>
         </section>
 
-        <section class="reference-band" id="imageSection">
-          <div class="image-pane">
-            <div class="image-toolbar">
-              <span>关卡图片</span>
-              <button class="ghost-button" id="toggleImageButton" type="button">展开</button>
-            </div>
-            <div class="image-frame" id="imageFrame">
-              <button class="image-nav-button previous" id="imagePreviousButton" type="button" aria-label="上一张图片">‹</button>
-              <img id="levelImage" alt="">
-              <button class="image-nav-button next" id="imageNextButton" type="button" aria-label="下一张图片">›</button>
-              <div class="image-viewer-status" id="imageViewerStatus" aria-live="polite"></div>
-            </div>
-          </div>
-        </section>
-
         <section class="article-source-panel" id="articleSourcePanel" hidden>
           <div class="article-source-toolbar">
             <div>
@@ -113,6 +98,24 @@
             <button class="ghost-button" id="toggleArticleSourceButton" type="button">收起</button>
           </div>
           <div class="article-source-body" id="articleSourceBody"></div>
+        </section>
+
+        <section class="reference-band" id="imageSection">
+          <div class="image-pane">
+            <div class="image-toolbar">
+              <div>
+                <span>关卡图片</span>
+                <p>速记卡片预览，双击图片可放大查看。</p>
+              </div>
+              <button class="ghost-button" id="toggleImageButton" type="button">展开</button>
+            </div>
+            <div class="image-frame" id="imageFrame">
+              <button class="image-nav-button previous" id="imagePreviousButton" type="button" aria-label="上一张图片">‹</button>
+              <img id="levelImage" alt="">
+              <button class="image-nav-button next" id="imageNextButton" type="button" aria-label="下一张图片">›</button>
+              <div class="image-viewer-status" id="imageViewerStatus" aria-live="polite"></div>
+            </div>
+          </div>
         </section>
         <section class="practice-panel" id="practicePanel">
           <div class="panel-heading">
