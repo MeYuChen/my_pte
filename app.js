@@ -259,7 +259,7 @@ const articleImageUrls = new Set([
   ...articles.map((article) => assetUrl(memoryCardImagePath(article))).filter(Boolean)
 ]);
 const IMAGE_PRELOAD_CONCURRENCY = 3;
-const IMAGE_CACHE_NAME = "pte-we-images-v3";
+const IMAGE_CACHE_NAME = "pte-we-images-v4";
 const imagePreload = {
   active: 0,
   queue: [],

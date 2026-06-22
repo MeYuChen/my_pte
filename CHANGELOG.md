@@ -5,7 +5,9 @@ All notable changes to this project are recorded here.
 ## Unreleased
 
 ### Added
-- Replaced 15 corrected memory cards from `WE_problematic_15_cards_final_replacements` and bumped image cache versions.- Added reviewed Chinese translations for all 39 WE articles and highlighted Chinese core phrases in the article preview.
+- Replaced #106 Effective Study memory card with the fixed v8 image and bumped cache versions.
+- Replaced 15 corrected memory cards from `WE_problematic_15_cards_final_replacements` and bumped image cache versions.
+- Added reviewed Chinese translations for all 39 WE articles and highlighted Chinese core phrases in the article preview.
 - Replaced all 39 memory card images with the approved v5 PRER chain cards.
 - Added unified memory-category filtering for article argument, memory, and exam modes.
 - Added memory logic display to article argument and exam modes.

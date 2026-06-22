@@ -1,5 +1,5 @@
-const CACHE_NAME = "pte-we-static-v4";
-const IMAGE_CACHE_NAME = "pte-we-images-v3";
+const CACHE_NAME = "pte-we-static-v5";
+const IMAGE_CACHE_NAME = "pte-we-images-v4";
 const STATIC_ASSETS = [
   "./",
   "./index.html",
