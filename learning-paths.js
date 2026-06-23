@@ -11,14 +11,14 @@ window.WE_LEARNING_PATHS = {
     ]
   },
   "#9": {
-    cnRoute: ["气候问题", "政府带头", "企业配合", "全球合作"],
-    cnHook: "气候治理 -> 政府立法 -> 企业配合 -> 国际合作",
-    keywords: ["climate change", "government action", "laws and funding", "business responsibility", "international cooperation"],
+    cnRoute: ["气候问题", "政府主责", "法律政策", "公共资源"],
+    cnHook: "政府主责 -> 法律政策 -> 公共资源 -> 绿色行动",
+    keywords: ["government responsibility", "climate change", "laws and policies", "public resources", "clean energy"],
     skeleton: [
-      "Climate change is an important global issue.",
-      "Governments should take the lead through laws and funding.",
-      "Businesses also need to follow clear environmental rules.",
-      "Therefore, countries should work together to deal with climate change."
+      "Governments should take the leading responsibility for climate change.",
+      "They can make laws and policies to control pollution.",
+      "They also have public resources to organize large-scale action.",
+      "Therefore, governments should invest in clean energy and guide citizens to live greener lives."
     ]
   },
   "#17": {
@@ -169,7 +169,7 @@ window.WE_LEARNING_PATHS = {
     cnHook: "有文化 -> 难理解 -> 换方法教",
     keywords: ["classical theatre", "cultural value", "language difficulty", "modern teaching methods", "student interest"],
     skeleton: [
-      "Classical theatre has cultural value for students.",
+      "Studying classical theatre has both value and difficulty.",
       "It helps young people understand history and traditional ideas.",
       "However, old language and stories may be difficult to understand.",
       "Therefore, teachers should use modern methods to make it easier."
@@ -178,11 +178,11 @@ window.WE_LEARNING_PATHS = {
   "#86": {
     cnRoute: ["数字材料", "更新方便", "图书馆价值", "混合使用"],
     cnHook: "数字方便 -> 图书馆不死 -> 混合最好",
-    keywords: ["digital materials", "easy to update", "low cost", "libraries", "balanced use"],
+    keywords: ["digital materials", "easy to update", "printed textbooks", "reliable information", "balanced use"],
     skeleton: [
       "Digital materials are useful but cannot fully replace libraries.",
       "They are easy to update and convenient to access.",
-      "However, libraries still provide quiet space and reliable resources.",
+      "However, printed textbooks and libraries still support deep learning.",
       "Therefore, schools should use both digital materials and libraries."
     ]
   },
@@ -288,7 +288,7 @@ window.WE_LEARNING_PATHS = {
   "#159": {
     cnRoute: ["AI助手", "提高效率", "帮助弱势", "合理使用"],
     cnHook: "AI提效 -> 帮资源少的人 -> 负责任使用",
-    keywords: ["AI assistants", "improve efficiency", "study and work", "equal support", "responsible use"],
+    keywords: ["AI assistants", "improve efficiency", "study and work", "accessibility", "responsible use"],
     skeleton: [
       "Modern inventions such as AI assistants are very useful.",
       "They can improve efficiency in study and work.",
