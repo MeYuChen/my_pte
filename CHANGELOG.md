@@ -5,6 +5,8 @@ All notable changes to this project are recorded here.
 ## Unreleased
 
 ### Added
+- Added `learning-paths.js` with 39 article-level memorization paths: Chinese route, Chinese hook, five English keywords, and four English skeleton sentences.
+- Added a layered memorization panel for article, memory, and exam contexts so students can move from compressed prompts to full essay practice.
 - Replaced and rotated #106 Effective Study memory card with the fixed v8 image and bumped cache versions.
 - Replaced 15 corrected memory cards from `WE_problematic_15_cards_final_replacements` and bumped image cache versions.
 - Added reviewed Chinese translations for all 39 WE articles and highlighted Chinese core phrases in the article preview.

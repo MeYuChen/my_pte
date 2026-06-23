@@ -425,6 +425,7 @@ textarea:focus {
 
 .prompt-panel,
 .memory-meta-panel,
+.learning-path-panel,
 .image-pane,
 .article-source-panel,
 .practice-panel,
@@ -462,6 +463,91 @@ textarea:focus {
   font-size: 15px;
   line-height: 1.45;
   font-weight: 750;
+}
+
+.learning-path-panel {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+  margin-bottom: 16px;
+}
+
+.learning-path-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.learning-path-heading span,
+.learning-path-grid span {
+  display: block;
+  color: var(--accent-strong);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.learning-path-heading p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+#learningPathHook {
+  max-width: 48%;
+  color: var(--ink);
+  font-weight: 850;
+  text-align: right;
+}
+
+.learning-path-grid {
+  display: grid;
+  grid-template-columns: 0.9fr 1fr 1.35fr;
+  gap: 14px;
+}
+
+.learning-path-grid > div {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--soft);
+}
+
+.learning-route,
+.learning-keywords,
+.learning-skeleton {
+  margin: 10px 0 0;
+  padding-left: 20px;
+}
+
+.learning-route li,
+.learning-keywords li,
+.learning-skeleton li {
+  margin: 7px 0;
+  color: var(--ink);
+  line-height: 1.45;
+}
+
+.learning-keywords li {
+  color: var(--accent);
+  font-weight: 800;
+}
+
+.learning-skeleton li {
+  font-weight: 650;
+}
+
+.learning-drill {
+  padding: 10px 12px;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  color: var(--muted);
+  background: #fff;
+  font-size: 13px;
+  font-weight: 800;
 }
 
 .prompt-panel {
