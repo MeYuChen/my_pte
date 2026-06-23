@@ -5,6 +5,8 @@ All notable changes to this project are recorded here.
 ## Unreleased
 
 ### Added
+- Added a mobile-friendly card drilling mode with route, keyword, skeleton, and mixed recall cards.
+- Added local drill grading with three outcomes: forgot, vague, and known.
 - Added `learning-paths.js` with 39 article-level memorization paths: Chinese route, Chinese hook, five English keywords, and four English skeleton sentences.
 - Added a layered memorization panel for article, memory, and exam contexts so students can move from compressed prompts to full essay practice.
 - Replaced and rotated #106 Effective Study memory card with the fixed v8 image and bumped cache versions.
