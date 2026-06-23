@@ -89,6 +89,33 @@
           </div>
         </section>
 
+        <section class="learning-path-panel" id="learningPathPanel" hidden>
+          <div class="learning-path-heading">
+            <div>
+              <span>分层背诵</span>
+              <p>先压缩，再提取，再扩展。</p>
+            </div>
+            <p id="learningPathHook"></p>
+          </div>
+          <div class="learning-path-grid">
+            <div>
+              <span>中文路线</span>
+              <ol class="learning-route" id="learningRouteList"></ol>
+            </div>
+            <div>
+              <span>英文关键词</span>
+              <ul class="learning-keywords" id="learningKeywordList"></ul>
+            </div>
+            <div>
+              <span>4 句英文骨架</span>
+              <ol class="learning-skeleton" id="learningSkeletonList"></ol>
+            </div>
+          </div>
+          <div class="learning-drill">
+            题目 -> 中文钩子 -> 关键词 -> 4 句骨架 -> 全文扩展
+          </div>
+        </section>
+
         <section class="article-source-panel" id="articleSourcePanel" hidden>
           <div class="article-source-toolbar">
             <div>
@@ -163,6 +190,7 @@
 
     <script src="./practice-data.js"></script>
     <script src="./translations.js"></script>
+    <script src="./learning-paths.js"></script>
     <script src="./app.js"></script>
   </body>
 </html>

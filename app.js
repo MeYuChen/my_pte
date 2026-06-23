@@ -159,6 +159,7 @@ const MEMORY_FILTERS = [
 ];
 
 const ARTICLE_TRANSLATIONS = window.WE_TRANSLATIONS || {};
+const LEARNING_PATHS = window.WE_LEARNING_PATHS || {};
 
 const ARTICLE_SLOT_PATTERNS = {
   introduction: [
@@ -330,6 +331,11 @@ const els = {
   memoryParentLogicText: document.getElementById("memoryParentLogicText"),
   memoryHookText: document.getElementById("memoryHookText"),
   memoryWritingLogicText: document.getElementById("memoryWritingLogicText"),
+  learningPathPanel: document.getElementById("learningPathPanel"),
+  learningPathHook: document.getElementById("learningPathHook"),
+  learningRouteList: document.getElementById("learningRouteList"),
+  learningKeywordList: document.getElementById("learningKeywordList"),
+  learningSkeletonList: document.getElementById("learningSkeletonList"),
   imageSection: document.getElementById("imageSection"),
   articleSourcePanel: document.getElementById("articleSourcePanel"),
   articleSourceBody: document.getElementById("articleSourceBody"),
@@ -571,6 +577,36 @@ function renderMemoryMeta(article) {
   els.memoryWritingLogicText.textContent = meta?.logic || category?.summary || "按图片链路记忆。";
 }
 
+function renderLearningPath(article) {
+  if (!els.learningPathPanel) return;
+  const path = learningPath(article);
+  const shouldShow = usesMemoryCatalog() && Boolean(path);
+  els.learningPathPanel.hidden = !shouldShow;
+  if (!shouldShow) {
+    els.learningPathHook.textContent = "";
+    fillList(els.learningRouteList, []);
+    fillList(els.learningKeywordList, []);
+    fillList(els.learningSkeletonList, []);
+    return;
+  }
+
+  els.learningPathHook.textContent = path.cnHook || "";
+  fillList(els.learningRouteList, path.cnRoute || []);
+  fillList(els.learningKeywordList, path.keywords || []);
+  fillList(els.learningSkeletonList, path.skeleton || []);
+}
+
+function fillList(list, items) {
+  if (!list) return;
+  list.replaceChildren(
+    ...items.map((item) => {
+      const li = document.createElement("li");
+      li.textContent = item;
+      return li;
+    })
+  );
+}
+
 function examHeaderLabel() {
   if (state.examType === "composite") {
     return state.compositeExam.active
@@ -615,6 +651,10 @@ function navigationArticles() {
 }
 function memoryMeta(article) {
   return MEMORY_CARD_META[article?.number] || null;
+}
+
+function learningPath(article) {
+  return LEARNING_PATHS[article?.number] || null;
 }
 
 function memoryCardImagePath(article) {
@@ -704,6 +744,7 @@ function renderMain() {
   els.nextLevelButton.hidden = state.mode === "template" || state.mode === "exam";
   els.promptPanel.hidden = state.mode === "template" || state.mode === "exam" || isMemoryMode;
   els.memoryMetaPanel.hidden = !usesMemoryCatalog();
+  els.learningPathPanel.hidden = !usesMemoryCatalog();
   els.imageSection.hidden = state.mode === "template" || state.mode === "exam" || !displayImagePath(item);
   if (state.mode === "exam") {
     els.levelImage.removeAttribute("src");
@@ -719,6 +760,7 @@ function renderMain() {
     els.levelTitle.textContent = template.title;
     els.practiceTitle.textContent = "5 分钟模板默写";
     els.levelScore.textContent = scoreText(template.id);
+    renderLearningPath(null);
   } else {
     const article = state.mode === "exam" ? currentExamArticle() : getActiveArticle();
     if (state.mode === "exam") {
@@ -726,6 +768,7 @@ function renderMain() {
       els.levelTitle.textContent = state.examType === "composite" ? "综合考核" : article.title;
       els.examTopicText.textContent = article.topic;
       renderMemoryMeta(article);
+      renderLearningPath(article);
     } else {
       const meta = memoryMeta(article);
       els.levelNumber.textContent = isMemoryMode ? "图片速记" : article.number;
@@ -733,6 +776,7 @@ function renderMain() {
       els.topicText.textContent = article.topic;
       els.positionText.textContent = article.position;
       renderMemoryMeta(usesMemoryCatalog() ? article : null);
+      renderLearningPath(usesMemoryCatalog() ? article : null);
       renderArticleSource(state.mode === "article" ? article : null);
       const imageUrl = assetUrl(displayImagePath(article));
       if (els.levelImage.getAttribute("src") !== imageUrl) {
