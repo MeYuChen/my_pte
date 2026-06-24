@@ -132,7 +132,7 @@ button {
 
 .mode-tabs {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 5px;
   margin-bottom: 14px;
 }
@@ -1135,6 +1135,173 @@ textarea:focus {
   margin-top: 7px;
 }
 
+.drill-panel {
+  display: grid;
+  gap: 16px;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.drill-topbar,
+.drill-card,
+.drill-actions,
+.drill-footer {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.drill-topbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+}
+
+.drill-topbar span,
+.drill-answer span,
+.drill-prompt-label {
+  display: block;
+  color: var(--accent-strong);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.drill-topbar h3 {
+  margin: 5px 0 0;
+  font-size: 22px;
+  line-height: 1.2;
+}
+
+.drill-progress {
+  flex: 0 0 auto;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: var(--surface-muted);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.drill-card {
+  display: grid;
+  gap: 18px;
+  min-height: 360px;
+  padding: 24px;
+}
+
+.drill-question {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+
+.drill-question strong {
+  display: block;
+  max-width: 760px;
+  font-size: 24px;
+  line-height: 1.38;
+}
+
+.drill-question p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.55;
+  font-weight: 700;
+}
+
+.drill-reveal-button {
+  align-self: end;
+  justify-self: start;
+  min-width: 160px;
+}
+
+.drill-answer {
+  display: grid;
+  gap: 16px;
+  padding-top: 4px;
+}
+
+.drill-answer section {
+  display: grid;
+  gap: 9px;
+}
+
+.drill-answer ol {
+  margin: 0;
+  padding-left: 22px;
+}
+
+.drill-answer li {
+  margin: 7px 0;
+  line-height: 1.5;
+  font-weight: 750;
+}
+
+.drill-hook {
+  margin: 0;
+  color: var(--ink);
+  font-weight: 900;
+}
+
+.drill-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.drill-keyword-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.drill-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding: 12px;
+}
+
+.drill-grade-button {
+  min-height: 48px;
+  border: 0;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 900;
+}
+
+.drill-grade-button.is-forgot {
+  background: var(--bad);
+}
+
+.drill-grade-button.is-vague {
+  background: var(--warn);
+}
+
+.drill-grade-button.is-known {
+  background: var(--good);
+}
+
+.drill-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px;
+  box-shadow: none;
+}
+
 .toast {
   position: fixed;
   right: 24px;
@@ -1152,4 +1319,135 @@ textarea:focus {
 
 .toast.warn {
   background: var(--warn);
+}
+
+@media (max-width: 760px) {
+  body {
+    min-width: 0;
+  }
+
+  .app-shell {
+    display: block;
+  }
+
+  .sidebar {
+    position: static;
+    height: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .brand {
+    padding: 16px;
+  }
+
+  .sidebar-toggle,
+  .level-list,
+  .field,
+  .segmented,
+  .memory-filter-panel {
+    display: none !important;
+  }
+
+  .mode-tabs {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 4px;
+    margin-bottom: 0;
+  }
+
+  .mode-tab {
+    height: 38px;
+    padding: 0 4px;
+    font-size: 12px;
+  }
+
+  .workspace {
+    padding: 14px 12px 22px;
+  }
+
+  .level-header {
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+
+  .level-header h2 {
+    font-size: 24px;
+  }
+
+  .header-actions {
+    display: none;
+  }
+
+  .prompt-panel,
+  .memory-meta-panel,
+  .learning-path-grid,
+  .module-grid,
+  .diff-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .learning-path-heading {
+    display: block;
+  }
+
+  #learningPathHook {
+    max-width: none;
+    text-align: left;
+  }
+
+  .drill-panel {
+    max-width: none;
+  }
+
+  .drill-topbar,
+  .drill-card,
+  .drill-actions,
+  .drill-footer {
+    border-radius: 8px;
+  }
+
+  .drill-topbar {
+    padding: 14px;
+  }
+
+  .drill-topbar h3 {
+    font-size: 18px;
+  }
+
+  .drill-card {
+    min-height: 330px;
+    padding: 18px;
+  }
+
+  .drill-reveal-button {
+    align-self: start;
+  }
+
+  .drill-question strong {
+    font-size: 20px;
+  }
+
+  .drill-actions {
+    position: sticky;
+    bottom: 8px;
+    z-index: 3;
+  }
+
+  .drill-grade-button {
+    min-height: 52px;
+  }
+
+  .reference-band,
+  .article-source-panel,
+  .practice-panel,
+  .exam-panel {
+    overflow: hidden;
+  }
+
+  .toast {
+    right: 12px;
+    left: 12px;
+    bottom: 12px;
+    max-width: none;
+  }
 }

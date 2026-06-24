@@ -19,6 +19,7 @@
         <div class="sidebar-tools">
           <div class="mode-tabs" role="tablist" aria-label="练习模式">
             <button class="mode-tab is-active" type="button" data-mode="template">模板</button>
+            <button class="mode-tab" type="button" data-mode="drill">刷卡</button>
             <button class="mode-tab" type="button" data-mode="article">文章论点</button>
             <button class="mode-tab" type="button" data-mode="memory">速记</button>
             <button class="mode-tab" type="button" data-mode="exam">考核</button>
@@ -125,6 +126,30 @@
             <button class="ghost-button" id="toggleArticleSourceButton" type="button">收起</button>
           </div>
           <div class="article-source-body" id="articleSourceBody"></div>
+        </section>
+
+        <section class="drill-panel" id="drillPanel" hidden>
+          <div class="drill-topbar">
+            <div>
+              <span id="drillCardType">中文路线</span>
+              <h3 id="drillCardTitle">#5 Transportation Networks</h3>
+            </div>
+            <div class="drill-progress" id="drillProgressText">1 / 156</div>
+          </div>
+          <div class="drill-card">
+            <div class="drill-question" id="drillQuestion"></div>
+            <button class="primary-button drill-reveal-button" id="drillRevealButton" type="button">显示答案</button>
+            <div class="drill-answer" id="drillAnswer" hidden></div>
+          </div>
+          <div class="drill-actions" id="drillActions" hidden>
+            <button class="drill-grade-button is-forgot" type="button" data-grade="forgot">忘了</button>
+            <button class="drill-grade-button is-vague" type="button" data-grade="vague">模糊</button>
+            <button class="drill-grade-button is-known" type="button" data-grade="known">记住了</button>
+          </div>
+          <div class="drill-footer">
+            <button class="secondary-button" id="drillPreviousButton" type="button">上一张</button>
+            <button class="secondary-button" id="drillSkipButton" type="button">跳过</button>
+          </div>
         </section>
 
         <section class="reference-band" id="imageSection">

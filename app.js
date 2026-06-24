@@ -9,10 +9,18 @@ const STORAGE_KEY = "pte-we-v2-state";
 const SIDEBAR_STATE_KEY = "pte-we-sidebar-collapsed";
 const MODE_LIMITS = {
   template: 300,
+  drill: 0,
   memory: 0,
   article: 300,
   exam: 1200
 };
+
+const DRILL_TYPES = [
+  { key: "route", label: "中文路线" },
+  { key: "keywords", label: "英文关键词" },
+  { key: "skeleton", label: "4 句骨架" },
+  { key: "mixed", label: "混合提取" }
+];
 
 const MEMORY_CARD_FILES = {
   "#5": "./images/memory-cards/005_Transportation_Networks_memory_card.png",
@@ -274,8 +282,10 @@ const imagePreload = {
 const persisted = readJson(STORAGE_KEY, {
   progress: {},
   drafts: {},
-  examDrafts: {}
+  examDrafts: {},
+  drill: {}
 });
+persisted.drill ||= {};
 
 const state = {
   mode: "template",
@@ -288,6 +298,10 @@ const state = {
   imageCollapsed: false,
   search: "",
   answersVisible: false,
+  drill: {
+    index: 0,
+    answerVisible: false
+  },
   compositeExam: {
     active: false,
     articleIds: [],
@@ -336,6 +350,16 @@ const els = {
   learningRouteList: document.getElementById("learningRouteList"),
   learningKeywordList: document.getElementById("learningKeywordList"),
   learningSkeletonList: document.getElementById("learningSkeletonList"),
+  drillPanel: document.getElementById("drillPanel"),
+  drillCardType: document.getElementById("drillCardType"),
+  drillCardTitle: document.getElementById("drillCardTitle"),
+  drillProgressText: document.getElementById("drillProgressText"),
+  drillQuestion: document.getElementById("drillQuestion"),
+  drillRevealButton: document.getElementById("drillRevealButton"),
+  drillAnswer: document.getElementById("drillAnswer"),
+  drillActions: document.getElementById("drillActions"),
+  drillPreviousButton: document.getElementById("drillPreviousButton"),
+  drillSkipButton: document.getElementById("drillSkipButton"),
   imageSection: document.getElementById("imageSection"),
   articleSourcePanel: document.getElementById("articleSourcePanel"),
   articleSourceBody: document.getElementById("articleSourceBody"),
@@ -467,6 +491,10 @@ function bindEvents() {
   els.submitExamButton.addEventListener("click", () => submitExam({ auto: false }));
   els.clearExamButton.addEventListener("click", clearExam);
   els.examInput.addEventListener("input", saveExamDraft);
+  els.drillRevealButton.addEventListener("click", revealDrillAnswer);
+  els.drillActions.addEventListener("click", handleDrillGrade);
+  els.drillSkipButton.addEventListener("click", nextDrillCard);
+  els.drillPreviousButton.addEventListener("click", previousDrillCard);
 }
 
 function renderMemoryFilters() {
@@ -498,6 +526,7 @@ function renderSidebarState() {
 function setMode(mode) {
   state.mode = mode;
   state.answersVisible = false;
+  state.drill.answerVisible = false;
   if (mode === "memory" && !memoryArticles().some((article) => article.id === state.activeArticleId)) {
     const first = memoryArticles()[0];
     if (first) state.activeArticleId = first.id;
@@ -505,6 +534,11 @@ function setMode(mode) {
   if (mode === "article" && !articleArticles().some((article) => article.id === state.activeArticleId)) {
     const first = articleArticles()[0];
     if (first) state.activeArticleId = first.id;
+  }
+  if (mode === "drill") {
+    const cards = drillCards();
+    state.drill.index = normalizeDrillIndex(state.drill.index, cards.length);
+    if (cards[state.drill.index]) state.activeArticleId = cards[state.drill.index].article.id;
   }
   if (mode === "exam" && !examArticles().some((article) => article.id === state.activeArticleId)) {
     const first = examArticles()[0];
@@ -559,7 +593,7 @@ function renderMemoryFilterState() {
 }
 
 function usesMemoryCatalog() {
-  return state.mode === "memory" || state.mode === "article" || state.mode === "exam";
+  return state.mode === "memory" || state.mode === "article" || state.mode === "exam" || state.mode === "drill";
 }
 function renderMemoryMeta(article) {
   if (!article) {
@@ -644,6 +678,7 @@ function examArticles() {
 }
 
 function navigationArticles() {
+  if (state.mode === "drill") return articleArticles();
   if (state.mode === "memory") return memoryArticles();
   if (state.mode === "article") return articleArticles();
   if (state.mode === "exam") return examArticles();
@@ -734,18 +769,21 @@ function renderMain() {
   const item = currentPracticeItem();
   if (!item) return;
   const isMemoryMode = state.mode === "memory";
+  const isDrillMode = state.mode === "drill";
 
   els.appShell.classList.toggle("is-memory-mode", isMemoryMode);
+  els.appShell.classList.toggle("is-drill-mode", isDrillMode);
   els.appShell.classList.toggle("is-article-mode", state.mode === "article");
-  els.practicePanel.hidden = state.mode === "exam" || isMemoryMode;
+  els.practicePanel.hidden = state.mode === "exam" || isMemoryMode || isDrillMode;
   els.articleSourcePanel.hidden = state.mode !== "article";
+  els.drillPanel.hidden = !isDrillMode;
   els.examPanel.hidden = state.mode !== "exam";
-  els.markMasteredButton.hidden = state.mode === "template" || state.mode === "exam";
-  els.nextLevelButton.hidden = state.mode === "template" || state.mode === "exam";
-  els.promptPanel.hidden = state.mode === "template" || state.mode === "exam" || isMemoryMode;
-  els.memoryMetaPanel.hidden = !usesMemoryCatalog();
-  els.learningPathPanel.hidden = !usesMemoryCatalog();
-  els.imageSection.hidden = state.mode === "template" || state.mode === "exam" || !displayImagePath(item);
+  els.markMasteredButton.hidden = state.mode === "template" || state.mode === "exam" || isDrillMode;
+  els.nextLevelButton.hidden = state.mode === "template" || state.mode === "exam" || isDrillMode;
+  els.promptPanel.hidden = state.mode === "template" || state.mode === "exam" || isMemoryMode || isDrillMode;
+  els.memoryMetaPanel.hidden = !usesMemoryCatalog() || isDrillMode;
+  els.learningPathPanel.hidden = !usesMemoryCatalog() || isDrillMode;
+  els.imageSection.hidden = state.mode === "template" || state.mode === "exam" || isDrillMode || !displayImagePath(item);
   if (state.mode === "exam") {
     els.levelImage.removeAttribute("src");
     els.topicText.textContent = "";
@@ -761,14 +799,25 @@ function renderMain() {
     els.practiceTitle.textContent = "5 分钟模板默写";
     els.levelScore.textContent = scoreText(template.id);
     renderLearningPath(null);
+    renderDrill(null);
   } else {
     const article = state.mode === "exam" ? currentExamArticle() : getActiveArticle();
+    if (isDrillMode) {
+      els.levelNumber.textContent = "刷卡训练";
+      els.levelTitle.textContent = "核心素材提取";
+      renderMemoryMeta(null);
+      renderLearningPath(null);
+      renderArticleSource(null);
+      renderDrill(article);
+      return;
+    }
     if (state.mode === "exam") {
       els.levelNumber.textContent = examHeaderLabel();
       els.levelTitle.textContent = state.examType === "composite" ? "综合考核" : article.title;
       els.examTopicText.textContent = article.topic;
       renderMemoryMeta(article);
       renderLearningPath(article);
+      renderDrill(null);
     } else {
       const meta = memoryMeta(article);
       els.levelNumber.textContent = isMemoryMode ? "图片速记" : article.number;
@@ -777,6 +826,7 @@ function renderMain() {
       els.positionText.textContent = article.position;
       renderMemoryMeta(usesMemoryCatalog() ? article : null);
       renderLearningPath(usesMemoryCatalog() ? article : null);
+      renderDrill(null);
       renderArticleSource(state.mode === "article" ? article : null);
       const imageUrl = assetUrl(displayImagePath(article));
       if (els.levelImage.getAttribute("src") !== imageUrl) {
@@ -831,6 +881,158 @@ function renderArticleSource(article) {
       return paragraphEl;
     })
   );
+}
+
+function drillCards() {
+  return articleArticles()
+    .filter((article) => learningPath(article))
+    .flatMap((article) => DRILL_TYPES.map((type) => ({
+      id: `${article.number}:${type.key}`,
+      article,
+      type
+    })));
+}
+
+function normalizeDrillIndex(index, total) {
+  if (!total) return 0;
+  return ((index % total) + total) % total;
+}
+
+function currentDrillCard() {
+  const cards = drillCards();
+  if (!cards.length) return null;
+  state.drill.index = normalizeDrillIndex(state.drill.index, cards.length);
+  return cards[state.drill.index];
+}
+
+function renderDrill() {
+  if (!els.drillPanel || state.mode !== "drill") return;
+  const cards = drillCards();
+  const card = currentDrillCard();
+  if (!card) {
+    els.drillCardType.textContent = "暂无卡片";
+    els.drillCardTitle.textContent = "没有可刷内容";
+    els.drillProgressText.textContent = "0 / 0";
+    els.drillQuestion.textContent = "当前筛选范围没有分层背诵数据。";
+    els.drillAnswer.hidden = true;
+    els.drillActions.hidden = true;
+    return;
+  }
+
+  const { article, type } = card;
+  const path = learningPath(article);
+  state.activeArticleId = article.id;
+  els.drillCardType.textContent = type.label;
+  els.drillCardTitle.textContent = `${article.number} ${article.name}`;
+  els.drillProgressText.textContent = `${state.drill.index + 1} / ${cards.length}`;
+  els.drillQuestion.innerHTML = drillQuestionHtml(article, path, type.key);
+  els.drillAnswer.innerHTML = drillAnswerHtml(path, type.key);
+  els.drillAnswer.hidden = !state.drill.answerVisible;
+  els.drillActions.hidden = !state.drill.answerVisible;
+  els.drillRevealButton.hidden = state.drill.answerVisible;
+}
+
+function drillQuestionHtml(article, path, type) {
+  if (type === "route") {
+    return `
+      <span class="drill-prompt-label">看到题目，回忆中文路线</span>
+      <strong>${escapeHtml(article.topic)}</strong>
+      <p>说出：总论点 -> 分论点1 -> 分论点2 -> 总结建议。</p>
+    `;
+  }
+  if (type === "keywords") {
+    return `
+      <span class="drill-prompt-label">根据中文钩子，回忆 5 个英文关键词</span>
+      <strong>${escapeHtml(path.cnHook)}</strong>
+      <p>${escapeHtml(path.cnRoute.join(" -> "))}</p>
+    `;
+  }
+  if (type === "skeleton") {
+    return `
+      <span class="drill-prompt-label">根据关键词，默写 4 句英文骨架</span>
+      ${tagListHtml(path.keywords, "drill-keyword-chip")}
+    `;
+  }
+  return `
+    <span class="drill-prompt-label">混合提取</span>
+    <strong>${escapeHtml(article.topic)}</strong>
+    <p>直接说出中文钩子、5 个关键词和 4 句英文骨架。</p>
+  `;
+}
+
+function drillAnswerHtml(path, type) {
+  const routeBlock = `
+    <section>
+      <span>中文路线</span>
+      ${orderedListHtml(path.cnRoute)}
+      <p class="drill-hook">${escapeHtml(path.cnHook)}</p>
+    </section>
+  `;
+  const keywordBlock = `
+    <section>
+      <span>英文关键词</span>
+      ${tagListHtml(path.keywords, "drill-keyword-chip")}
+    </section>
+  `;
+  const skeletonBlock = `
+    <section>
+      <span>4 句英文骨架</span>
+      ${orderedListHtml(path.skeleton)}
+    </section>
+  `;
+  if (type === "route") return routeBlock;
+  if (type === "keywords") return keywordBlock;
+  if (type === "skeleton") return skeletonBlock;
+  return routeBlock + keywordBlock + skeletonBlock;
+}
+
+function orderedListHtml(items) {
+  return `<ol>${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ol>`;
+}
+
+function tagListHtml(items, className) {
+  return `<div class="drill-chip-list">${items.map((item) => `<span class="${className}">${escapeHtml(item)}</span>`).join("")}</div>`;
+}
+
+function revealDrillAnswer() {
+  state.drill.answerVisible = true;
+  renderDrill();
+}
+
+function handleDrillGrade(event) {
+  const button = event.target.closest("[data-grade]");
+  if (!button) return;
+  const card = currentDrillCard();
+  if (!card) return;
+  const grade = button.dataset.grade;
+  const key = card.id;
+  const previous = persisted.drill[key] || { reviews: 0, streak: 0 };
+  const delta = grade === "known" ? 1 : grade === "vague" ? 0 : -1;
+  persisted.drill[key] = {
+    reviews: (previous.reviews || 0) + 1,
+    streak: grade === "known" ? (previous.streak || 0) + 1 : 0,
+    strength: Math.max(0, Math.min(5, (previous.strength || 0) + delta)),
+    grade,
+    reviewedAt: new Date().toISOString()
+  };
+  writeState();
+  nextDrillCard();
+}
+
+function nextDrillCard() {
+  const cards = drillCards();
+  if (!cards.length) return;
+  state.drill.index = normalizeDrillIndex(state.drill.index + 1, cards.length);
+  state.drill.answerVisible = false;
+  render();
+}
+
+function previousDrillCard() {
+  const cards = drillCards();
+  if (!cards.length) return;
+  state.drill.index = normalizeDrillIndex(state.drill.index - 1, cards.length);
+  state.drill.answerVisible = false;
+  render();
 }
 
 function articleSourceParagraphHtml(article, paragraph, paragraphIndex) {
@@ -1576,7 +1778,7 @@ function renderTimer() {
   const mins = Math.floor(seconds / 60);
   const secs = seconds % 60;
   const showPracticeTimer = state.mode === "template";
-  els.timerDisplay.hidden = state.mode === "article" || state.mode === "memory";
+  els.timerDisplay.hidden = state.mode === "article" || state.mode === "memory" || state.mode === "drill";
   els.startTimerButton.hidden = !showPracticeTimer;
   els.timerDisplay.textContent = `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
   els.timerDisplay.classList.toggle("is-warning", seconds <= 60 && seconds > 0);
@@ -1590,7 +1792,7 @@ function renderTimer() {
 }
 
 function saveCurrentDrafts() {
-  if (state.mode === "memory") return;
+  if (state.mode === "memory" || state.mode === "drill") return;
   if (state.mode === "exam") saveExamDraft();
   else savePracticeDrafts();
 }
