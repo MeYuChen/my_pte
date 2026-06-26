@@ -22,7 +22,8 @@ const DRILL_TYPES = [
   { key: "route", label: "中文路线" },
   { key: "keywords", label: "英文关键词" },
   { key: "skeleton", label: "4 句骨架" },
-  { key: "mixed", label: "混合提取" }
+  { key: "mixed", label: "混合提取" },
+  { key: "source", label: "原文背诵" }
 ];
 
 const MEMORY_CARD_FILES = {
@@ -938,7 +939,7 @@ function renderDrill() {
   els.drillCardTitle.textContent = `${article.number} ${article.name}`;
   els.drillProgressText.textContent = `${state.drill.index + 1} / ${cards.length}`;
   els.drillQuestion.innerHTML = drillQuestionHtml(article, path, type.key);
-  els.drillAnswer.innerHTML = drillAnswerHtml(path, type.key);
+  els.drillAnswer.innerHTML = drillAnswerHtml(article, path, type.key);
   els.drillAnswer.hidden = !state.drill.answerVisible;
   els.drillActions.hidden = !state.drill.answerVisible;
   els.drillRevealButton.hidden = state.drill.answerVisible;
@@ -965,6 +966,13 @@ function drillQuestionHtml(article, path, type) {
       ${tagListHtml(path.keywords, "drill-keyword-chip")}
     `;
   }
+  if (type === "source") {
+    return `
+      <span class="drill-prompt-label">全文背诵前，先回忆高亮核心句</span>
+      <p class="drill-topic-text">${escapeHtml(article.topic)}</p>
+      <p>先默写或口头复述全文；重点确认黄色高亮部分是否能准确写出。</p>
+    `;
+  }
   return `
     <span class="drill-prompt-label">混合提取</span>
     <strong>${escapeHtml(article.topic)}</strong>
@@ -972,7 +980,7 @@ function drillQuestionHtml(article, path, type) {
   `;
 }
 
-function drillAnswerHtml(path, type) {
+function drillAnswerHtml(article, path, type) {
   const routeBlock = `
     <section>
       <span>中文路线</span>
@@ -995,7 +1003,23 @@ function drillAnswerHtml(path, type) {
   if (type === "route") return routeBlock;
   if (type === "keywords") return keywordBlock;
   if (type === "skeleton") return skeletonBlock;
+  if (type === "source") return drillSourceHtml(article);
   return routeBlock + keywordBlock + skeletonBlock;
+}
+
+function drillSourceHtml(article) {
+  return `
+    <section class="drill-source-panel">
+      <span>作文原文 · 高亮为重点背诵</span>
+      <div class="drill-source-body">
+        ${article.paragraphs.map((paragraph, index) => `
+          <div class="article-source-paragraph">
+            ${articleSourceParagraphHtml(article, paragraph, index)}
+          </div>
+        `).join("")}
+      </div>
+    </section>
+  `;
 }
 
 function orderedListHtml(items) {

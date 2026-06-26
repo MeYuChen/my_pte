@@ -1248,6 +1248,12 @@ textarea:focus {
   font-weight: 500;
 }
 
+.drill-topic-text {
+  max-width: 760px;
+  color: var(--ink) !important;
+  font-weight: 600 !important;
+}
+
 .drill-reveal-button {
   align-self: end;
   justify-self: start;
@@ -1301,6 +1307,31 @@ textarea:focus {
   font-weight: 650;
   letter-spacing: 0;
   text-transform: none;
+}
+
+.drill-source-panel {
+  min-width: 0;
+}
+
+.drill-source-body {
+  max-height: 560px;
+  overflow: auto;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fffdf7;
+}
+
+.drill-source-body .article-source-row p {
+  font-size: 15px;
+  line-height: 1.7;
+  font-weight: 550;
+}
+
+.drill-source-body .zh-row p {
+  font-size: 14px;
+  line-height: 1.65;
+  font-weight: 550;
 }
 
 .drill-actions {
@@ -1510,6 +1541,27 @@ textarea:focus {
     padding: 5px 9px;
     font-size: 13px;
     font-weight: 550;
+  }
+
+  .drill-source-body {
+    max-height: none;
+    overflow: visible;
+    padding: 12px 12px 96px;
+  }
+
+  .drill-source-body .article-source-row {
+    grid-template-columns: 28px minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .drill-source-body .article-source-row p {
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  .drill-source-body .zh-row p {
+    font-size: 13px;
+    line-height: 1.6;
   }
 
   .drill-actions {
