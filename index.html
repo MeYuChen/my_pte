@@ -57,10 +57,30 @@
             <p class="eyebrow" id="levelNumber">模板练习</p>
             <h2 id="levelTitle">WE 四段模板</h2>
           </div>
+          <button class="secondary-button catalog-open-button" id="openCatalogButton" type="button">目录</button>
           <div class="header-actions">
             <div class="timer" id="timerDisplay">05:00</div>
             <button class="secondary-button" id="markMasteredButton" type="button">标记已会</button>
             <button class="primary-button" id="nextLevelButton" type="button">下一篇</button>
+          </div>
+        </section>
+
+        <section class="mobile-article-nav" id="mobileArticleNav" hidden>
+          <button class="secondary-button" id="mobilePreviousArticleButton" type="button">上一篇</button>
+          <button class="secondary-button" id="mobileNextArticleButton" type="button">下一篇</button>
+        </section>
+
+        <section class="catalog-panel" id="catalogPanel" hidden>
+          <div class="catalog-backdrop" id="catalogBackdrop"></div>
+          <div class="catalog-sheet" role="dialog" aria-modal="true" aria-labelledby="catalogTitle">
+            <div class="catalog-heading">
+              <div>
+                <span>目录</span>
+                <h3 id="catalogTitle">选择开始位置</h3>
+              </div>
+              <button class="secondary-button" id="closeCatalogButton" type="button">关闭</button>
+            </div>
+            <div class="catalog-list" id="catalogList"></div>
           </div>
         </section>
 
@@ -147,8 +167,10 @@
             <button class="drill-grade-button is-known" type="button" data-grade="known">记住了</button>
           </div>
           <div class="drill-footer">
+            <button class="secondary-button" id="drillPreviousArticleButton" type="button">上一篇</button>
             <button class="secondary-button" id="drillPreviousButton" type="button">上一张</button>
             <button class="secondary-button" id="drillSkipButton" type="button">跳过</button>
+            <button class="secondary-button" id="drillNextArticleButton" type="button">下一篇</button>
           </div>
         </section>
 

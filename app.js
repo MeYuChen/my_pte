@@ -340,6 +340,14 @@ const els = {
   memoryFilterPanel: document.getElementById("memoryFilterPanel"),
   memoryFilterList: document.getElementById("memoryFilterList"),
   levelList: document.getElementById("levelList"),
+  openCatalogButton: document.getElementById("openCatalogButton"),
+  catalogPanel: document.getElementById("catalogPanel"),
+  catalogBackdrop: document.getElementById("catalogBackdrop"),
+  catalogList: document.getElementById("catalogList"),
+  closeCatalogButton: document.getElementById("closeCatalogButton"),
+  mobileArticleNav: document.getElementById("mobileArticleNav"),
+  mobilePreviousArticleButton: document.getElementById("mobilePreviousArticleButton"),
+  mobileNextArticleButton: document.getElementById("mobileNextArticleButton"),
   levelNumber: document.getElementById("levelNumber"),
   levelTitle: document.getElementById("levelTitle"),
   timerDisplay: document.getElementById("timerDisplay"),
@@ -367,6 +375,8 @@ const els = {
   drillActions: document.getElementById("drillActions"),
   drillPreviousButton: document.getElementById("drillPreviousButton"),
   drillSkipButton: document.getElementById("drillSkipButton"),
+  drillPreviousArticleButton: document.getElementById("drillPreviousArticleButton"),
+  drillNextArticleButton: document.getElementById("drillNextArticleButton"),
   imageSection: document.getElementById("imageSection"),
   articleSourcePanel: document.getElementById("articleSourcePanel"),
   articleSourceBody: document.getElementById("articleSourceBody"),
@@ -418,6 +428,14 @@ function bindEvents() {
   });
 
   els.sidebarToggle.addEventListener("click", toggleSidebar);
+  els.openCatalogButton.addEventListener("click", openCatalog);
+  els.closeCatalogButton.addEventListener("click", closeCatalog);
+  els.catalogBackdrop.addEventListener("click", closeCatalog);
+  els.mobilePreviousArticleButton.addEventListener("click", () => goToAdjacentArticle(-1));
+  els.mobileNextArticleButton.addEventListener("click", () => goToAdjacentArticle(1));
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeCatalog();
+  });
 
   document.querySelectorAll(".segment").forEach((button) => {
     button.addEventListener("click", () => {
@@ -508,6 +526,8 @@ function bindEvents() {
   els.drillActions.addEventListener("click", handleDrillGrade);
   els.drillSkipButton.addEventListener("click", nextDrillCard);
   els.drillPreviousButton.addEventListener("click", previousDrillCard);
+  els.drillPreviousArticleButton.addEventListener("click", () => goToAdjacentDrillArticle(-1));
+  els.drillNextArticleButton.addEventListener("click", () => goToAdjacentDrillArticle(1));
 }
 
 function renderMemoryFilters() {
@@ -587,6 +607,7 @@ function render() {
   renderSummary();
   renderMemoryFilterState();
   renderLevelList();
+  renderCatalog();
   renderMain();
   renderTimer();
 }
@@ -759,23 +780,84 @@ function renderLevelList() {
         </span>
       `;
       button.addEventListener("click", () => {
-        if (state.mode === "exam" && state.examType === "composite" && state.compositeExam.active) {
-          showToast("综合考核进行中，请先完成当前篇。", true);
-          return;
-        }
-        saveCurrentDrafts();
-        state.activeArticleId = article.id;
-        if (state.mode === "exam") {
-          state.examType = "single";
-          state.compositeExam.active = false;
-          els.examResult.hidden = true;
-        }
-        if (state.mode === "template") setMode("article");
-        else render();
+        selectCatalogArticle(article);
       });
       return button;
     })
   );
+}
+
+function renderCatalog() {
+  if (!els.catalogList) return;
+  const items = navigationArticles();
+  els.catalogList.replaceChildren(
+    ...items.map((article) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "catalog-item";
+      button.classList.toggle("is-active", article.id === currentCatalogArticleId());
+      button.innerHTML = `
+        <span>
+          <strong>${escapeHtml(article.title)}</strong>
+          <small>${escapeHtml(memoryLevelMeta(article))}</small>
+        </span>
+        <span>${article.id === currentCatalogArticleId() ? "当前" : "开始"}</span>
+      `;
+      button.addEventListener("click", () => selectCatalogArticle(article));
+      return button;
+    })
+  );
+}
+
+function currentCatalogArticleId() {
+  if (state.mode === "drill") return currentDrillCard()?.article.id || state.activeArticleId;
+  return state.activeArticleId;
+}
+
+function openCatalog() {
+  renderCatalog();
+  els.catalogPanel.hidden = false;
+  document.body.classList.add("is-catalog-open");
+}
+
+function closeCatalog() {
+  if (!els.catalogPanel || els.catalogPanel.hidden) return;
+  els.catalogPanel.hidden = true;
+  document.body.classList.remove("is-catalog-open");
+}
+
+function selectCatalogArticle(article) {
+  if (state.mode === "exam" && state.examType === "composite" && state.compositeExam.active) {
+    showToast("综合考核进行中，请先完成当前篇。", true);
+    return;
+  }
+  saveCurrentDrafts();
+  if (state.mode === "exam") {
+    state.examType = "single";
+    state.compositeExam.active = false;
+    els.examResult.hidden = true;
+  }
+  if (state.mode === "template") {
+    state.activeArticleId = article.id;
+    closeCatalog();
+    setMode("article");
+    return;
+  }
+  jumpToArticle(article.id);
+  closeCatalog();
+  render();
+}
+
+function jumpToArticle(articleId) {
+  state.activeArticleId = articleId;
+  state.answersVisible = false;
+  state.drill.answerVisible = false;
+  if (els.revealAllButton) els.revealAllButton.textContent = "显示答案";
+  if (state.mode === "drill") {
+    const cards = drillCards();
+    const index = cards.findIndex((card) => card.article.id === articleId);
+    if (index >= 0) state.drill.index = index;
+  }
 }
 
 function renderMain() {
@@ -788,6 +870,7 @@ function renderMain() {
   els.appShell.classList.toggle("is-drill-mode", isDrillMode);
   els.appShell.classList.toggle("is-article-mode", state.mode === "article");
   els.practicePanel.hidden = state.mode === "exam" || isMemoryMode || isDrillMode;
+  els.mobileArticleNav.hidden = state.mode === "template" || state.mode === "exam" || isDrillMode;
   els.articleSourcePanel.hidden = state.mode !== "article";
   els.drillPanel.hidden = !isDrillMode;
   els.examPanel.hidden = state.mode !== "exam";
@@ -1068,6 +1151,17 @@ function previousDrillCard() {
   if (!cards.length) return;
   state.drill.index = normalizeDrillIndex(state.drill.index - 1, cards.length);
   state.drill.answerVisible = false;
+  render();
+}
+
+function goToAdjacentDrillArticle(direction) {
+  const current = currentDrillCard();
+  const items = navigationArticles();
+  if (!current || !items.length) return;
+  const currentIndex = items.findIndex((article) => article.id === current.article.id);
+  const next = items[(currentIndex + direction + items.length) % items.length];
+  if (!next) return;
+  jumpToArticle(next.id);
   render();
 }
 
@@ -1563,14 +1657,16 @@ function clearExam() {
 }
 
 function goToNextArticle() {
+  goToAdjacentArticle(1);
+}
+
+function goToAdjacentArticle(direction) {
   const items = navigationArticles();
   const index = items.findIndex((article) => article.id === state.activeArticleId);
-  const next = items[(index + 1) % items.length];
+  const next = items[(index + direction + items.length) % items.length];
   if (!next) return;
   saveCurrentDrafts();
-  state.activeArticleId = next.id;
-  state.answersVisible = false;
-  els.revealAllButton.textContent = "显示答案";
+  jumpToArticle(next.id);
   render();
 }
 
