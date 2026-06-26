@@ -343,6 +343,7 @@ const els = {
   openCatalogButton: document.getElementById("openCatalogButton"),
   catalogPanel: document.getElementById("catalogPanel"),
   catalogBackdrop: document.getElementById("catalogBackdrop"),
+  catalogFilterList: document.getElementById("catalogFilterList"),
   catalogList: document.getElementById("catalogList"),
   closeCatalogButton: document.getElementById("closeCatalogButton"),
   mobileArticleNav: document.getElementById("mobileArticleNav"),
@@ -431,6 +432,7 @@ function bindEvents() {
   els.openCatalogButton.addEventListener("click", openCatalog);
   els.closeCatalogButton.addEventListener("click", closeCatalog);
   els.catalogBackdrop.addEventListener("click", closeCatalog);
+  els.catalogFilterList.addEventListener("click", handleCatalogFilterClick);
   els.mobilePreviousArticleButton.addEventListener("click", () => goToAdjacentArticle(-1));
   els.mobileNextArticleButton.addEventListener("click", () => goToAdjacentArticle(1));
   document.addEventListener("keydown", (event) => {
@@ -460,9 +462,7 @@ function bindEvents() {
       return;
     }
     state.memoryFilter = button.dataset.memoryFilter;
-    const source = navigationArticles();
-    const next = source[0];
-    if (next) state.activeArticleId = next.id;
+    moveToFirstArticleInCurrentRange();
     render();
   });
 
@@ -789,6 +789,7 @@ function renderLevelList() {
 
 function renderCatalog() {
   if (!els.catalogList) return;
+  renderCatalogFilters();
   const items = navigationArticles();
   els.catalogList.replaceChildren(
     ...items.map((article) => {
@@ -807,6 +808,44 @@ function renderCatalog() {
       return button;
     })
   );
+}
+
+function renderCatalogFilters() {
+  if (!els.catalogFilterList) return;
+  const shouldShow = usesMemoryCatalog();
+  els.catalogFilterList.hidden = !shouldShow;
+  if (!shouldShow) {
+    els.catalogFilterList.replaceChildren();
+    return;
+  }
+  els.catalogFilterList.replaceChildren(
+    ...MEMORY_FILTERS.map((filter) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "catalog-filter-button";
+      button.classList.toggle("is-active", filter.key === state.memoryFilter);
+      button.dataset.memoryFilter = filter.key;
+      button.textContent = filter.label;
+      return button;
+    })
+  );
+}
+
+function handleCatalogFilterClick(event) {
+  const button = event.target.closest(".catalog-filter-button");
+  if (!button) return;
+  if (state.mode === "exam" && state.examType === "composite" && state.compositeExam.active) {
+    showToast("综合考核进行中，请先完成当前考核再切换分类。", true);
+    return;
+  }
+  saveCurrentDrafts();
+  state.memoryFilter = button.dataset.memoryFilter;
+  moveToFirstArticleInCurrentRange();
+  renderMemoryFilterState();
+  renderLevelList();
+  renderCatalog();
+  renderMain();
+  renderTimer();
 }
 
 function currentCatalogArticleId() {
@@ -856,8 +895,17 @@ function jumpToArticle(articleId) {
   if (state.mode === "drill") {
     const cards = drillCards();
     const index = cards.findIndex((card) => card.article.id === articleId);
-    if (index >= 0) state.drill.index = index;
+    state.drill.index = index >= 0 ? index : 0;
+    const card = cards[state.drill.index];
+    if (card) state.activeArticleId = card.article.id;
   }
+}
+
+function moveToFirstArticleInCurrentRange() {
+  const source = navigationArticles();
+  const next = source[0];
+  if (!next) return;
+  jumpToArticle(next.id);
 }
 
 function renderMain() {
