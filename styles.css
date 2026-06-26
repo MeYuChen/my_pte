@@ -144,7 +144,7 @@ button {
   background: var(--surface);
   color: var(--muted);
   font-size: 13px;
-  font-weight: 850;
+  font-weight: 750;
 }
 
 .mode-tab.is-active {
@@ -1160,20 +1160,21 @@ textarea:focus {
   padding: 16px 18px;
 }
 
-.drill-topbar span,
-.drill-answer span,
+.drill-topbar > div > span,
+.drill-answer section > span,
 .drill-prompt-label {
   display: block;
   color: var(--accent-strong);
   font-size: 12px;
-  font-weight: 900;
-  text-transform: uppercase;
+  font-weight: 750;
+  letter-spacing: 0;
 }
 
 .drill-topbar h3 {
   margin: 5px 0 0;
   font-size: 22px;
   line-height: 1.2;
+  font-weight: 750;
 }
 
 .drill-progress {
@@ -1183,7 +1184,7 @@ textarea:focus {
   background: var(--surface-muted);
   color: var(--muted);
   font-size: 13px;
-  font-weight: 850;
+  font-weight: 700;
 }
 
 .drill-card {
@@ -1204,6 +1205,7 @@ textarea:focus {
   max-width: 760px;
   font-size: 24px;
   line-height: 1.38;
+  font-weight: 650;
 }
 
 .drill-question p {
@@ -1211,7 +1213,7 @@ textarea:focus {
   color: var(--muted);
   font-size: 15px;
   line-height: 1.55;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .drill-reveal-button {
@@ -1239,13 +1241,13 @@ textarea:focus {
 .drill-answer li {
   margin: 7px 0;
   line-height: 1.5;
-  font-weight: 750;
+  font-weight: 550;
 }
 
 .drill-hook {
   margin: 0;
   color: var(--ink);
-  font-weight: 900;
+  font-weight: 700;
 }
 
 .drill-chip-list {
@@ -1264,7 +1266,9 @@ textarea:focus {
   background: var(--accent-soft);
   color: var(--accent-strong);
   font-size: 13px;
-  font-weight: 850;
+  font-weight: 650;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .drill-actions {
@@ -1279,7 +1283,7 @@ textarea:focus {
   border: 0;
   border-radius: 8px;
   color: #fff;
-  font-weight: 900;
+  font-weight: 750;
 }
 
 .drill-grade-button.is-forgot {
@@ -1338,7 +1342,21 @@ textarea:focus {
   }
 
   .brand {
-    padding: 16px;
+    padding: 14px 14px 12px;
+  }
+
+  .brand h1 {
+    font-size: 21px;
+    font-weight: 700;
+  }
+
+  .brand p {
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .sidebar-tools {
+    padding: 12px;
   }
 
   .sidebar-toggle,
@@ -1359,10 +1377,11 @@ textarea:focus {
     height: 38px;
     padding: 0 4px;
     font-size: 12px;
+    font-weight: 650;
   }
 
   .workspace {
-    padding: 14px 12px 22px;
+    padding: 12px 10px 22px;
   }
 
   .level-header {
@@ -1371,7 +1390,8 @@ textarea:focus {
   }
 
   .level-header h2 {
-    font-size: 24px;
+    font-size: 20px;
+    font-weight: 700;
   }
 
   .header-actions {
@@ -1397,6 +1417,7 @@ textarea:focus {
 
   .drill-panel {
     max-width: none;
+    gap: 12px;
   }
 
   .drill-topbar,
@@ -1407,16 +1428,24 @@ textarea:focus {
   }
 
   .drill-topbar {
-    padding: 14px;
+    padding: 12px;
+    gap: 10px;
   }
 
   .drill-topbar h3 {
-    font-size: 18px;
+    font-size: 17px;
+    font-weight: 750;
+  }
+
+  .drill-progress {
+    padding: 6px 8px;
+    font-size: 12px;
   }
 
   .drill-card {
-    min-height: 330px;
-    padding: 18px;
+    min-height: 300px;
+    padding: 16px;
+    gap: 14px;
   }
 
   .drill-reveal-button {
@@ -1424,7 +1453,31 @@ textarea:focus {
   }
 
   .drill-question strong {
-    font-size: 20px;
+    font-size: 17px;
+    line-height: 1.45;
+    font-weight: 600;
+  }
+
+  .drill-question p,
+  .drill-answer li {
+    font-size: 14px;
+  }
+
+  .drill-answer {
+    gap: 14px;
+  }
+
+  .drill-answer section > span,
+  .drill-prompt-label {
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .drill-keyword-chip {
+    min-height: 30px;
+    padding: 5px 9px;
+    font-size: 13px;
+    font-weight: 550;
   }
 
   .drill-actions {
@@ -1435,6 +1488,8 @@ textarea:focus {
 
   .drill-grade-button {
     min-height: 52px;
+    font-size: 14px;
+    font-weight: 700;
   }
 
   .reference-band,
