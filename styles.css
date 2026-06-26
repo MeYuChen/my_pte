@@ -188,6 +188,33 @@ textarea:focus {
   box-shadow: 0 0 0 3px rgba(30, 107, 100, 0.14);
 }
 
+.timer-setting {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 8px 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.timer-setting input {
+  width: 54px;
+  height: 28px;
+  padding: 0 7px;
+  text-align: center;
+  font-weight: 750;
+}
+
+.timer-setting:has(input:focus) {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(30, 107, 100, 0.14);
+}
+
 .segmented {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -355,6 +382,11 @@ textarea:focus {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.panel-actions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .timer {
@@ -1490,6 +1522,24 @@ textarea:focus {
     min-height: 52px;
     font-size: 14px;
     font-weight: 700;
+  }
+
+  .panel-heading {
+    display: grid;
+    gap: 12px;
+  }
+
+  .panel-actions {
+    justify-content: stretch;
+  }
+
+  .panel-actions > button,
+  .timer-setting {
+    flex: 1 1 calc(50% - 4px);
+  }
+
+  .timer-setting {
+    justify-content: space-between;
   }
 
   .reference-band,

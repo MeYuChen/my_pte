@@ -14,6 +14,9 @@ const MODE_LIMITS = {
   article: 300,
   exam: 1200
 };
+const DEFAULT_TEMPLATE_TIMER_MINUTES = 5;
+const MIN_TEMPLATE_TIMER_MINUTES = 1;
+const MAX_TEMPLATE_TIMER_MINUTES = 60;
 
 const DRILL_TYPES = [
   { key: "route", label: "中文路线" },
@@ -283,9 +286,12 @@ const persisted = readJson(STORAGE_KEY, {
   progress: {},
   drafts: {},
   examDrafts: {},
-  drill: {}
+  drill: {},
+  settings: {}
 });
 persisted.drill ||= {};
+persisted.settings ||= {};
+persisted.settings.templateTimerMinutes = normalizedTemplateTimerMinutes(persisted.settings.templateTimerMinutes);
 
 const state = {
   mode: "template",
@@ -311,7 +317,7 @@ const state = {
   timer: {
     mode: null,
     endsAt: null,
-    remaining: MODE_LIMITS.template,
+    remaining: templateTimerSeconds(),
     interval: null
   },
   imageViewer: {
@@ -373,6 +379,7 @@ const els = {
   practicePanel: document.getElementById("practicePanel"),
   practiceTitle: document.getElementById("practiceTitle"),
   levelScore: document.getElementById("levelScore"),
+  templateTimerInput: document.getElementById("templateTimerInput"),
   startTimerButton: document.getElementById("startTimerButton"),
   resetInputsButton: document.getElementById("resetInputsButton"),
   revealAllButton: document.getElementById("revealAllButton"),
@@ -476,8 +483,13 @@ function bindEvents() {
   els.levelImage.draggable = false;
 
   els.startTimerButton.addEventListener("click", () => {
-    if (state.mode === "template") startTimer(state.mode);
+    if (state.mode === "template") {
+      handleTemplateTimerChange();
+      startTimer(state.mode);
+    }
   });
+  els.templateTimerInput.addEventListener("change", handleTemplateTimerChange);
+  els.templateTimerInput.addEventListener("blur", handleTemplateTimerChange);
   els.checkButton.addEventListener("click", checkPractice);
   els.revealAllButton.addEventListener("click", toggleAnswers);
   els.resetInputsButton.addEventListener("click", resetPracticeInputs);
@@ -549,7 +561,7 @@ function setMode(mode) {
     els.searchInput.value = "";
   }
   stopTimer(false);
-  state.timer.remaining = MODE_LIMITS[mode];
+  state.timer.remaining = modeLimitSeconds(mode);
   document.querySelectorAll(".mode-tab").forEach((button) => {
     button.classList.toggle("is-active", button.dataset.mode === mode);
   });
@@ -796,7 +808,7 @@ function renderMain() {
   if (state.mode === "template") {
     els.levelNumber.textContent = "模板练习";
     els.levelTitle.textContent = template.title;
-    els.practiceTitle.textContent = "5 分钟模板默写";
+    els.practiceTitle.textContent = templatePracticeTitle();
     els.levelScore.textContent = scoreText(template.id);
     renderLearningPath(null);
     renderDrill(null);
@@ -1716,7 +1728,7 @@ function handleImageViewerKeydown(event) {
 function startTimer(mode) {
   if (mode === "article" || mode === "memory") return;
   stopTimer(false);
-  const seconds = MODE_LIMITS[mode] || 300;
+  const seconds = modeLimitSeconds(mode);
   state.timer = {
     mode,
     endsAt: Date.now() + seconds * 1000,
@@ -1774,21 +1786,61 @@ function stopTimer(ended) {
 }
 
 function renderTimer() {
-  const seconds = state.timer.interval ? state.timer.remaining : MODE_LIMITS[state.mode];
+  const seconds = state.timer.interval ? state.timer.remaining : modeLimitSeconds(state.mode);
   const mins = Math.floor(seconds / 60);
   const secs = seconds % 60;
   const showPracticeTimer = state.mode === "template";
   els.timerDisplay.hidden = state.mode === "article" || state.mode === "memory" || state.mode === "drill";
+  els.templateTimerInput.closest(".timer-setting").hidden = !showPracticeTimer;
+  els.templateTimerInput.disabled = state.timer.interval && state.timer.mode === "template";
+  els.templateTimerInput.value = String(templateTimerMinutes());
   els.startTimerButton.hidden = !showPracticeTimer;
   els.timerDisplay.textContent = `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
   els.timerDisplay.classList.toggle("is-warning", seconds <= 60 && seconds > 0);
   els.timerDisplay.classList.toggle("is-ended", seconds === 0);
   els.startTimerButton.textContent = state.timer.interval
-    ? "计时中"
+    ? `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`
     : state.mode === "template"
-      ? "开始 5 分钟"
+      ? `开始 ${templateTimerMinutes()} 分钟`
       : "开始计时";
   els.startExamButton.textContent = state.timer.interval && state.mode === "exam" ? "计时中" : "开始";
+}
+
+function handleTemplateTimerChange() {
+  const minutes = normalizedTemplateTimerMinutes(els.templateTimerInput.value);
+  persisted.settings.templateTimerMinutes = minutes;
+  els.templateTimerInput.value = String(minutes);
+  writeState();
+  if (!(state.timer.interval && state.timer.mode === "template")) {
+    state.timer.remaining = templateTimerSeconds();
+    renderTimer();
+  }
+  if (state.mode === "template") {
+    els.practiceTitle.textContent = templatePracticeTitle();
+  }
+}
+
+function modeLimitSeconds(mode) {
+  if (mode === "template") return templateTimerSeconds();
+  return MODE_LIMITS[mode] || MODE_LIMITS.template;
+}
+
+function templateTimerSeconds() {
+  return templateTimerMinutes() * 60;
+}
+
+function templateTimerMinutes() {
+  return normalizedTemplateTimerMinutes(persisted.settings?.templateTimerMinutes);
+}
+
+function templatePracticeTitle() {
+  return `${templateTimerMinutes()} 分钟模板默写`;
+}
+
+function normalizedTemplateTimerMinutes(value) {
+  const parsed = Number.parseInt(value, 10);
+  if (!Number.isFinite(parsed)) return DEFAULT_TEMPLATE_TIMER_MINUTES;
+  return clamp(parsed, MIN_TEMPLATE_TIMER_MINUTES, MAX_TEMPLATE_TIMER_MINUTES);
 }
 
 function saveCurrentDrafts() {
