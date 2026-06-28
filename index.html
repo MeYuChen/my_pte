@@ -22,6 +22,7 @@
             <button class="mode-tab" type="button" data-mode="drill">刷卡</button>
             <button class="mode-tab" type="button" data-mode="article">文章论点</button>
             <button class="mode-tab" type="button" data-mode="memory">速记</button>
+            <button class="mode-tab" type="button" data-mode="wfd">WFD</button>
             <button class="mode-tab" type="button" data-mode="exam">考核</button>
           </div>
           <label class="field">
@@ -236,6 +237,60 @@
           <div class="exam-progress" id="examProgress" hidden></div>
           <textarea id="examInput" class="exam-input" spellcheck="false" placeholder="在这里默写完整作文..."></textarea>
           <div class="exam-result" id="examResult" hidden></div>
+        </section>
+
+        <section class="wfd-panel" id="wfdPanel" hidden>
+          <div class="panel-heading">
+            <div>
+              <h3>WFD 听写</h3>
+              <p id="wfdSummary">0 句候选高频 · 先导入题库</p>
+            </div>
+            <div class="panel-actions">
+              <button class="secondary-button" id="wfdPreviousButton" type="button">上一句</button>
+              <button class="secondary-button" id="wfdNextButton" type="button">下一句</button>
+              <button class="primary-button" id="wfdPlayButton" type="button">播放</button>
+            </div>
+          </div>
+
+          <div class="wfd-layout">
+            <section class="wfd-card">
+              <div class="wfd-card-top">
+                <div>
+                  <span id="wfdMeta">候选高频</span>
+                  <strong id="wfdTitle">暂无题目</strong>
+                </div>
+                <span class="status-pill" id="wfdProgressPill">0 / 0</span>
+              </div>
+              <textarea id="wfdInput" class="wfd-input" spellcheck="false" placeholder="听完后默写整句..."></textarea>
+              <div class="wfd-actions">
+                <button class="secondary-button" id="wfdRevealButton" type="button">显示答案</button>
+                <button class="primary-button" id="wfdCheckButton" type="button">检查</button>
+              </div>
+              <div class="wfd-result" id="wfdResult" hidden></div>
+            </section>
+
+            <section class="wfd-bank">
+              <details open>
+                <summary>题库导入</summary>
+                <p>一行一句；也支持 JSON 数组：{"sentence":"...", "sources":["gurully"], "audio":"https://..."}</p>
+                <textarea id="wfdImportText" rows="7" placeholder="The library is located on the other side of the campus."></textarea>
+                <div class="wfd-import-actions">
+                  <button class="secondary-button" id="wfdImportAppendButton" type="button">追加导入</button>
+                  <button class="secondary-button" id="wfdImportReplaceButton" type="button">替换题库</button>
+                </div>
+              </details>
+              <details>
+                <summary>同步源</summary>
+                <p>填入你有权使用的 JSON/CSV 地址。静态网页会受 CORS 限制；失败时用粘贴导入。</p>
+                <input id="wfdSyncUrlInput" type="url" placeholder="https://example.com/wfd.json">
+                <div class="wfd-import-actions">
+                  <button class="secondary-button" id="wfdSyncButton" type="button">同步</button>
+                  <button class="secondary-button" id="wfdClearBankButton" type="button">清空题库</button>
+                </div>
+                <small id="wfdSyncStatus">未同步</small>
+              </details>
+            </section>
+          </div>
         </section>
       </main>
     </div>

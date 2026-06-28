@@ -132,7 +132,7 @@ button {
 
 .mode-tabs {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 5px;
   margin-bottom: 14px;
 }
@@ -345,6 +345,16 @@ textarea:focus {
 .status-pill.skilled {
   background: var(--good-soft);
   color: var(--good);
+}
+
+.status-pill.learning {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+.status-pill.weak {
+  background: var(--bad-soft);
+  color: var(--bad);
 }
 
 .workspace {
@@ -884,7 +894,8 @@ textarea:focus {
 }
 
 .practice-panel,
-.exam-panel {
+.exam-panel,
+.wfd-panel {
   padding: 18px;
   margin-bottom: 18px;
 }
@@ -954,6 +965,118 @@ textarea:focus {
   border-color: #f2b8b3;
   background: var(--bad-soft);
   color: var(--bad);
+}
+
+.wfd-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 14px;
+  align-items: start;
+}
+
+.wfd-card,
+.wfd-bank {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.wfd-card {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+}
+
+.wfd-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.wfd-card-top span,
+.wfd-result-heading span,
+.wfd-bank summary {
+  color: var(--accent-strong);
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.wfd-card-top strong,
+.wfd-result-heading strong {
+  display: block;
+  margin-top: 6px;
+  font-size: 20px;
+  line-height: 1.35;
+}
+
+.wfd-input {
+  min-height: 160px;
+  font-size: 18px;
+  line-height: 1.65;
+}
+
+.wfd-actions,
+.wfd-import-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.wfd-result {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f8faf7;
+}
+
+.wfd-result-heading small {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.wfd-empty strong {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.wfd-empty p,
+.wfd-bank p,
+.wfd-bank small {
+  margin: 6px 0 10px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.wfd-bank {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+}
+
+.wfd-bank details {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 12px;
+}
+
+.wfd-bank details:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.wfd-bank summary {
+  cursor: pointer;
+}
+
+.wfd-bank textarea {
+  min-height: 150px;
+  margin-bottom: 10px;
 }
 
 .module-grid {
@@ -2004,7 +2127,7 @@ body.is-catalog-open {
   }
 
   .mode-tabs {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(6, minmax(0, 1fr));
     gap: 4px;
     margin-bottom: 0;
   }
@@ -2220,8 +2343,34 @@ body.is-catalog-open {
   .reference-band,
   .article-source-panel,
   .practice-panel,
-  .exam-panel {
+  .exam-panel,
+  .wfd-panel {
     overflow: hidden;
+  }
+
+  .wfd-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .wfd-card,
+  .wfd-bank {
+    box-shadow: none;
+  }
+
+  .wfd-card {
+    padding: 12px;
+  }
+
+  .wfd-card-top strong,
+  .wfd-result-heading strong {
+    font-size: 16px;
+    font-weight: 650;
+  }
+
+  .wfd-input {
+    min-height: 132px;
+    font-size: 16px;
+    line-height: 1.6;
   }
 
   .toast {

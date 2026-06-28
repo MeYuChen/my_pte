@@ -85,6 +85,31 @@ test.describe("desktop flows", () => {
     await expect(page.locator("#drillProgressText")).toHaveText("16 / 195");
     await expect(page.locator(".level-item.is-active .level-item-title")).toHaveText("#24 Information Revolution");
   });
+
+  test("desktop WFD imports, checks and persists local progress", async ({ page }) => {
+    await openFresh(page);
+
+    await page.getByRole("button", { name: "WFD" }).click();
+    await expect(page.locator("#wfdSummary")).toContainText("0 句候选高频");
+
+    await page.locator("#wfdImportText").fill([
+      "The library is located on the other side of the campus.",
+      "Students are encouraged to submit their assignments on time."
+    ].join("\n"));
+    await page.locator("#wfdImportAppendButton").click();
+    await expect(page.locator("#wfdSummary")).toContainText("2 句候选高频");
+    await expect(page.locator(".level-item")).toHaveCount(2);
+
+    await page.locator("#wfdInput").fill("The library is located on the other side of the campus.");
+    await page.locator("#wfdCheckButton").click();
+    await expect(page.locator("#wfdResult")).toContainText("通过");
+    await expect(page.locator("#studyPetStatus")).toHaveText("粮食 4 · 目标 1/4");
+
+    await page.reload();
+    await page.getByRole("button", { name: "WFD" }).click();
+    await expect(page.locator("#wfdSummary")).toContainText("2 句候选高频");
+    await expect(page.locator(".level-item.is-active .level-item-meta")).toContainText("练过 1 次");
+  });
 });
 
 test.describe("mobile flows", () => {

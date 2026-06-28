@@ -12,6 +12,7 @@ const MODE_LIMITS = {
   drill: 0,
   memory: 0,
   article: 300,
+  wfd: 0,
   exam: 1200
 };
 const DEFAULT_TEMPLATE_TIMER_MINUTES = 5;
@@ -310,6 +311,12 @@ persisted.progress ||= {};
 persisted.drafts ||= {};
 persisted.examDrafts ||= {};
 persisted.drill ||= {};
+persisted.wfd ||= {};
+persisted.wfd.items = normalizeWfdItems(persisted.wfd.items || []);
+persisted.wfd.progress ||= {};
+persisted.wfd.index = normalizeWfdIndex(persisted.wfd.index, persisted.wfd.items.length);
+persisted.wfd.syncUrl ||= "";
+persisted.wfd.lastSyncedAt ||= "";
 persisted.pet ||= {};
 persisted.pet.daily ||= {};
 persisted.pet.position ||= null;
@@ -334,6 +341,10 @@ const state = {
   drill: {
     index: 0,
     answerVisible: false
+  },
+  wfd: {
+    answerVisible: false,
+    checked: false
   },
   compositeExam: {
     active: false,
@@ -469,7 +480,26 @@ const els = {
   dailyGoalMinutesInput: document.getElementById("dailyGoalMinutesInput"),
   resetDailyGoalsButton: document.getElementById("resetDailyGoalsButton"),
   examDateInput: document.getElementById("examDateInput"),
-  clearExamDateButton: document.getElementById("clearExamDateButton")
+  clearExamDateButton: document.getElementById("clearExamDateButton"),
+  wfdPanel: document.getElementById("wfdPanel"),
+  wfdSummary: document.getElementById("wfdSummary"),
+  wfdPreviousButton: document.getElementById("wfdPreviousButton"),
+  wfdNextButton: document.getElementById("wfdNextButton"),
+  wfdPlayButton: document.getElementById("wfdPlayButton"),
+  wfdMeta: document.getElementById("wfdMeta"),
+  wfdTitle: document.getElementById("wfdTitle"),
+  wfdProgressPill: document.getElementById("wfdProgressPill"),
+  wfdInput: document.getElementById("wfdInput"),
+  wfdRevealButton: document.getElementById("wfdRevealButton"),
+  wfdCheckButton: document.getElementById("wfdCheckButton"),
+  wfdResult: document.getElementById("wfdResult"),
+  wfdImportText: document.getElementById("wfdImportText"),
+  wfdImportAppendButton: document.getElementById("wfdImportAppendButton"),
+  wfdImportReplaceButton: document.getElementById("wfdImportReplaceButton"),
+  wfdSyncUrlInput: document.getElementById("wfdSyncUrlInput"),
+  wfdSyncButton: document.getElementById("wfdSyncButton"),
+  wfdClearBankButton: document.getElementById("wfdClearBankButton"),
+  wfdSyncStatus: document.getElementById("wfdSyncStatus")
 };
 
 bindEvents();
@@ -606,6 +636,16 @@ function bindEvents() {
   els.drillPreviousButton.addEventListener("click", previousDrillCard);
   els.drillPreviousArticleButton.addEventListener("click", () => goToAdjacentDrillArticle(-1));
   els.drillNextArticleButton.addEventListener("click", () => goToAdjacentDrillArticle(1));
+  els.wfdPreviousButton.addEventListener("click", () => goToAdjacentWfd(-1));
+  els.wfdNextButton.addEventListener("click", () => goToAdjacentWfd(1));
+  els.wfdPlayButton.addEventListener("click", playCurrentWfd);
+  els.wfdRevealButton.addEventListener("click", revealCurrentWfd);
+  els.wfdCheckButton.addEventListener("click", checkCurrentWfd);
+  els.wfdInput.addEventListener("input", saveCurrentWfdDraft);
+  els.wfdImportAppendButton.addEventListener("click", () => importWfdItems({ replace: false }));
+  els.wfdImportReplaceButton.addEventListener("click", () => importWfdItems({ replace: true }));
+  els.wfdSyncButton.addEventListener("click", syncWfdFromUrl);
+  els.wfdClearBankButton.addEventListener("click", clearWfdBank);
 }
 
 function renderMemoryFilters() {
@@ -919,6 +959,17 @@ function recordWritingPetProgress(key) {
   recordPetActivity();
 }
 
+function recordWfdPetProgress(key, passed) {
+  const stats = todayPetStats();
+  stats.writingKeys ||= {};
+  if (!stats.writingKeys[`wfd:${key}`]) {
+    stats.writing += 1;
+    stats.writingKeys[`wfd:${key}`] = true;
+  }
+  stats.food += passed ? 4 : 1;
+  recordPetActivity();
+}
+
 function recordFamiliarPetProgress(previousProgress, nextProgress) {
   if (windowCorrectCount(previousProgress) >= 1 || windowCorrectCount(nextProgress) < 1) return;
   const stats = todayPetStats();
@@ -1053,6 +1104,8 @@ function setMode(mode) {
   state.mode = mode;
   state.answersVisible = false;
   state.drill.answerVisible = false;
+  state.wfd.answerVisible = false;
+  state.wfd.checked = false;
   if (mode === "memory" && !memoryArticles().some((article) => article.id === state.activeArticleId)) {
     const first = memoryArticles()[0];
     if (first) state.activeArticleId = first.id;
@@ -1073,6 +1126,10 @@ function setMode(mode) {
   if (mode === "exam") {
     state.search = "";
     els.searchInput.value = "";
+  }
+  if (mode === "wfd") {
+    persisted.wfd.index = normalizeWfdIndex(persisted.wfd.index, persisted.wfd.items.length);
+    loadCurrentWfdDraft();
   }
   stopTimer(false);
   state.timer.remaining = modeLimitSeconds(mode);
@@ -1236,6 +1293,10 @@ function memoryLevelMeta(article) {
 }
 
 function renderLevelList() {
+  if (state.mode === "wfd") {
+    renderWfdLevelList();
+    return;
+  }
   const sourceArticles = navigationArticles();
   const visibleArticles = sourceArticles.filter((article) => {
     const progress = getArticleProgress(article.id);
@@ -1274,6 +1335,43 @@ function renderLevelList() {
       `;
       button.addEventListener("click", () => {
         selectCatalogArticle(article);
+      });
+      return button;
+    })
+  );
+}
+
+function renderWfdLevelList() {
+  const query = state.search;
+  const visibleItems = persisted.wfd.items.filter((item) => {
+    const haystack = `${item.sentence} ${(item.sources || []).join(" ")}`.toLowerCase();
+    return !query || haystack.includes(query);
+  });
+  els.levelList.replaceChildren(
+    ...visibleItems.map((item) => {
+      const index = persisted.wfd.items.findIndex((entry) => entry.id === item.id);
+      const progress = wfdProgress(item.id);
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "level-item";
+      button.classList.toggle("is-active", index === persisted.wfd.index);
+      button.innerHTML = `
+        <span>
+          <span class="level-item-title">${escapeHtml(item.sentence)}</span>
+          <span class="level-item-meta">${escapeHtml(wfdMetaText(item))}</span>
+        </span>
+        <span class="status-pill ${progress.mastered ? "skilled" : progress.lastResult === "failed" ? "weak" : "learning"}">
+          ${progress.mastered ? "已掌握" : progress.lastResult === "failed" ? "错题" : "待练"}
+        </span>
+      `;
+      button.addEventListener("click", () => {
+        saveCurrentWfdDraft();
+        persisted.wfd.index = index;
+        state.wfd.answerVisible = false;
+        state.wfd.checked = false;
+        loadCurrentWfdDraft();
+        writeState();
+        render();
       });
       return button;
     })
@@ -1403,24 +1501,38 @@ function moveToFirstArticleInCurrentRange() {
 
 function renderMain() {
   const item = currentPracticeItem();
-  if (!item) return;
   const isMemoryMode = state.mode === "memory";
   const isDrillMode = state.mode === "drill";
+  const isWfdMode = state.mode === "wfd";
 
   els.appShell.classList.toggle("is-memory-mode", isMemoryMode);
   els.appShell.classList.toggle("is-drill-mode", isDrillMode);
+  els.appShell.classList.toggle("is-wfd-mode", isWfdMode);
   els.appShell.classList.toggle("is-article-mode", state.mode === "article");
-  els.practicePanel.hidden = state.mode === "exam" || isMemoryMode || isDrillMode;
-  els.mobileArticleNav.hidden = state.mode === "template" || state.mode === "exam" || isDrillMode;
+  els.practicePanel.hidden = state.mode === "exam" || isMemoryMode || isDrillMode || isWfdMode;
+  els.mobileArticleNav.hidden = state.mode === "template" || state.mode === "exam" || isDrillMode || isWfdMode;
   els.articleSourcePanel.hidden = state.mode !== "article";
   els.drillPanel.hidden = !isDrillMode;
   els.examPanel.hidden = state.mode !== "exam";
-  els.markMasteredButton.hidden = state.mode === "template" || state.mode === "exam" || isDrillMode;
-  els.nextLevelButton.hidden = state.mode === "template" || state.mode === "exam" || isDrillMode;
-  els.promptPanel.hidden = state.mode === "template" || state.mode === "exam" || isMemoryMode || isDrillMode;
-  els.memoryMetaPanel.hidden = !usesMemoryCatalog() || isDrillMode;
-  els.learningPathPanel.hidden = !usesMemoryCatalog() || isDrillMode;
-  els.imageSection.hidden = state.mode === "template" || state.mode === "exam" || isDrillMode || !displayImagePath(item);
+  els.wfdPanel.hidden = !isWfdMode;
+  els.markMasteredButton.hidden = state.mode === "template" || state.mode === "exam" || isDrillMode || isWfdMode;
+  els.nextLevelButton.hidden = state.mode === "template" || state.mode === "exam" || isDrillMode || isWfdMode;
+  els.promptPanel.hidden = state.mode === "template" || state.mode === "exam" || isMemoryMode || isDrillMode || isWfdMode;
+  els.memoryMetaPanel.hidden = !usesMemoryCatalog() || isDrillMode || isWfdMode;
+  els.learningPathPanel.hidden = !usesMemoryCatalog() || isDrillMode || isWfdMode;
+  els.imageSection.hidden = state.mode === "template" || state.mode === "exam" || isDrillMode || isWfdMode || !displayImagePath(item);
+  if (isWfdMode) {
+    els.levelNumber.textContent = "Write From Dictation";
+    els.levelTitle.textContent = "候选高频听写";
+    els.timerDisplay.hidden = true;
+    renderMemoryMeta(null);
+    renderLearningPath(null);
+    renderDrill(null);
+    renderArticleSource(null);
+    renderWfd();
+    return;
+  }
+  if (!item) return;
   if (state.mode === "exam") {
     els.levelImage.removeAttribute("src");
     els.topicText.textContent = "";
@@ -1705,6 +1817,343 @@ function goToAdjacentDrillArticle(direction) {
   if (!next) return;
   jumpToArticle(next.id);
   render();
+}
+
+function renderWfd() {
+  const items = persisted.wfd.items;
+  persisted.wfd.index = normalizeWfdIndex(persisted.wfd.index, items.length);
+  const item = currentWfdItem();
+  const mastered = items.filter((entry) => wfdProgress(entry.id).mastered).length;
+  els.wfdSummary.textContent = `${items.length} 句候选高频 · ${mastered} 句已掌握`;
+  els.wfdSyncUrlInput.value = persisted.wfd.syncUrl || "";
+  els.wfdSyncStatus.textContent = persisted.wfd.lastSyncedAt
+    ? `上次同步 ${formatDateTime(persisted.wfd.lastSyncedAt)}`
+    : "未同步";
+  els.wfdProgressPill.textContent = items.length ? `${persisted.wfd.index + 1} / ${items.length}` : "0 / 0";
+  els.wfdPreviousButton.disabled = items.length < 2;
+  els.wfdNextButton.disabled = items.length < 2;
+  els.wfdPlayButton.disabled = !item;
+  els.wfdRevealButton.disabled = !item;
+  els.wfdCheckButton.disabled = !item;
+
+  if (!item) {
+    els.wfdMeta.textContent = "先导入候选库";
+    els.wfdTitle.textContent = "暂无题目";
+    els.wfdInput.value = "";
+    els.wfdInput.disabled = true;
+    els.wfdResult.hidden = false;
+    els.wfdResult.innerHTML = `
+      <div class="wfd-empty">
+        <strong>还没有 WFD 题库</strong>
+        <p>从公开可用或你已授权的来源整理句子后，粘贴到右侧导入框。</p>
+      </div>
+    `;
+    return;
+  }
+
+  const progress = wfdProgress(item.id);
+  els.wfdMeta.textContent = wfdMetaText(item);
+  els.wfdTitle.textContent = progress.mastered ? "已掌握 · 继续抽查" : "听一句，默写一句";
+  els.wfdInput.disabled = false;
+  if (els.wfdInput.dataset.itemId !== item.id) {
+    loadCurrentWfdDraft();
+  }
+  if (state.wfd.answerVisible || state.wfd.checked) {
+    renderWfdResult(item);
+  } else {
+    els.wfdResult.hidden = true;
+    els.wfdResult.textContent = "";
+  }
+}
+
+function currentWfdItem() {
+  return persisted.wfd.items[persisted.wfd.index] || null;
+}
+
+function goToAdjacentWfd(direction) {
+  if (!persisted.wfd.items.length) return;
+  saveCurrentWfdDraft();
+  persisted.wfd.index = normalizeWfdIndex(persisted.wfd.index + direction, persisted.wfd.items.length);
+  state.wfd.answerVisible = false;
+  state.wfd.checked = false;
+  loadCurrentWfdDraft();
+  writeState();
+  renderWfd();
+}
+
+function loadCurrentWfdDraft() {
+  const item = currentWfdItem();
+  els.wfdInput.dataset.itemId = item?.id || "";
+  els.wfdInput.value = item ? (wfdProgress(item.id).draft || "") : "";
+}
+
+function saveCurrentWfdDraft() {
+  const item = currentWfdItem();
+  if (!item) return;
+  const progress = wfdProgress(item.id);
+  progress.draft = els.wfdInput.value;
+  progress.updatedAt = new Date().toISOString();
+  writeState();
+}
+
+function revealCurrentWfd() {
+  if (!currentWfdItem()) return;
+  state.wfd.answerVisible = true;
+  renderWfd();
+}
+
+function checkCurrentWfd() {
+  const item = currentWfdItem();
+  if (!item) return;
+  const actual = els.wfdInput.value;
+  const expectedWords = wfdWords(item.sentence);
+  const actualWords = wfdWords(actual);
+  const passed = expectedWords.length > 0 &&
+    expectedWords.length === actualWords.length &&
+    expectedWords.every((word, index) => word === actualWords[index]);
+  const progress = wfdProgress(item.id);
+  progress.draft = actual;
+  progress.reviews = (progress.reviews || 0) + 1;
+  progress.correct = (progress.correct || 0) + (passed ? 1 : 0);
+  progress.streak = passed ? (progress.streak || 0) + 1 : 0;
+  progress.mastered = progress.streak >= 2 || Boolean(progress.mastered && passed);
+  progress.lastResult = passed ? "passed" : "failed";
+  progress.updatedAt = new Date().toISOString();
+  state.wfd.checked = true;
+  state.wfd.answerVisible = true;
+  recordWfdPetProgress(item.id, passed);
+  writeState();
+  renderWfd();
+}
+
+function renderWfdResult(item) {
+  const progress = wfdProgress(item.id);
+  const diff = tokenDiff(wfdCompareTokens(item.sentence), wfdCompareTokens(progress.draft || ""));
+  const sourceList = item.sources?.length ? item.sources.join(" / ") : "未标注来源";
+  els.wfdResult.hidden = false;
+  els.wfdResult.innerHTML = `
+    <div class="wfd-result-heading">
+      <span>${progress.lastResult === "passed" ? "通过" : state.wfd.checked ? "需复习" : "答案"}</span>
+      <strong>${escapeHtml(item.sentence)}</strong>
+      <small>来源：${escapeHtml(sourceList)}${item.audio ? " · 有音频" : " · TTS 播放"}</small>
+    </div>
+    <div class="diff-columns">
+      <div class="diff-cell expected">
+        <strong>标准答案</strong>
+        <div class="exam-diff-text">${renderDiffTokens(diff.expected, "expected")}</div>
+      </div>
+      <div class="diff-cell actual">
+        <strong>你的答案</strong>
+        <div class="exam-diff-text">${renderDiffTokens(diff.actual, "actual") || '<span class="muted-token">[未填写]</span>'}</div>
+      </div>
+    </div>
+  `;
+}
+
+function playCurrentWfd() {
+  const item = currentWfdItem();
+  if (!item) return;
+  if (item.audio) {
+    const audio = new Audio(item.audio);
+    audio.play().catch(() => speakWfdSentence(item.sentence));
+    return;
+  }
+  speakWfdSentence(item.sentence);
+}
+
+function speakWfdSentence(sentence) {
+  if (!("speechSynthesis" in window)) {
+    showToast("当前浏览器不支持朗读，请先显示答案自读。", true);
+    return;
+  }
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(sentence);
+  utterance.lang = "en-US";
+  utterance.rate = 0.82;
+  window.speechSynthesis.speak(utterance);
+}
+
+function importWfdItems({ replace }) {
+  const parsed = parseWfdImport(els.wfdImportText.value);
+  if (!parsed.length) {
+    showToast("没有识别到有效 WFD 句子。", true);
+    return;
+  }
+  mergeWfdItems(parsed, { replace });
+  persisted.wfd.index = 0;
+  state.wfd.answerVisible = false;
+  state.wfd.checked = false;
+  els.wfdImportText.value = "";
+  loadCurrentWfdDraft();
+  writeState();
+  render();
+  showToast(`${replace ? "替换" : "追加"} ${parsed.length} 句，已自动去重。`);
+}
+
+async function syncWfdFromUrl() {
+  const url = els.wfdSyncUrlInput.value.trim();
+  if (!url) {
+    showToast("先填写同步源地址。", true);
+    return;
+  }
+  try {
+    els.wfdSyncButton.disabled = true;
+    els.wfdSyncStatus.textContent = "同步中...";
+    const response = await fetch(url, { cache: "no-store" });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const text = await response.text();
+    const parsed = parseWfdImport(text);
+    if (!parsed.length) throw new Error("未识别到题目");
+    persisted.wfd.syncUrl = url;
+    persisted.wfd.lastSyncedAt = new Date().toISOString();
+    mergeWfdItems(parsed, { replace: false });
+    writeState();
+    render();
+    showToast(`同步 ${parsed.length} 句，已按句子去重。`);
+  } catch (error) {
+    els.wfdSyncStatus.textContent = "同步失败";
+    showToast(`同步失败：${error.message || "可能被 CORS 限制"}`, true);
+  } finally {
+    els.wfdSyncButton.disabled = false;
+  }
+}
+
+function clearWfdBank() {
+  persisted.wfd.items = [];
+  persisted.wfd.progress = {};
+  persisted.wfd.index = 0;
+  state.wfd.answerVisible = false;
+  state.wfd.checked = false;
+  writeState();
+  render();
+}
+
+function parseWfdImport(raw) {
+  const text = String(raw || "").trim();
+  if (!text) return [];
+  const fromJson = parseWfdJson(text);
+  if (fromJson.length) return fromJson;
+  return text
+    .split(/\n+/)
+    .map((line) => line.replace(/^\s*\d+[\.)、-]\s*/, "").trim())
+    .map((sentence) => normalizeWfdItem({ sentence, sources: ["manual"] }))
+    .filter(Boolean);
+}
+
+function parseWfdJson(text) {
+  try {
+    const parsed = JSON.parse(text);
+    const list = Array.isArray(parsed) ? parsed : Array.isArray(parsed.items) ? parsed.items : [];
+    return normalizeWfdItems(list);
+  } catch {
+    return [];
+  }
+}
+
+function mergeWfdItems(items, { replace }) {
+  const merged = new Map();
+  if (!replace) {
+    persisted.wfd.items.forEach((item) => merged.set(item.id, item));
+  }
+  items.forEach((item) => {
+    const previous = merged.get(item.id);
+    merged.set(item.id, previous ? mergeWfdItem(previous, item) : item);
+  });
+  persisted.wfd.items = [...merged.values()];
+  persisted.wfd.index = normalizeWfdIndex(persisted.wfd.index, persisted.wfd.items.length);
+}
+
+function mergeWfdItem(previous, next) {
+  return {
+    ...previous,
+    sentence: previous.sentence || next.sentence,
+    audio: previous.audio || next.audio || "",
+    sources: [...new Set([...(previous.sources || []), ...(next.sources || [])])],
+    updatedAt: next.updatedAt || previous.updatedAt || ""
+  };
+}
+
+function normalizeWfdItems(items) {
+  const map = new Map();
+  (Array.isArray(items) ? items : []).forEach((item) => {
+    const normalized = normalizeWfdItem(item);
+    if (!normalized) return;
+    const previous = map.get(normalized.id);
+    map.set(normalized.id, previous ? mergeWfdItem(previous, normalized) : normalized);
+  });
+  return [...map.values()];
+}
+
+function normalizeWfdItem(item) {
+  const sentence = cleanWfdSentence(typeof item === "string" ? item : item?.sentence);
+  if (!isLikelyWfdSentence(sentence)) return null;
+  const sources = Array.isArray(item?.sources)
+    ? item.sources
+    : item?.source
+      ? [item.source]
+      : [];
+  return {
+    id: wfdSentenceKey(sentence),
+    sentence,
+    sources: sources.map((source) => String(source).trim()).filter(Boolean),
+    audio: typeof item?.audio === "string" ? item.audio.trim() : "",
+    updatedAt: typeof item?.updatedAt === "string" ? item.updatedAt : ""
+  };
+}
+
+function cleanWfdSentence(value) {
+  return String(value || "")
+    .replace(/\s+/g, " ")
+    .replace(/^["'“”]+|["'“”]+$/g, "")
+    .trim();
+}
+
+function isLikelyWfdSentence(sentence) {
+  const count = wfdWords(sentence).length;
+  return count >= 4 && count <= 24 && /[A-Za-z]/.test(sentence);
+}
+
+function wfdSentenceKey(sentence) {
+  return wfdWords(sentence).join("-");
+}
+
+function wfdWords(value) {
+  return String(value || "").toLowerCase().match(/[a-z0-9']+/g) || [];
+}
+
+function wfdCompareTokens(value) {
+  return wfdWords(value);
+}
+
+function wfdProgress(id) {
+  persisted.wfd.progress[id] ||= {
+    draft: "",
+    reviews: 0,
+    correct: 0,
+    streak: 0,
+    mastered: false,
+    lastResult: "",
+    updatedAt: ""
+  };
+  return persisted.wfd.progress[id];
+}
+
+function normalizeWfdIndex(index, length) {
+  if (!length) return 0;
+  const parsed = Number.parseInt(index, 10);
+  if (!Number.isFinite(parsed)) return 0;
+  return ((parsed % length) + length) % length;
+}
+
+function wfdMetaText(item) {
+  const sourceCount = item.sources?.length || 0;
+  const progress = wfdProgress(item.id);
+  const parts = [
+    sourceCount ? `${sourceCount} 个来源` : "未标注来源",
+    progress.reviews ? `练过 ${progress.reviews} 次` : "未练习",
+    progress.mastered ? "已掌握" : "候选高频"
+  ];
+  return parts.join(" · ");
 }
 
 function articleSourceParagraphHtml(article, paragraph, paragraphIndex) {
@@ -2465,7 +2914,7 @@ function renderTimer() {
   const mins = Math.floor(seconds / 60);
   const secs = seconds % 60;
   const showPracticeTimer = state.mode === "template";
-  els.timerDisplay.hidden = state.mode === "article" || state.mode === "memory" || state.mode === "drill";
+  els.timerDisplay.hidden = state.mode === "article" || state.mode === "memory" || state.mode === "drill" || state.mode === "wfd";
   els.templateTimerInput.closest(".timer-setting").hidden = !showPracticeTimer;
   els.templateTimerInput.disabled = state.timer.interval && state.timer.mode === "template";
   els.templateTimerInput.value = String(templateTimerMinutes());
@@ -2520,6 +2969,10 @@ function normalizedTemplateTimerMinutes(value) {
 
 function saveCurrentDrafts() {
   if (state.mode === "memory" || state.mode === "drill") return;
+  if (state.mode === "wfd") {
+    saveCurrentWfdDraft();
+    return;
+  }
   if (state.mode === "exam") saveExamDraft();
   else savePracticeDrafts();
 }
@@ -2983,6 +3436,12 @@ function daysUntil(key) {
   const today = new Date();
   const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
   return Math.round((target.getTime() - todayStart.getTime()) / 86400000);
+}
+
+function formatDateTime(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  return `${date.getMonth() + 1}月${date.getDate()}日 ${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
 }
 
 function readJson(key, fallback) {
