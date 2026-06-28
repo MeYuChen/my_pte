@@ -32,6 +32,26 @@ http://127.0.0.1:8765/
 - 综合考核
 - 最近 5 次滑动窗口熟练度统计
 
+## 自动化测试
+
+安装依赖：
+
+```bash
+npm install
+```
+
+运行 Playwright 验收测试：
+
+```bash
+npm test
+```
+
+测试会使用本机 Chrome，默认路径是 `/usr/bin/google-chrome`。如果 Chrome 路径不同，可以设置：
+
+```bash
+PLAYWRIGHT_CHROME_EXECUTABLE=/path/to/chrome npm test
+```
+
 ## 更新记录
 
 见 [CHANGELOG.md](./CHANGELOG.md)。
