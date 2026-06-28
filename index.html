@@ -261,6 +261,26 @@
       </div>
     </aside>
 
+    <aside class="study-pet" id="studyPet" aria-label="学习宠物">
+      <button class="study-pet-card" id="studyPetCard" type="button" aria-label="查看今日学习目标">
+        <span class="study-pet-face" id="studyPetFace">🥺</span>
+        <span class="study-pet-info">
+          <strong id="studyPetTitle">Lv1 新手蛋</strong>
+          <span id="studyPetStatus">今天还没开饭</span>
+        </span>
+      </button>
+      <div class="study-pet-panel" id="studyPetPanel" hidden>
+        <div class="study-pet-panel-heading">
+          <div>
+            <span id="studyPetMood">有点饿</span>
+            <h3 id="studyPetMessage">刷几张卡，我就开始吃饭。</h3>
+          </div>
+          <button class="study-pet-close" id="studyPetCloseButton" type="button" aria-label="收起宠物面板">×</button>
+        </div>
+        <div class="study-pet-goals" id="studyPetGoals"></div>
+      </div>
+    </aside>
+
     <script src="./practice-data.js"></script>
     <script src="./translations.js"></script>
     <script src="./learning-paths.js"></script>

@@ -34,6 +34,25 @@ test.describe("desktop flows", () => {
     await expect(calendar).toHaveClass(/is-collapsed/);
   });
 
+  test("desktop pet tracks study goals from real actions", async ({ page }) => {
+    await openFresh(page);
+
+    await expect(page.locator("#studyPet")).toBeVisible();
+    await expect(page.locator("#studyPetStatus")).toHaveText("粮食 0/30");
+
+    await page.locator("#studyPetCard").click();
+    await expect(page.locator("#studyPetPanel")).toBeVisible();
+    await expect(page.locator("#studyPetGoals")).toContainText("刷卡");
+    await expect(page.locator("#studyPetGoals")).toContainText("0 / 30");
+
+    await page.getByRole("button", { name: "刷卡" }).click();
+    await page.getByRole("button", { name: "显示答案" }).click();
+    await page.getByRole("button", { name: "记住了" }).click();
+
+    await expect(page.locator("#studyPetStatus")).toHaveText("粮食 3/30");
+    await expect(page.locator("#studyPetGoals")).toContainText("1 / 30");
+  });
+
   test("desktop drill list click jumps to the selected article", async ({ page }, testInfo) => {
     await openFresh(page);
 

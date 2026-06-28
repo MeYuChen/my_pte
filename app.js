@@ -18,6 +18,15 @@ const MODE_LIMITS = {
 const DEFAULT_TEMPLATE_TIMER_MINUTES = 5;
 const MIN_TEMPLATE_TIMER_MINUTES = 1;
 const MAX_TEMPLATE_TIMER_MINUTES = 60;
+const DAILY_GOALS = {
+  cards: 30,
+  familiar: 1,
+  writing: 1,
+  minutes: 25
+};
+const PET_DEFAULT_POSITION = { right: 22, bottom: 22 };
+const PET_FATIGUE_MINUTES = 45;
+const PET_FATIGUE_COOLDOWN_MS = 20 * 60 * 1000;
 
 const DRILL_TYPES = [
   { key: "route", label: "中文路线" },
@@ -289,12 +298,16 @@ const persisted = readJson(STORAGE_KEY, {
   drafts: {},
   examDrafts: {},
   drill: {},
+  pet: {},
   settings: {}
 });
 persisted.progress ||= {};
 persisted.drafts ||= {};
 persisted.examDrafts ||= {};
 persisted.drill ||= {};
+persisted.pet ||= {};
+persisted.pet.daily ||= {};
+persisted.pet.position ||= null;
 persisted.settings ||= {};
 persisted.settings.templateTimerMinutes = normalizedTemplateTimerMinutes(persisted.settings.templateTimerMinutes);
 
@@ -334,6 +347,14 @@ const state = {
     dragging: false,
     lastX: 0,
     lastY: 0
+  },
+  pet: {
+    panelOpen: false,
+    dragging: false,
+    moved: false,
+    dragOffsetX: 0,
+    dragOffsetY: 0,
+    fatigueNotifiedAt: 0
   }
 };
 
@@ -424,13 +445,24 @@ const els = {
   calendarTodayButton: document.getElementById("calendarTodayButton"),
   calendarPreviousMonthButton: document.getElementById("calendarPreviousMonthButton"),
   calendarNextMonthButton: document.getElementById("calendarNextMonthButton"),
-  calendarToggleButton: document.getElementById("calendarToggleButton")
+  calendarToggleButton: document.getElementById("calendarToggleButton"),
+  studyPet: document.getElementById("studyPet"),
+  studyPetCard: document.getElementById("studyPetCard"),
+  studyPetFace: document.getElementById("studyPetFace"),
+  studyPetTitle: document.getElementById("studyPetTitle"),
+  studyPetStatus: document.getElementById("studyPetStatus"),
+  studyPetPanel: document.getElementById("studyPetPanel"),
+  studyPetMood: document.getElementById("studyPetMood"),
+  studyPetMessage: document.getElementById("studyPetMessage"),
+  studyPetGoals: document.getElementById("studyPetGoals"),
+  studyPetCloseButton: document.getElementById("studyPetCloseButton")
 };
 
 bindEvents();
 renderMemoryFilters();
 renderSidebarState();
 renderStudyCalendar();
+renderStudyPet();
 render();
 registerImageCacheWorker().finally(scheduleImageCacheWarmup);
 
@@ -447,6 +479,12 @@ function bindEvents() {
   els.calendarPreviousMonthButton.addEventListener("click", () => shiftStudyCalendarMonth(-1));
   els.calendarNextMonthButton.addEventListener("click", () => shiftStudyCalendarMonth(1));
   els.calendarTodayButton.addEventListener("click", showCurrentStudyCalendarMonth);
+  els.studyPetCard.addEventListener("click", toggleStudyPetPanel);
+  els.studyPetCard.addEventListener("dblclick", resetStudyPetPosition);
+  els.studyPetCard.addEventListener("pointerdown", startStudyPetDrag);
+  els.studyPetCloseButton.addEventListener("click", closeStudyPetPanel);
+  window.addEventListener("pointermove", moveStudyPet);
+  window.addEventListener("pointerup", endStudyPetDrag);
   els.openCatalogButton.addEventListener("click", openCatalog);
   els.closeCatalogButton.addEventListener("click", closeCatalog);
   els.catalogBackdrop.addEventListener("click", closeCatalog);
@@ -621,6 +659,230 @@ function renderStudyCalendar() {
   });
 
   els.calendarGrid.replaceChildren(...days);
+}
+
+function toggleStudyPetPanel() {
+  if (state.pet.moved) return;
+  state.pet.panelOpen = !state.pet.panelOpen;
+  renderStudyPet();
+}
+
+function closeStudyPetPanel(event) {
+  event.stopPropagation();
+  state.pet.panelOpen = false;
+  renderStudyPet();
+}
+
+function startStudyPetDrag(event) {
+  if (event.button !== 0) return;
+  const rect = els.studyPet.getBoundingClientRect();
+  state.pet.dragging = true;
+  state.pet.moved = false;
+  state.pet.dragOffsetX = event.clientX - rect.left;
+  state.pet.dragOffsetY = event.clientY - rect.top;
+  els.studyPet.classList.add("is-dragging");
+  els.studyPetCard.setPointerCapture?.(event.pointerId);
+}
+
+function moveStudyPet(event) {
+  if (!state.pet.dragging) return;
+  event.preventDefault();
+  state.pet.moved = true;
+  const width = els.studyPet.offsetWidth;
+  const height = els.studyPet.offsetHeight;
+  const left = clamp(event.clientX - state.pet.dragOffsetX, 8, window.innerWidth - width - 8);
+  const top = clamp(event.clientY - state.pet.dragOffsetY, 8, window.innerHeight - height - 8);
+  applyStudyPetPosition({ left, top });
+}
+
+function endStudyPetDrag() {
+  if (!state.pet.dragging) return;
+  state.pet.dragging = false;
+  els.studyPet.classList.remove("is-dragging");
+  const rect = els.studyPet.getBoundingClientRect();
+  persisted.pet.position = {
+    left: Math.round(rect.left),
+    top: Math.round(rect.top)
+  };
+  writeState();
+  window.setTimeout(() => {
+    state.pet.moved = false;
+  }, 0);
+}
+
+function resetStudyPetPosition(event) {
+  event.preventDefault();
+  persisted.pet.position = null;
+  writeState();
+  renderStudyPet();
+}
+
+function renderStudyPet() {
+  if (!els.studyPet) return;
+  ensureTodayPetStats();
+  const stats = todayPetStats();
+  const level = petLevel();
+  const status = petStatus(stats);
+  applyStudyPetPosition(persisted.pet.position);
+  els.studyPet.classList.toggle("is-panel-open", state.pet.panelOpen);
+  els.studyPetPanel.hidden = !state.pet.panelOpen;
+  els.studyPetFace.textContent = status.face;
+  els.studyPetTitle.textContent = `Lv${level.level} ${level.label}`;
+  els.studyPetStatus.textContent = `粮食 ${stats.food}/${DAILY_GOALS.cards}`;
+  els.studyPetMood.textContent = status.mood;
+  els.studyPetMessage.textContent = status.message;
+  els.studyPetGoals.replaceChildren(
+    petGoalRow("刷卡", stats.cards, DAILY_GOALS.cards),
+    petGoalRow("熟悉新文章", stats.familiar, DAILY_GOALS.familiar),
+    petGoalRow("默写/考核", stats.writing, DAILY_GOALS.writing),
+    petGoalRow("计时学习", stats.minutes, DAILY_GOALS.minutes, "分钟")
+  );
+}
+
+function applyStudyPetPosition(position) {
+  if (!els.studyPet) return;
+  if (!position) {
+    els.studyPet.style.left = "";
+    els.studyPet.style.top = "";
+    els.studyPet.style.right = `${PET_DEFAULT_POSITION.right}px`;
+    els.studyPet.style.bottom = `${PET_DEFAULT_POSITION.bottom}px`;
+    return;
+  }
+  const left = clamp(position.left, 8, Math.max(8, window.innerWidth - els.studyPet.offsetWidth - 8));
+  const top = clamp(position.top, 8, Math.max(8, window.innerHeight - els.studyPet.offsetHeight - 8));
+  els.studyPet.style.left = `${left}px`;
+  els.studyPet.style.top = `${top}px`;
+  els.studyPet.style.right = "auto";
+  els.studyPet.style.bottom = "auto";
+}
+
+function petGoalRow(label, value, target, suffix = "") {
+  const row = document.createElement("div");
+  row.className = "study-pet-goal";
+  const capped = Math.min(value, target);
+  const percent = target ? Math.min(100, Math.round((capped / target) * 100)) : 0;
+  row.innerHTML = `
+    <div>
+      <span>${escapeHtml(label)}</span>
+      <strong>${capped} / ${target}${suffix ? ` ${escapeHtml(suffix)}` : ""}</strong>
+    </div>
+    <div class="study-pet-progress"><span style="width: ${percent}%"></span></div>
+  `;
+  return row;
+}
+
+function recordDrillPetProgress(cardId, grade) {
+  const stats = todayPetStats();
+  stats.reviewedCards ||= {};
+  if (!stats.reviewedCards[cardId]) {
+    stats.cards += 1;
+    stats.reviewedCards[cardId] = true;
+  }
+  if (grade === "known") stats.food += 3;
+  if (grade === "vague") stats.food += 1;
+  recordPetActivity();
+}
+
+function recordWritingPetProgress(key) {
+  const stats = todayPetStats();
+  stats.writingKeys ||= {};
+  if (!stats.writingKeys[key]) {
+    stats.writing += 1;
+    stats.food += 5;
+    stats.writingKeys[key] = true;
+  }
+  recordPetActivity();
+}
+
+function recordFamiliarPetProgress(previousProgress, nextProgress) {
+  if (windowCorrectCount(previousProgress) >= 1 || windowCorrectCount(nextProgress) < 1) return;
+  const stats = todayPetStats();
+  stats.familiar += 1;
+  stats.food += 8;
+  recordPetActivity();
+}
+
+function recordTimedStudySeconds(seconds) {
+  if (seconds < 20) return;
+  const stats = todayPetStats();
+  stats.minutes += Math.max(1, Math.round(seconds / 60));
+  stats.food += Math.max(1, Math.round(seconds / 300));
+  recordPetActivity();
+}
+
+function recordPetActivity() {
+  const stats = todayPetStats();
+  const now = Date.now();
+  stats.lastActivityAt = new Date(now).toISOString();
+  stats.firstActivityAt ||= stats.lastActivityAt;
+  maybeShowPetFatigue(stats, now);
+  writeState();
+  renderStudyPet();
+}
+
+function maybeShowPetFatigue(stats, now) {
+  if (!stats.firstActivityAt) return;
+  const first = new Date(stats.firstActivityAt).getTime();
+  const lastPrompt = new Date(stats.lastFatiguePromptAt || 0).getTime();
+  const studiedLongEnough = now - first >= PET_FATIGUE_MINUTES * 60 * 1000;
+  const cooledDown = now - lastPrompt >= PET_FATIGUE_COOLDOWN_MS;
+  if (!studiedLongEnough || !cooledDown) return;
+  stats.lastFatiguePromptAt = new Date(now).toISOString();
+  state.pet.panelOpen = true;
+  showToast("你已经学了 45 分钟，宠物有点担心你。休息 3 分钟再继续。", true);
+}
+
+function todayPetStats() {
+  return ensureTodayPetStats();
+}
+
+function ensureTodayPetStats() {
+  const key = todayKey();
+  persisted.pet.daily[key] ||= {
+    cards: 0,
+    familiar: 0,
+    writing: 0,
+    minutes: 0,
+    food: 0,
+    reviewedCards: {},
+    writingKeys: {},
+    firstActivityAt: null,
+    lastActivityAt: null,
+    lastFatiguePromptAt: null
+  };
+  return persisted.pet.daily[key];
+}
+
+function petLevel() {
+  const mastered = articles.filter((article) => masteryLevel(getProgress(article.id)).key === "skilled").length;
+  if (mastered >= 30) return { level: 4, label: "考前搭子" };
+  if (mastered >= 15) return { level: 3, label: "陪练员" };
+  if (mastered >= 5) return { level: 2, label: "小伙伴" };
+  return { level: 1, label: "新手蛋" };
+}
+
+function petStatus(stats) {
+  const completed = [
+    stats.cards >= DAILY_GOALS.cards,
+    stats.familiar >= DAILY_GOALS.familiar,
+    stats.writing >= DAILY_GOALS.writing,
+    stats.minutes >= DAILY_GOALS.minutes
+  ].filter(Boolean).length;
+  if (completed >= 2) {
+    return { face: "😌", mood: "今天吃饱了", message: "今日目标达标了，别硬熬。" };
+  }
+  if (stats.food > 0) {
+    return { face: "😋", mood: "进食中", message: nextPetGoalMessage(stats) };
+  }
+  return { face: "🥺", mood: "有点饿", message: "刷几张卡，我就开始吃饭。" };
+}
+
+function nextPetGoalMessage(stats) {
+  if (stats.cards < DAILY_GOALS.cards) return `还差 ${DAILY_GOALS.cards - stats.cards} 张卡，今天就更稳。`;
+  if (stats.familiar < DAILY_GOALS.familiar) return "再把 1 篇推进到熟悉，宠物就长经验。";
+  if (stats.writing < DAILY_GOALS.writing) return "补 1 次默写/考核，今天质量就够了。";
+  if (stats.minutes < DAILY_GOALS.minutes) return `再计时学习 ${DAILY_GOALS.minutes - stats.minutes} 分钟。`;
+  return "今天已经够了，可以收工。";
 }
 
 function setMode(mode) {
@@ -1249,6 +1511,7 @@ function handleDrillGrade(event) {
     grade,
     reviewedAt: new Date().toISOString()
   };
+  recordDrillPetProgress(key, grade);
   writeState();
   nextDrillCard();
 }
@@ -1564,7 +1827,10 @@ function checkPractice() {
   });
 
   const id = item.id;
+  const previousProgress = getProgress(id);
   const progress = updateProgressWithResult(id, correct === total, { correct, total });
+  recordFamiliarPetProgress(previousProgress, progress);
+  recordWritingPetProgress(`practice:${id}`);
   writeState();
   els.levelScore.textContent = scoreText(id);
   renderSummary();
@@ -1590,12 +1856,15 @@ function submitExam(options = {}) {
     return;
   }
   const { passed, diffs } = gradeEssay(article, els.examInput.value);
+  const previousProgress = getProgress(article.id);
   const progress = updateProgressWithResult(article.id, passed, {
     examChecked: true,
     examPassed: passed,
     total: sentenceCount(article),
     correct: passed ? sentenceCount(article) : 0
   });
+  recordFamiliarPetProgress(previousProgress, progress);
+  recordWritingPetProgress(`exam:${article.id}`);
   writeState();
   renderSummary();
   renderLevelList();
@@ -1620,12 +1889,15 @@ function submitCompositeExam() {
     const article = articles.find((item) => item.id === id);
     const value = persisted.examDrafts[id] || "";
     const { passed, diffs } = gradeEssay(article, value);
-    updateProgressWithResult(article.id, passed, {
+    const previousProgress = getProgress(article.id);
+    const progress = updateProgressWithResult(article.id, passed, {
       examChecked: true,
       examPassed: passed,
       total: sentenceCount(article),
       correct: passed ? sentenceCount(article) : 0
     });
+    recordFamiliarPetProgress(previousProgress, progress);
+    recordWritingPetProgress(`exam:${article.id}`);
     return {
       id: article.id,
       title: article.title,
@@ -1967,6 +2239,7 @@ function startTimer(mode) {
   state.timer = {
     mode,
     endsAt: Date.now() + seconds * 1000,
+    startedAt: Date.now(),
     remaining: seconds,
     interval: window.setInterval(tickTimer, 250)
   };
@@ -2013,6 +2286,9 @@ function advanceCompositeAfterTimeout() {
 }
 
 function stopTimer(ended) {
+  if (state.timer.interval && state.timer.startedAt) {
+    recordTimedStudySeconds((Date.now() - state.timer.startedAt) / 1000);
+  }
   if (state.timer.interval) window.clearInterval(state.timer.interval);
   state.timer.interval = null;
   if (ended) {
@@ -2502,6 +2778,15 @@ function isSameDate(first, second) {
   return first.getFullYear() === second.getFullYear() &&
     first.getMonth() === second.getMonth() &&
     first.getDate() === second.getDate();
+}
+
+function todayKey() {
+  const date = new Date();
+  return [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, "0"),
+    String(date.getDate()).padStart(2, "0")
+  ].join("-");
 }
 
 function readJson(key, fallback) {
