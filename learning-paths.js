@@ -187,14 +187,14 @@ window.WE_LEARNING_PATHS = {
     ]
   },
   "#90": {
-    cnRoute: ["年龄限制", "判断不足", "保护安全", "必要规则"],
-    cnHook: "年轻判断弱 -> 风险活动要限制 -> 保护大家",
-    keywords: ["age limit", "risky activities", "poor judgment", "protect young people", "public safety"],
+    cnRoute: ["年龄限制", "判断不足", "驾驶18岁", "培训规则"],
+    cnHook: "年轻判断弱 -> 驾驶18岁 -> 严格培训",
+    keywords: ["age limit", "risky activities", "poor judgment", "driving age should be eighteen", "strict training"],
     skeleton: [
       "Age limits are necessary for risky activities.",
       "Young people may not fully understand danger and consequences.",
-      "Such rules can protect both individuals and society.",
-      "Therefore, governments should keep reasonable age limits."
+      "For example, the minimum driving age should be eighteen.",
+      "Therefore, governments should keep clear age limits and strict driving training."
     ]
   },
   "#98": {
@@ -330,14 +330,14 @@ window.WE_LEARNING_PATHS = {
     ]
   },
   "#166": {
-    cnRoute: ["短工作周", "创造岗位", "成本风险", "谨慎设计"],
-    cnHook: "多岗位 -> 更健康 -> 成本收入要保护",
+    cnRoute: ["短工作周", "创造岗位", "成本风险", "全员逐步"],
+    cnHook: "多岗位 -> 有成本 -> 全员逐步推",
     keywords: ["short work week", "create jobs", "better well-being", "business costs", "wage protection"],
     skeleton: [
       "A shorter work week may bring benefits if it is designed carefully.",
       "It can create more jobs and improve workers' well-being.",
       "However, it may increase business costs and reduce income.",
-      "Therefore, companies should test it carefully with wage protection."
+      "Therefore, it should apply to the whole workforce gradually with wage protection."
     ]
   },
   "#170": {
@@ -345,7 +345,7 @@ window.WE_LEARNING_PATHS = {
     cnHook: "外语沟通 -> 大脑发展 -> 教得实用",
     keywords: ["compulsory foreign language", "global communication", "brain development", "future opportunities", "practical teaching"],
     skeleton: [
-      "Learning a foreign language should be encouraged in schools.",
+      "Learning a foreign language should be compulsory at school.",
       "It helps students communicate in a global world.",
       "It can also train the brain and create future opportunities.",
       "Therefore, schools should teach languages in a practical way."
