@@ -1523,7 +1523,7 @@ body.is-catalog-open {
 
 .study-calendar {
   position: fixed;
-  right: 22px;
+  left: 22px;
   bottom: 22px;
   z-index: 8;
   width: 286px;
