@@ -38,9 +38,11 @@ test.describe("desktop flows", () => {
     await openFresh(page);
 
     await expect(page.locator("#studyPet")).toBeVisible();
+    await expect(page.locator("#studyPetAvatar")).toBeVisible();
+    await expect(page.locator("#studyPetAvatar")).toHaveJSProperty("naturalWidth", 791);
     await expect(page.locator("#studyPetStatus")).toHaveText("粮食 0/30");
 
-    await page.locator("#studyPetCard").click();
+    await page.locator("#studyPetAvatar").click();
     await expect(page.locator("#studyPetPanel")).toBeVisible();
     await expect(page.locator("#studyPetGoals")).toContainText("刷卡");
     await expect(page.locator("#studyPetGoals")).toContainText("0 / 30");

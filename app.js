@@ -24,7 +24,7 @@ const DAILY_GOALS = {
   writing: 1,
   minutes: 25
 };
-const PET_DEFAULT_POSITION = { right: 22, bottom: 22 };
+const PET_DEFAULT_POSITION = { right: 22, bottom: 96 };
 const PET_FATIGUE_MINUTES = 45;
 const PET_FATIGUE_COOLDOWN_MS = 20 * 60 * 1000;
 
