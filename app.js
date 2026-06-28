@@ -482,6 +482,7 @@ function bindEvents() {
   els.studyPetCard.addEventListener("click", toggleStudyPetPanel);
   els.studyPetCard.addEventListener("dblclick", resetStudyPetPosition);
   els.studyPetCard.addEventListener("pointerdown", startStudyPetDrag);
+  els.studyPetCard.addEventListener("dragstart", (event) => event.preventDefault());
   els.studyPetCloseButton.addEventListener("click", closeStudyPetPanel);
   window.addEventListener("pointermove", moveStudyPet);
   window.addEventListener("pointerup", endStudyPetDrag);
@@ -675,6 +676,7 @@ function closeStudyPetPanel(event) {
 
 function startStudyPetDrag(event) {
   if (event.button !== 0) return;
+  event.preventDefault();
   const rect = els.studyPet.getBoundingClientRect();
   state.pet.dragging = true;
   state.pet.moved = false;
@@ -688,11 +690,10 @@ function moveStudyPet(event) {
   if (!state.pet.dragging) return;
   event.preventDefault();
   state.pet.moved = true;
-  const width = els.studyPet.offsetWidth;
-  const height = els.studyPet.offsetHeight;
-  const left = clamp(event.clientX - state.pet.dragOffsetX, 8, window.innerWidth - width - 8);
-  const top = clamp(event.clientY - state.pet.dragOffsetY, 8, window.innerHeight - height - 8);
-  applyStudyPetPosition({ left, top });
+  applyStudyPetPosition(clampedStudyPetPosition(
+    event.clientX - state.pet.dragOffsetX,
+    event.clientY - state.pet.dragOffsetY
+  ));
 }
 
 function endStudyPetDrag() {
@@ -700,10 +701,8 @@ function endStudyPetDrag() {
   state.pet.dragging = false;
   els.studyPet.classList.remove("is-dragging");
   const rect = els.studyPet.getBoundingClientRect();
-  persisted.pet.position = {
-    left: Math.round(rect.left),
-    top: Math.round(rect.top)
-  };
+  persisted.pet.position = clampedStudyPetPosition(rect.left, rect.top);
+  applyStudyPetPosition(persisted.pet.position);
   writeState();
   window.setTimeout(() => {
     state.pet.moved = false;
@@ -748,12 +747,20 @@ function applyStudyPetPosition(position) {
     els.studyPet.style.bottom = `${PET_DEFAULT_POSITION.bottom}px`;
     return;
   }
-  const left = clamp(position.left, 8, Math.max(8, window.innerWidth - els.studyPet.offsetWidth - 8));
-  const top = clamp(position.top, 8, Math.max(8, window.innerHeight - els.studyPet.offsetHeight - 8));
+  const { left, top } = clampedStudyPetPosition(position.left, position.top);
   els.studyPet.style.left = `${left}px`;
   els.studyPet.style.top = `${top}px`;
   els.studyPet.style.right = "auto";
   els.studyPet.style.bottom = "auto";
+}
+
+function clampedStudyPetPosition(left, top) {
+  const width = els.studyPet.offsetWidth;
+  const height = els.studyPet.offsetHeight;
+  return {
+    left: Math.round(clamp(left, 8, Math.max(8, window.innerWidth - width - 8))),
+    top: Math.round(clamp(top, 8, Math.max(8, window.innerHeight - height - 8)))
+  };
 }
 
 function petGoalRow(label, value, target, suffix = "") {

@@ -55,6 +55,22 @@ test.describe("desktop flows", () => {
     await expect(page.locator("#studyPetGoals")).toContainText("1 / 30");
   });
 
+  test("desktop pet drag does not open the image asset", async ({ page }) => {
+    await openFresh(page);
+
+    const avatar = page.locator("#studyPetAvatar");
+    const box = await avatar.boundingBox();
+    expect(box).not.toBeNull();
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(page.viewportSize().width + 500, box.y + box.height / 2, { steps: 8 });
+    await page.mouse.up();
+
+    await expect(page).toHaveURL(/index\.html$/);
+    const petBox = await page.locator("#studyPet").boundingBox();
+    expect(petBox.x + petBox.width).toBeLessThanOrEqual(page.viewportSize().width + 1);
+  });
+
   test("desktop drill list click jumps to the selected article", async ({ page }, testInfo) => {
     await openFresh(page);
 

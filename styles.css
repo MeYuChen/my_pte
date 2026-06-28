@@ -1722,6 +1722,8 @@ body.is-catalog-open {
   object-fit: contain;
   filter: drop-shadow(0 14px 14px rgba(28, 39, 33, 0.14));
   transition: transform 180ms ease, filter 180ms ease;
+  -webkit-user-drag: none;
+  user-select: none;
 }
 
 .study-pet-mood-badge {
