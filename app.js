@@ -290,6 +290,9 @@ const persisted = readJson(STORAGE_KEY, {
   drill: {},
   settings: {}
 });
+persisted.progress ||= {};
+persisted.drafts ||= {};
+persisted.examDrafts ||= {};
 persisted.drill ||= {};
 persisted.settings ||= {};
 persisted.settings.templateTimerMinutes = normalizedTemplateTimerMinutes(persisted.settings.templateTimerMinutes);

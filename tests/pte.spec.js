@@ -85,4 +85,20 @@ test.describe("shared flows", () => {
     await expect(page.locator("#templateTimerInput")).toHaveValue("7");
     await expect(page.locator("#startTimerButton")).toHaveText("开始 7 分钟");
   });
+
+  test("incomplete saved learning state is normalized", async ({ page }) => {
+    await page.addInitScript(() => {
+      localStorage.setItem("pte-we-v2-state", JSON.stringify({
+        settings: { templateTimerMinutes: 6 }
+      }));
+      localStorage.removeItem("pte-we-sidebar-collapsed");
+    });
+    await page.goto("./index.html");
+
+    await expect(page.getByRole("button", { name: "模板" })).toBeVisible();
+    await expect(page.locator("#progressSummary")).toContainText("/ 39 已掌握");
+    await expect(page.locator("#templateTimerInput")).toHaveValue("6");
+    await page.getByRole("button", { name: "刷卡" }).click();
+    await expect(page.locator("#drillCardTitle")).toHaveText("#5 Transportation Networks");
+  });
 });
