@@ -240,6 +240,27 @@
       </main>
     </div>
 
+    <aside class="study-calendar" id="studyCalendar" aria-label="学习日历">
+      <div class="study-calendar-header">
+        <button class="study-calendar-icon-button" id="calendarPreviousMonthButton" type="button" aria-label="上个月">‹</button>
+        <button class="study-calendar-title" id="calendarTodayButton" type="button">今天</button>
+        <button class="study-calendar-icon-button" id="calendarNextMonthButton" type="button" aria-label="下个月">›</button>
+        <button class="study-calendar-toggle" id="calendarToggleButton" type="button" aria-label="缩小日历" aria-expanded="true">−</button>
+      </div>
+      <div class="study-calendar-body" id="calendarBody">
+        <div class="study-calendar-weekdays" aria-hidden="true">
+          <span>一</span>
+          <span>二</span>
+          <span>三</span>
+          <span>四</span>
+          <span>五</span>
+          <span>六</span>
+          <span>日</span>
+        </div>
+        <div class="study-calendar-grid" id="calendarGrid"></div>
+      </div>
+    </aside>
+
     <script src="./practice-data.js"></script>
     <script src="./translations.js"></script>
     <script src="./learning-paths.js"></script>

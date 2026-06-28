@@ -7,6 +7,7 @@
 
 const STORAGE_KEY = "pte-we-v2-state";
 const SIDEBAR_STATE_KEY = "pte-we-sidebar-collapsed";
+const CALENDAR_STATE_KEY = "pte-we-calendar-collapsed";
 const MODE_LIMITS = {
   template: 300,
   drill: 0,
@@ -302,6 +303,8 @@ const state = {
   examType: "single",
   activeArticleId: articles[0]?.id || null,
   sidebarCollapsed: readJson(SIDEBAR_STATE_KEY, false),
+  calendarCollapsed: readJson(CALENDAR_STATE_KEY, false),
+  calendarMonth: startOfMonth(new Date()),
   filter: "all",
   memoryFilter: "all",
   articleSourceCollapsed: false,
@@ -414,12 +417,20 @@ const els = {
   examTopicText: document.getElementById("examTopicText"),
   examProgress: document.getElementById("examProgress"),
   examInput: document.getElementById("examInput"),
-  examResult: document.getElementById("examResult")
+  examResult: document.getElementById("examResult"),
+  studyCalendar: document.getElementById("studyCalendar"),
+  calendarBody: document.getElementById("calendarBody"),
+  calendarGrid: document.getElementById("calendarGrid"),
+  calendarTodayButton: document.getElementById("calendarTodayButton"),
+  calendarPreviousMonthButton: document.getElementById("calendarPreviousMonthButton"),
+  calendarNextMonthButton: document.getElementById("calendarNextMonthButton"),
+  calendarToggleButton: document.getElementById("calendarToggleButton")
 };
 
 bindEvents();
 renderMemoryFilters();
 renderSidebarState();
+renderStudyCalendar();
 render();
 registerImageCacheWorker().finally(scheduleImageCacheWarmup);
 
@@ -432,6 +443,10 @@ function bindEvents() {
   });
 
   els.sidebarToggle.addEventListener("click", toggleSidebar);
+  els.calendarToggleButton.addEventListener("click", toggleStudyCalendar);
+  els.calendarPreviousMonthButton.addEventListener("click", () => shiftStudyCalendarMonth(-1));
+  els.calendarNextMonthButton.addEventListener("click", () => shiftStudyCalendarMonth(1));
+  els.calendarTodayButton.addEventListener("click", showCurrentStudyCalendarMonth);
   els.openCatalogButton.addEventListener("click", openCatalog);
   els.closeCatalogButton.addEventListener("click", closeCatalog);
   els.catalogBackdrop.addEventListener("click", closeCatalog);
@@ -557,6 +572,55 @@ function renderSidebarState() {
   els.sidebarToggle.textContent = state.sidebarCollapsed ? "›" : "‹";
   els.sidebarToggle.setAttribute("aria-expanded", String(!state.sidebarCollapsed));
   els.sidebarToggle.setAttribute("aria-label", state.sidebarCollapsed ? "展开左侧栏" : "收起左侧栏");
+}
+
+function toggleStudyCalendar() {
+  state.calendarCollapsed = !state.calendarCollapsed;
+  localStorage.setItem(CALENDAR_STATE_KEY, JSON.stringify(state.calendarCollapsed));
+  renderStudyCalendar();
+}
+
+function shiftStudyCalendarMonth(direction) {
+  state.calendarMonth = addMonths(state.calendarMonth, direction);
+  renderStudyCalendar();
+}
+
+function showCurrentStudyCalendarMonth() {
+  state.calendarMonth = startOfMonth(new Date());
+  renderStudyCalendar();
+}
+
+function renderStudyCalendar() {
+  if (!els.studyCalendar) return;
+  const month = startOfMonth(state.calendarMonth);
+  const today = new Date();
+  const monthStartOffset = (month.getDay() + 6) % 7;
+  const gridStart = new Date(month);
+  gridStart.setDate(month.getDate() - monthStartOffset);
+
+  els.studyCalendar.classList.toggle("is-collapsed", state.calendarCollapsed);
+  els.calendarBody.hidden = state.calendarCollapsed;
+  els.calendarTodayButton.textContent = `${month.getFullYear()}年${month.getMonth() + 1}月`;
+  els.calendarToggleButton.textContent = state.calendarCollapsed ? "+" : "−";
+  els.calendarToggleButton.setAttribute("aria-expanded", String(!state.calendarCollapsed));
+  els.calendarToggleButton.setAttribute("aria-label", state.calendarCollapsed ? "展开日历" : "缩小日历");
+
+  const days = Array.from({ length: 42 }, (_, index) => {
+    const day = new Date(gridStart);
+    day.setDate(gridStart.getDate() + index);
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "study-calendar-day";
+    button.textContent = String(day.getDate());
+    button.setAttribute("aria-label", `${day.getFullYear()}年${day.getMonth() + 1}月${day.getDate()}日`);
+    button.classList.toggle("is-outside-month", day.getMonth() !== month.getMonth());
+    button.classList.toggle("is-weekend", day.getDay() === 0 || day.getDay() === 6);
+    button.classList.toggle("is-today", isSameDate(day, today));
+    if (isSameDate(day, today)) button.setAttribute("aria-current", "date");
+    return button;
+  });
+
+  els.calendarGrid.replaceChildren(...days);
 }
 
 function setMode(mode) {
@@ -2421,6 +2485,23 @@ function applyImageViewerTransform() {
 
 function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
+}
+
+function startOfMonth(value) {
+  const date = new Date(value);
+  return new Date(date.getFullYear(), date.getMonth(), 1);
+}
+
+function addMonths(value, amount) {
+  const date = startOfMonth(value);
+  date.setMonth(date.getMonth() + amount);
+  return date;
+}
+
+function isSameDate(first, second) {
+  return first.getFullYear() === second.getFullYear() &&
+    first.getMonth() === second.getMonth() &&
+    first.getDate() === second.getDate();
 }
 
 function readJson(key, fallback) {

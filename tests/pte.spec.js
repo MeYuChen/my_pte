@@ -5,12 +5,34 @@ async function openFresh(page) {
   await page.evaluate(() => {
     localStorage.removeItem("pte-we-v2-state");
     localStorage.removeItem("pte-we-sidebar-collapsed");
+    localStorage.removeItem("pte-we-calendar-collapsed");
   });
   await page.reload();
 }
 
 test.describe("desktop flows", () => {
   test.skip(({ isMobile }) => isMobile, "desktop-only behavior");
+
+  test("desktop floating calendar highlights today and can collapse", async ({ page }) => {
+    await openFresh(page);
+
+    const today = await page.evaluate(() => ({
+      day: new Date().getDate(),
+      monthTitle: `${new Date().getFullYear()}年${new Date().getMonth() + 1}月`
+    }));
+    const calendar = page.locator("#studyCalendar");
+
+    await expect(calendar).toBeVisible();
+    await expect(page.locator("#calendarTodayButton")).toHaveText(today.monthTitle);
+    await expect(page.locator(".study-calendar-day.is-today")).toHaveText(String(today.day));
+
+    await page.locator("#calendarToggleButton").click();
+    await expect(calendar).toHaveClass(/is-collapsed/);
+    await expect(page.locator("#calendarBody")).toBeHidden();
+
+    await page.reload();
+    await expect(calendar).toHaveClass(/is-collapsed/);
+  });
 
   test("desktop drill list click jumps to the selected article", async ({ page }, testInfo) => {
     await openFresh(page);
@@ -26,6 +48,12 @@ test.describe("desktop flows", () => {
 
 test.describe("mobile flows", () => {
   test.skip(({ isMobile }) => !isMobile, "mobile-only behavior");
+
+  test("mobile hides the floating calendar", async ({ page }) => {
+    await openFresh(page);
+
+    await expect(page.locator("#studyCalendar")).toBeHidden();
+  });
 
   test("mobile catalog filters by category and starts from a selected article", async ({ page }, testInfo) => {
     await openFresh(page);
