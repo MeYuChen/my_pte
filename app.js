@@ -727,7 +727,7 @@ function renderStudyPet() {
   els.studyPetPanel.hidden = !state.pet.panelOpen;
   els.studyPetFace.textContent = status.face;
   els.studyPetTitle.textContent = `Lv${level.level} ${level.label}`;
-  els.studyPetStatus.textContent = `粮食 ${stats.food}/${DAILY_GOALS.cards}`;
+  els.studyPetStatus.textContent = `粮食 ${stats.food} · 目标 ${completedDailyGoalCount(stats)}/4`;
   els.studyPetMood.textContent = status.mood;
   els.studyPetMessage.textContent = status.message;
   els.studyPetGoals.replaceChildren(
@@ -776,6 +776,15 @@ function petGoalRow(label, value, target, suffix = "") {
     <div class="study-pet-progress"><span style="width: ${percent}%"></span></div>
   `;
   return row;
+}
+
+function completedDailyGoalCount(stats) {
+  return [
+    stats.cards >= DAILY_GOALS.cards,
+    stats.familiar >= DAILY_GOALS.familiar,
+    stats.writing >= DAILY_GOALS.writing,
+    stats.minutes >= DAILY_GOALS.minutes
+  ].filter(Boolean).length;
 }
 
 function recordDrillPetProgress(cardId, grade) {
@@ -869,12 +878,7 @@ function petLevel() {
 }
 
 function petStatus(stats) {
-  const completed = [
-    stats.cards >= DAILY_GOALS.cards,
-    stats.familiar >= DAILY_GOALS.familiar,
-    stats.writing >= DAILY_GOALS.writing,
-    stats.minutes >= DAILY_GOALS.minutes
-  ].filter(Boolean).length;
+  const completed = completedDailyGoalCount(stats);
   if (completed >= 2) {
     return { face: "😌", mood: "今天吃饱了", message: "今日目标达标了，别硬熬。" };
   }

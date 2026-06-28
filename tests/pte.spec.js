@@ -40,7 +40,7 @@ test.describe("desktop flows", () => {
     await expect(page.locator("#studyPet")).toBeVisible();
     await expect(page.locator("#studyPetAvatar")).toBeVisible();
     await expect(page.locator("#studyPetAvatar")).toHaveJSProperty("naturalWidth", 791);
-    await expect(page.locator("#studyPetStatus")).toHaveText("粮食 0/30");
+    await expect(page.locator("#studyPetStatus")).toHaveText("粮食 0 · 目标 0/4");
 
     await page.locator("#studyPetAvatar").click();
     await expect(page.locator("#studyPetPanel")).toBeVisible();
@@ -51,7 +51,7 @@ test.describe("desktop flows", () => {
     await page.getByRole("button", { name: "显示答案" }).click();
     await page.getByRole("button", { name: "记住了" }).click();
 
-    await expect(page.locator("#studyPetStatus")).toHaveText("粮食 3/30");
+    await expect(page.locator("#studyPetStatus")).toHaveText("粮食 3 · 目标 0/4");
     await expect(page.locator("#studyPetGoals")).toContainText("1 / 30");
   });
 
