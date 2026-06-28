@@ -1521,152 +1521,6 @@ body.is-catalog-open {
   overflow: hidden;
 }
 
-.study-calendar {
-  position: fixed;
-  left: 22px;
-  bottom: 22px;
-  z-index: 8;
-  width: 286px;
-  padding: 10px;
-  border: 1px solid rgba(216, 222, 216, 0.46);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.42);
-  box-shadow: 0 18px 42px rgba(28, 39, 33, 0.08);
-  opacity: 0.38;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  transition: width 160ms ease, background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
-}
-
-.study-calendar:hover,
-.study-calendar:focus-within {
-  border-color: rgba(216, 222, 216, 0.92);
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 18px 42px rgba(28, 39, 33, 0.18);
-  opacity: 1;
-}
-
-.study-calendar.is-collapsed {
-  width: 150px;
-  opacity: 0.32;
-}
-
-.study-calendar-header {
-  display: grid;
-  grid-template-columns: 30px minmax(0, 1fr) 30px 30px;
-  align-items: center;
-  gap: 6px;
-}
-
-.study-calendar.is-collapsed .study-calendar-header {
-  grid-template-columns: minmax(0, 1fr) 30px;
-}
-
-.study-calendar.is-collapsed .study-calendar-icon-button {
-  display: none;
-}
-
-.study-calendar-title,
-.study-calendar-icon-button,
-.study-calendar-toggle {
-  height: 30px;
-  border: 1px solid transparent;
-  border-radius: 6px;
-  background: rgba(238, 242, 237, 0.84);
-  color: var(--ink);
-  font-size: 13px;
-  font-weight: 750;
-}
-
-.study-calendar-title {
-  padding: 0 8px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.study-calendar-icon-button,
-.study-calendar-toggle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  color: var(--accent-strong);
-  font-size: 19px;
-  line-height: 1;
-}
-
-.study-calendar-toggle {
-  font-size: 17px;
-}
-
-.study-calendar-title:hover,
-.study-calendar-icon-button:hover,
-.study-calendar-toggle:hover {
-  border-color: var(--accent);
-  background: var(--accent-soft);
-}
-
-.study-calendar-body {
-  padding-top: 10px;
-}
-
-.study-calendar-weekdays,
-.study-calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 4px;
-}
-
-.study-calendar-weekdays {
-  margin-bottom: 5px;
-  color: var(--muted);
-  font-size: 11px;
-  font-weight: 800;
-  text-align: center;
-}
-
-.study-calendar-day {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  aspect-ratio: 1;
-  min-width: 0;
-  border: 1px solid transparent;
-  border-radius: 6px;
-  background: rgba(245, 246, 242, 0.76);
-  color: var(--ink);
-  font-size: 12px;
-  font-weight: 650;
-}
-
-.study-calendar-day.is-weekend {
-  color: var(--muted);
-}
-
-.study-calendar-day.is-outside-month {
-  opacity: 0.36;
-}
-
-.study-calendar-day.is-today {
-  border-color: #8b1a12;
-  background: var(--bad);
-  color: #fff;
-  font-weight: 850;
-}
-
-.study-calendar-day:hover {
-  border-color: var(--accent);
-  background: var(--accent-soft);
-  color: var(--accent-strong);
-}
-
-.study-calendar-day.is-today:hover {
-  border-color: #8b1a12;
-  background: #8b1a12;
-  color: #fff;
-}
-
 .study-pet {
   position: fixed;
   right: 22px;
@@ -1779,8 +1633,8 @@ body.is-catalog-open {
   position: absolute;
   right: 0;
   bottom: calc(100% + 8px);
-  width: 254px;
-  padding: 12px;
+  width: min(680px, calc(100vw - 32px));
+  padding: 14px;
   border: 1px solid rgba(216, 222, 216, 0.92);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.98);
@@ -1795,6 +1649,163 @@ body.is-catalog-open {
   grid-template-columns: minmax(0, 1fr) 28px;
   gap: 8px;
   align-items: start;
+}
+
+.study-pet-dashboard {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.study-pet-calendar,
+.study-pet-status-panel {
+  min-width: 0;
+}
+
+.study-pet-calendar-header {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) 30px;
+  align-items: center;
+  gap: 6px;
+}
+
+.study-pet-icon-button,
+.study-pet-calendar-title {
+  height: 30px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: rgba(238, 242, 237, 0.84);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.study-pet-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: var(--accent-strong);
+  font-size: 19px;
+  line-height: 1;
+}
+
+.study-pet-calendar-title:hover,
+.study-pet-icon-button:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.study-pet-weekdays,
+.study-pet-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.study-pet-weekdays {
+  margin: 10px 0 5px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.study-pet-calendar-day {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  min-width: 0;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: rgba(245, 246, 242, 0.76);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.study-pet-calendar-day.is-weekend {
+  color: var(--muted);
+}
+
+.study-pet-calendar-day.is-outside-month {
+  opacity: 0.38;
+}
+
+.study-pet-calendar-day.is-today {
+  border-color: var(--bad);
+  color: var(--bad);
+  font-weight: 850;
+}
+
+.study-pet-calendar-day.is-selected {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+.study-pet-calendar-day.has-study::after {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--warn);
+  content: "";
+  transform: translateX(-50%);
+}
+
+.study-pet-calendar-day.is-complete::after {
+  background: var(--good);
+}
+
+.study-pet-calendar-day.is-selected::after {
+  background: #fff;
+}
+
+.study-pet-calendar-day:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+.exam-countdown-card,
+.study-pet-selected-summary {
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfcfa;
+}
+
+.exam-countdown-card span,
+.study-pet-selected-summary span {
+  display: block;
+  color: var(--accent-strong);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.exam-countdown-card strong,
+.study-pet-selected-summary strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+.exam-countdown-card p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.study-pet-selected-summary {
+  margin-top: 10px;
 }
 
 .study-pet-panel-heading span {
@@ -1832,6 +1843,59 @@ body.is-catalog-open {
   display: grid;
   gap: 10px;
   margin-top: 12px;
+}
+
+.study-pet-settings {
+  margin-top: 12px;
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+}
+
+.study-pet-settings summary {
+  color: var(--accent-strong);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.study-pet-settings-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.study-pet-settings label,
+.study-pet-exam-date {
+  display: grid;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.study-pet-settings input {
+  height: 32px;
+  padding: 0 8px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.study-pet-exam-date {
+  margin-top: 10px;
+}
+
+.study-pet-settings-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.study-pet-settings-actions .secondary-button {
+  height: 32px;
+  padding: 0 8px;
+  font-size: 12px;
 }
 
 .study-pet-goal {
@@ -1935,8 +1999,7 @@ body.is-catalog-open {
   .level-list,
   .field,
   .segmented,
-  .memory-filter-panel,
-  .study-calendar {
+  .memory-filter-panel {
     display: none !important;
   }
 
@@ -2198,6 +2261,14 @@ body.is-catalog-open {
   }
 
   .study-pet-panel {
-    width: min(260px, calc(100vw - 20px));
+    width: min(340px, calc(100vw - 20px));
+  }
+
+  .study-pet-dashboard {
+    grid-template-columns: 1fr;
+  }
+
+  .study-pet-settings-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

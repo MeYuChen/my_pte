@@ -7,7 +7,6 @@
 
 const STORAGE_KEY = "pte-we-v2-state";
 const SIDEBAR_STATE_KEY = "pte-we-sidebar-collapsed";
-const CALENDAR_STATE_KEY = "pte-we-calendar-collapsed";
 const MODE_LIMITS = {
   template: 300,
   drill: 0,
@@ -18,11 +17,17 @@ const MODE_LIMITS = {
 const DEFAULT_TEMPLATE_TIMER_MINUTES = 5;
 const MIN_TEMPLATE_TIMER_MINUTES = 1;
 const MAX_TEMPLATE_TIMER_MINUTES = 60;
-const DAILY_GOALS = {
+const DEFAULT_DAILY_GOALS = {
   cards: 30,
   familiar: 1,
   writing: 1,
   minutes: 25
+};
+const DAILY_GOAL_LIMITS = {
+  cards: [5, 200],
+  familiar: [0, 10],
+  writing: [0, 10],
+  minutes: [5, 180]
 };
 const PET_DEFAULT_POSITION = { right: 22, bottom: 96 };
 const PET_FATIGUE_MINUTES = 45;
@@ -308,6 +313,9 @@ persisted.drill ||= {};
 persisted.pet ||= {};
 persisted.pet.daily ||= {};
 persisted.pet.position ||= null;
+persisted.pet.goals = normalizedDailyGoals(persisted.pet.goals);
+persisted.pet.examDate = normalizedDateKey(persisted.pet.examDate) || "";
+persisted.pet.selectedDate = normalizedDateKey(persisted.pet.selectedDate) || todayKey();
 persisted.settings ||= {};
 persisted.settings.templateTimerMinutes = normalizedTemplateTimerMinutes(persisted.settings.templateTimerMinutes);
 
@@ -316,8 +324,7 @@ const state = {
   examType: "single",
   activeArticleId: articles[0]?.id || null,
   sidebarCollapsed: readJson(SIDEBAR_STATE_KEY, false),
-  calendarCollapsed: readJson(CALENDAR_STATE_KEY, false),
-  calendarMonth: startOfMonth(new Date()),
+  calendarMonth: startOfMonth(dateFromKey(persisted.pet.selectedDate)),
   filter: "all",
   memoryFilter: "all",
   articleSourceCollapsed: false,
@@ -439,13 +446,10 @@ const els = {
   examProgress: document.getElementById("examProgress"),
   examInput: document.getElementById("examInput"),
   examResult: document.getElementById("examResult"),
-  studyCalendar: document.getElementById("studyCalendar"),
-  calendarBody: document.getElementById("calendarBody"),
   calendarGrid: document.getElementById("calendarGrid"),
   calendarTodayButton: document.getElementById("calendarTodayButton"),
   calendarPreviousMonthButton: document.getElementById("calendarPreviousMonthButton"),
   calendarNextMonthButton: document.getElementById("calendarNextMonthButton"),
-  calendarToggleButton: document.getElementById("calendarToggleButton"),
   studyPet: document.getElementById("studyPet"),
   studyPetCard: document.getElementById("studyPetCard"),
   studyPetFace: document.getElementById("studyPetFace"),
@@ -455,7 +459,17 @@ const els = {
   studyPetMood: document.getElementById("studyPetMood"),
   studyPetMessage: document.getElementById("studyPetMessage"),
   studyPetGoals: document.getElementById("studyPetGoals"),
-  studyPetCloseButton: document.getElementById("studyPetCloseButton")
+  studyPetCloseButton: document.getElementById("studyPetCloseButton"),
+  selectedStudyDateLabel: document.getElementById("selectedStudyDateLabel"),
+  selectedStudySummary: document.getElementById("selectedStudySummary"),
+  examCountdownCard: document.getElementById("examCountdownCard"),
+  dailyGoalCardsInput: document.getElementById("dailyGoalCardsInput"),
+  dailyGoalFamiliarInput: document.getElementById("dailyGoalFamiliarInput"),
+  dailyGoalWritingInput: document.getElementById("dailyGoalWritingInput"),
+  dailyGoalMinutesInput: document.getElementById("dailyGoalMinutesInput"),
+  resetDailyGoalsButton: document.getElementById("resetDailyGoalsButton"),
+  examDateInput: document.getElementById("examDateInput"),
+  clearExamDateButton: document.getElementById("clearExamDateButton")
 };
 
 bindEvents();
@@ -475,15 +489,22 @@ function bindEvents() {
   });
 
   els.sidebarToggle.addEventListener("click", toggleSidebar);
-  els.calendarToggleButton.addEventListener("click", toggleStudyCalendar);
   els.calendarPreviousMonthButton.addEventListener("click", () => shiftStudyCalendarMonth(-1));
   els.calendarNextMonthButton.addEventListener("click", () => shiftStudyCalendarMonth(1));
   els.calendarTodayButton.addEventListener("click", showCurrentStudyCalendarMonth);
+  els.calendarGrid.addEventListener("click", handleStudyCalendarDayClick);
   els.studyPetCard.addEventListener("click", toggleStudyPetPanel);
   els.studyPetCard.addEventListener("dblclick", resetStudyPetPosition);
   els.studyPetCard.addEventListener("pointerdown", startStudyPetDrag);
   els.studyPetCard.addEventListener("dragstart", (event) => event.preventDefault());
   els.studyPetCloseButton.addEventListener("click", closeStudyPetPanel);
+  els.dailyGoalCardsInput.addEventListener("change", saveDailyGoalSettings);
+  els.dailyGoalFamiliarInput.addEventListener("change", saveDailyGoalSettings);
+  els.dailyGoalWritingInput.addEventListener("change", saveDailyGoalSettings);
+  els.dailyGoalMinutesInput.addEventListener("change", saveDailyGoalSettings);
+  els.resetDailyGoalsButton.addEventListener("click", resetDailyGoalSettings);
+  els.examDateInput.addEventListener("change", saveExamDateSetting);
+  els.clearExamDateButton.addEventListener("click", clearExamDateSetting);
   window.addEventListener("pointermove", moveStudyPet);
   window.addEventListener("pointerup", endStudyPetDrag);
   els.openCatalogButton.addEventListener("click", openCatalog);
@@ -613,53 +634,65 @@ function renderSidebarState() {
   els.sidebarToggle.setAttribute("aria-label", state.sidebarCollapsed ? "展开左侧栏" : "收起左侧栏");
 }
 
-function toggleStudyCalendar() {
-  state.calendarCollapsed = !state.calendarCollapsed;
-  localStorage.setItem(CALENDAR_STATE_KEY, JSON.stringify(state.calendarCollapsed));
-  renderStudyCalendar();
-}
-
 function shiftStudyCalendarMonth(direction) {
   state.calendarMonth = addMonths(state.calendarMonth, direction);
   renderStudyCalendar();
+  renderStudyPet();
 }
 
 function showCurrentStudyCalendarMonth() {
   state.calendarMonth = startOfMonth(new Date());
+  persisted.pet.selectedDate = todayKey();
+  writeState();
   renderStudyCalendar();
+  renderStudyPet();
 }
 
 function renderStudyCalendar() {
-  if (!els.studyCalendar) return;
+  if (!els.calendarGrid) return;
   const month = startOfMonth(state.calendarMonth);
   const today = new Date();
+  const selected = dateFromKey(persisted.pet.selectedDate);
   const monthStartOffset = (month.getDay() + 6) % 7;
   const gridStart = new Date(month);
   gridStart.setDate(month.getDate() - monthStartOffset);
 
-  els.studyCalendar.classList.toggle("is-collapsed", state.calendarCollapsed);
-  els.calendarBody.hidden = state.calendarCollapsed;
   els.calendarTodayButton.textContent = `${month.getFullYear()}年${month.getMonth() + 1}月`;
-  els.calendarToggleButton.textContent = state.calendarCollapsed ? "+" : "−";
-  els.calendarToggleButton.setAttribute("aria-expanded", String(!state.calendarCollapsed));
-  els.calendarToggleButton.setAttribute("aria-label", state.calendarCollapsed ? "展开日历" : "缩小日历");
 
   const days = Array.from({ length: 42 }, (_, index) => {
     const day = new Date(gridStart);
     day.setDate(gridStart.getDate() + index);
+    const key = dateKey(day);
+    const stats = statsForDate(key);
+    const completed = completedDailyGoalCount(stats);
     const button = document.createElement("button");
     button.type = "button";
-    button.className = "study-calendar-day";
-    button.textContent = String(day.getDate());
+    button.className = "study-pet-calendar-day";
+    button.dataset.date = key;
+    button.innerHTML = `<span>${day.getDate()}</span>`;
     button.setAttribute("aria-label", `${day.getFullYear()}年${day.getMonth() + 1}月${day.getDate()}日`);
     button.classList.toggle("is-outside-month", day.getMonth() !== month.getMonth());
     button.classList.toggle("is-weekend", day.getDay() === 0 || day.getDay() === 6);
     button.classList.toggle("is-today", isSameDate(day, today));
+    button.classList.toggle("is-selected", isSameDate(day, selected));
+    button.classList.toggle("has-study", hasStudyActivity(stats));
+    button.classList.toggle("is-complete", completed >= 2);
+    button.classList.toggle("is-partial", hasStudyActivity(stats) && completed < 2);
     if (isSameDate(day, today)) button.setAttribute("aria-current", "date");
     return button;
   });
 
   els.calendarGrid.replaceChildren(...days);
+}
+
+function handleStudyCalendarDayClick(event) {
+  const button = event.target.closest(".study-pet-calendar-day");
+  if (!button) return;
+  persisted.pet.selectedDate = button.dataset.date;
+  state.calendarMonth = startOfMonth(dateFromKey(persisted.pet.selectedDate));
+  writeState();
+  renderStudyCalendar();
+  renderStudyPet();
 }
 
 function toggleStudyPetPanel() {
@@ -719,22 +752,29 @@ function resetStudyPetPosition(event) {
 function renderStudyPet() {
   if (!els.studyPet) return;
   ensureTodayPetStats();
-  const stats = todayPetStats();
+  const todayStats = todayPetStats();
+  const selectedKey = normalizedDateKey(persisted.pet.selectedDate) || todayKey();
+  const selectedStats = statsForDate(selectedKey);
+  const goals = dailyGoals();
   const level = petLevel();
-  const status = petStatus(stats);
+  const status = petStatus(todayStats);
   applyStudyPetPosition(persisted.pet.position);
   els.studyPet.classList.toggle("is-panel-open", state.pet.panelOpen);
   els.studyPetPanel.hidden = !state.pet.panelOpen;
   els.studyPetFace.textContent = status.face;
   els.studyPetTitle.textContent = `Lv${level.level} ${level.label}`;
-  els.studyPetStatus.textContent = `粮食 ${stats.food} · 目标 ${completedDailyGoalCount(stats)}/4`;
+  els.studyPetStatus.textContent = `粮食 ${todayStats.food} · 目标 ${completedDailyGoalCount(todayStats)}/4`;
   els.studyPetMood.textContent = status.mood;
   els.studyPetMessage.textContent = status.message;
+  els.selectedStudyDateLabel.textContent = selectedDateLabel(selectedKey);
+  els.selectedStudySummary.textContent = `目标 ${completedDailyGoalCount(selectedStats)}/4 · 粮食 ${selectedStats.food}`;
+  renderExamCountdown();
+  renderDailyGoalInputs();
   els.studyPetGoals.replaceChildren(
-    petGoalRow("刷卡", stats.cards, DAILY_GOALS.cards),
-    petGoalRow("熟悉新文章", stats.familiar, DAILY_GOALS.familiar),
-    petGoalRow("默写/考核", stats.writing, DAILY_GOALS.writing),
-    petGoalRow("计时学习", stats.minutes, DAILY_GOALS.minutes, "分钟")
+    petGoalRow("刷卡", selectedStats.cards, goals.cards),
+    petGoalRow("熟悉新文章", selectedStats.familiar, goals.familiar),
+    petGoalRow("默写/考核", selectedStats.writing, goals.writing),
+    petGoalRow("计时学习", selectedStats.minutes, goals.minutes, "分钟")
   );
 }
 
@@ -778,13 +818,82 @@ function petGoalRow(label, value, target, suffix = "") {
   return row;
 }
 
+function renderExamCountdown() {
+  const examDate = normalizedDateKey(persisted.pet.examDate);
+  if (!examDate) {
+    els.examCountdownCard.innerHTML = `
+      <span>考试倒计时</span>
+      <strong>未设置</strong>
+      <p>设置考试日期后，宠物会帮你倒计时。</p>
+    `;
+    return;
+  }
+  const days = daysUntil(examDate);
+  const text = days > 0 ? `还有 ${days} 天` : days === 0 ? "就是今天" : `已过去 ${Math.abs(days)} 天`;
+  els.examCountdownCard.innerHTML = `
+    <span>考试倒计时</span>
+    <strong>${escapeHtml(text)}</strong>
+    <p>${escapeHtml(examDate)}</p>
+  `;
+}
+
+function renderDailyGoalInputs() {
+  const goals = dailyGoals();
+  els.dailyGoalCardsInput.value = String(goals.cards);
+  els.dailyGoalFamiliarInput.value = String(goals.familiar);
+  els.dailyGoalWritingInput.value = String(goals.writing);
+  els.dailyGoalMinutesInput.value = String(goals.minutes);
+  els.examDateInput.value = normalizedDateKey(persisted.pet.examDate) || "";
+}
+
+function saveDailyGoalSettings() {
+  persisted.pet.goals = normalizedDailyGoals({
+    cards: els.dailyGoalCardsInput.value,
+    familiar: els.dailyGoalFamiliarInput.value,
+    writing: els.dailyGoalWritingInput.value,
+    minutes: els.dailyGoalMinutesInput.value
+  });
+  writeState();
+  renderStudyCalendar();
+  renderStudyPet();
+}
+
+function resetDailyGoalSettings() {
+  persisted.pet.goals = { ...DEFAULT_DAILY_GOALS };
+  writeState();
+  renderStudyCalendar();
+  renderStudyPet();
+}
+
+function saveExamDateSetting() {
+  persisted.pet.examDate = normalizedDateKey(els.examDateInput.value) || "";
+  writeState();
+  renderStudyPet();
+}
+
+function clearExamDateSetting() {
+  persisted.pet.examDate = "";
+  writeState();
+  renderStudyPet();
+}
+
+function dailyGoals() {
+  persisted.pet.goals = normalizedDailyGoals(persisted.pet.goals);
+  return persisted.pet.goals;
+}
+
 function completedDailyGoalCount(stats) {
+  const goals = dailyGoals();
   return [
-    stats.cards >= DAILY_GOALS.cards,
-    stats.familiar >= DAILY_GOALS.familiar,
-    stats.writing >= DAILY_GOALS.writing,
-    stats.minutes >= DAILY_GOALS.minutes
+    goalReached(stats.cards, goals.cards),
+    goalReached(stats.familiar, goals.familiar),
+    goalReached(stats.writing, goals.writing),
+    goalReached(stats.minutes, goals.minutes)
   ].filter(Boolean).length;
+}
+
+function goalReached(value, target) {
+  return target <= 0 || value >= target;
 }
 
 function recordDrillPetProgress(cardId, grade) {
@@ -833,6 +942,7 @@ function recordPetActivity() {
   stats.firstActivityAt ||= stats.lastActivityAt;
   maybeShowPetFatigue(stats, now);
   writeState();
+  renderStudyCalendar();
   renderStudyPet();
 }
 
@@ -869,6 +979,48 @@ function ensureTodayPetStats() {
   return persisted.pet.daily[key];
 }
 
+function statsForDate(key) {
+  const normalized = normalizedDateKey(key);
+  if (!normalized) return emptyPetStats();
+  return persisted.pet.daily[normalized] || emptyPetStats();
+}
+
+function emptyPetStats() {
+  return {
+    cards: 0,
+    familiar: 0,
+    writing: 0,
+    minutes: 0,
+    food: 0,
+    reviewedCards: {},
+    writingKeys: {},
+    firstActivityAt: null,
+    lastActivityAt: null,
+    lastFatiguePromptAt: null
+  };
+}
+
+function hasStudyActivity(stats) {
+  return Boolean(stats.food || stats.cards || stats.familiar || stats.writing || stats.minutes);
+}
+
+function normalizedDailyGoals(value = {}) {
+  return {
+    cards: normalizedGoalNumber(value.cards, "cards"),
+    familiar: normalizedGoalNumber(value.familiar, "familiar"),
+    writing: normalizedGoalNumber(value.writing, "writing"),
+    minutes: normalizedGoalNumber(value.minutes, "minutes")
+  };
+}
+
+function normalizedGoalNumber(value, key) {
+  const [min, max] = DAILY_GOAL_LIMITS[key];
+  const fallback = DEFAULT_DAILY_GOALS[key];
+  const parsed = Number.parseInt(value, 10);
+  if (!Number.isFinite(parsed)) return fallback;
+  return clamp(parsed, min, max);
+}
+
 function petLevel() {
   const mastered = articles.filter((article) => masteryLevel(getProgress(article.id)).key === "skilled").length;
   if (mastered >= 30) return { level: 4, label: "考前搭子" };
@@ -889,10 +1041,11 @@ function petStatus(stats) {
 }
 
 function nextPetGoalMessage(stats) {
-  if (stats.cards < DAILY_GOALS.cards) return `还差 ${DAILY_GOALS.cards - stats.cards} 张卡，今天就更稳。`;
-  if (stats.familiar < DAILY_GOALS.familiar) return "再把 1 篇推进到熟悉，宠物就长经验。";
-  if (stats.writing < DAILY_GOALS.writing) return "补 1 次默写/考核，今天质量就够了。";
-  if (stats.minutes < DAILY_GOALS.minutes) return `再计时学习 ${DAILY_GOALS.minutes - stats.minutes} 分钟。`;
+  const goals = dailyGoals();
+  if (!goalReached(stats.cards, goals.cards)) return `还差 ${goals.cards - stats.cards} 张卡，今天就更稳。`;
+  if (!goalReached(stats.familiar, goals.familiar)) return "再把 1 篇推进到熟悉，宠物就长经验。";
+  if (!goalReached(stats.writing, goals.writing)) return "补 1 次默写/考核，今天质量就够了。";
+  if (!goalReached(stats.minutes, goals.minutes)) return `再计时学习 ${goals.minutes - stats.minutes} 分钟。`;
   return "今天已经够了，可以收工。";
 }
 
@@ -2792,12 +2945,44 @@ function isSameDate(first, second) {
 }
 
 function todayKey() {
-  const date = new Date();
+  return dateKey(new Date());
+}
+
+function dateKey(date) {
   return [
     date.getFullYear(),
     String(date.getMonth() + 1).padStart(2, "0"),
     String(date.getDate()).padStart(2, "0")
   ].join("-");
+}
+
+function normalizedDateKey(value) {
+  if (!value) return "";
+  const match = String(value).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) return "";
+  const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+  if (Number.isNaN(date.getTime())) return "";
+  return dateKey(date) === value ? value : "";
+}
+
+function dateFromKey(value) {
+  const normalized = normalizedDateKey(value) || todayKey();
+  const [year, month, day] = normalized.split("-").map(Number);
+  return new Date(year, month - 1, day);
+}
+
+function selectedDateLabel(key) {
+  const date = dateFromKey(key);
+  const today = new Date();
+  if (isSameDate(date, today)) return "今天";
+  return `${date.getMonth() + 1}月${date.getDate()}日`;
+}
+
+function daysUntil(key) {
+  const target = dateFromKey(key);
+  const today = new Date();
+  const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  return Math.round((target.getTime() - todayStart.getTime()) / 86400000);
 }
 
 function readJson(key, fallback) {

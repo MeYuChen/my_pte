@@ -13,25 +13,29 @@ async function openFresh(page) {
 test.describe("desktop flows", () => {
   test.skip(({ isMobile }) => isMobile, "desktop-only behavior");
 
-  test("desktop floating calendar highlights today and can collapse", async ({ page }) => {
+  test("desktop pet dashboard shows calendar, exam countdown and editable goals", async ({ page }) => {
     await openFresh(page);
 
     const today = await page.evaluate(() => ({
       day: new Date().getDate(),
       monthTitle: `${new Date().getFullYear()}年${new Date().getMonth() + 1}月`
     }));
-    const calendar = page.locator("#studyCalendar");
 
-    await expect(calendar).toBeVisible();
+    await page.locator("#studyPetAvatar").click();
+    await expect(page.locator("#studyPetPanel")).toBeVisible();
     await expect(page.locator("#calendarTodayButton")).toHaveText(today.monthTitle);
-    await expect(page.locator(".study-calendar-day.is-today")).toHaveText(String(today.day));
+    await expect(page.locator(".study-pet-calendar-day.is-today")).toContainText(String(today.day));
+    await expect(page.locator("#selectedStudyDateLabel")).toHaveText("今天");
+    await expect(page.locator("#examCountdownCard")).toContainText("未设置");
 
-    await page.locator("#calendarToggleButton").click();
-    await expect(calendar).toHaveClass(/is-collapsed/);
-    await expect(page.locator("#calendarBody")).toBeHidden();
+    await page.getByText("目标与考试设置").click();
+    await page.locator("#examDateInput").fill("2026-07-20");
+    await page.locator("#examDateInput").blur();
+    await expect(page.locator("#examCountdownCard")).toContainText("2026-07-20");
 
-    await page.reload();
-    await expect(calendar).toHaveClass(/is-collapsed/);
+    await page.locator("#dailyGoalCardsInput").fill("12");
+    await page.locator("#dailyGoalCardsInput").blur();
+    await expect(page.locator("#studyPetGoals")).toContainText("0 / 12");
   });
 
   test("desktop pet tracks study goals from real actions", async ({ page }) => {
@@ -85,12 +89,6 @@ test.describe("desktop flows", () => {
 
 test.describe("mobile flows", () => {
   test.skip(({ isMobile }) => !isMobile, "mobile-only behavior");
-
-  test("mobile hides the floating calendar", async ({ page }) => {
-    await openFresh(page);
-
-    await expect(page.locator("#studyCalendar")).toBeHidden();
-  });
 
   test("mobile catalog filters by category and starts from a selected article", async ({ page }, testInfo) => {
     await openFresh(page);
