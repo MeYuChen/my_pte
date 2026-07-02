@@ -1,0 +1,37 @@
+[
+  {
+    "key": "gurully",
+    "name": "Gurully",
+    "url": "https://www.gurully.com/blog/most-repeated-pte-write-from-dictation-questions/",
+    "weight": 4,
+    "extract": ["transcript"]
+  },
+  {
+    "key": "goarno",
+    "name": "GoArno",
+    "url": "https://goarno.io/blog/write-from-dictation-practice-questions-with-answers-pte-essential-questions/",
+    "weight": 4,
+    "extract": ["answer", "numbered"]
+  },
+  {
+    "key": "languageacademy",
+    "name": "LanguageAcademy",
+    "url": "https://www.languageacademy.com.au/blog/pte-write-from-dictation-2026/",
+    "weight": 3,
+    "extract": ["numbered", "sentence-lines"]
+  },
+  {
+    "key": "sumlingo",
+    "name": "Sumlingo",
+    "url": "https://sumlingo.com/blog/most-common-write-from-dictation-pte-questions/",
+    "weight": 2,
+    "extract": ["numbered", "sentence-lines"]
+  },
+  {
+    "key": "79score",
+    "name": "79Score",
+    "url": "https://www.79score.com/blog/pte-write-from-dictation/",
+    "weight": 2,
+    "extract": ["transcript", "answer", "numbered"]
+  }
+]

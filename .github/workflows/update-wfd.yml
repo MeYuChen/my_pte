@@ -1,0 +1,30 @@
+name: Update WFD Data
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "20 19 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  update-wfd:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm run update:wfd
+      - name: Commit updated WFD data
+        run: |
+          if git diff --quiet -- wfd-data.js; then
+            echo "No WFD data changes."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add wfd-data.js
+          git commit -m "Update WFD data"
+          git push

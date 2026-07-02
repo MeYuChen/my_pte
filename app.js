@@ -188,6 +188,12 @@ const MEMORY_FILTERS = [
 
 const ARTICLE_TRANSLATIONS = window.WE_TRANSLATIONS || {};
 const LEARNING_PATHS = window.WE_LEARNING_PATHS || {};
+const DEFAULT_WFD_DATA = window.WFD_DATA || {};
+const DEFAULT_WFD_GENERATED_AT = DEFAULT_WFD_DATA.generatedAt || "";
+const DEFAULT_WFD_ITEMS = normalizeWfdItems(DEFAULT_WFD_DATA.items || []).map((item) => ({
+  ...item,
+  origin: "builtin"
+}));
 
 const ARTICLE_SLOT_PATTERNS = {
   introduction: [
@@ -312,11 +318,12 @@ persisted.drafts ||= {};
 persisted.examDrafts ||= {};
 persisted.drill ||= {};
 persisted.wfd ||= {};
-persisted.wfd.items = normalizeWfdItems(persisted.wfd.items || []);
+persisted.wfd.items = seededWfdItems(persisted.wfd.items || []);
 persisted.wfd.progress ||= {};
 persisted.wfd.index = normalizeWfdIndex(persisted.wfd.index, persisted.wfd.items.length);
 persisted.wfd.syncUrl ||= "";
 persisted.wfd.lastSyncedAt ||= "";
+persisted.wfd.seedGeneratedAt = DEFAULT_WFD_GENERATED_AT;
 persisted.pet ||= {};
 persisted.pet.daily ||= {};
 persisted.pet.position ||= null;
@@ -1824,7 +1831,8 @@ function renderWfd() {
   persisted.wfd.index = normalizeWfdIndex(persisted.wfd.index, items.length);
   const item = currentWfdItem();
   const mastered = items.filter((entry) => wfdProgress(entry.id).mastered).length;
-  els.wfdSummary.textContent = `${items.length} 句候选高频 · ${mastered} 句已掌握`;
+  const generated = DEFAULT_WFD_GENERATED_AT ? ` · 更新 ${formatDate(DEFAULT_WFD_GENERATED_AT)}` : "";
+  els.wfdSummary.textContent = `${items.length} 句候选高频 · ${mastered} 句已掌握${generated}`;
   els.wfdSyncUrlInput.value = persisted.wfd.syncUrl || "";
   els.wfdSyncStatus.textContent = persisted.wfd.lastSyncedAt
     ? `上次同步 ${formatDateTime(persisted.wfd.lastSyncedAt)}`
@@ -1845,7 +1853,7 @@ function renderWfd() {
     els.wfdResult.innerHTML = `
       <div class="wfd-empty">
         <strong>还没有 WFD 题库</strong>
-        <p>从公开可用或你已授权的来源整理句子后，粘贴到右侧导入框。</p>
+        <p>自动更新源暂时没有生成数据；可以稍后刷新，或先用同步源补充。</p>
       </div>
     `;
     return;
@@ -2019,7 +2027,7 @@ async function syncWfdFromUrl() {
 }
 
 function clearWfdBank() {
-  persisted.wfd.items = [];
+  persisted.wfd.items = seededWfdItems([]);
   persisted.wfd.progress = {};
   persisted.wfd.index = 0;
   state.wfd.answerVisible = false;
@@ -2036,7 +2044,7 @@ function parseWfdImport(raw) {
   return text
     .split(/\n+/)
     .map((line) => line.replace(/^\s*\d+[\.)、-]\s*/, "").trim())
-    .map((sentence) => normalizeWfdItem({ sentence, sources: ["manual"] }))
+    .map((sentence) => normalizeWfdItem({ sentence, sources: ["manual"], origin: "custom" }))
     .filter(Boolean);
 }
 
@@ -2044,10 +2052,27 @@ function parseWfdJson(text) {
   try {
     const parsed = JSON.parse(text);
     const list = Array.isArray(parsed) ? parsed : Array.isArray(parsed.items) ? parsed.items : [];
-    return normalizeWfdItems(list);
+    return normalizeWfdItems(list.map((item) => (
+      typeof item === "string" ? { sentence: item, origin: "custom" } : { ...item, origin: "custom" }
+    )));
   } catch {
     return [];
   }
+}
+
+function seededWfdItems(items) {
+  const customItems = normalizeWfdItems(items).filter((item) => item.origin === "custom");
+  return mergeWfdCatalogItems(DEFAULT_WFD_ITEMS, customItems);
+}
+
+function mergeWfdCatalogItems(primary, secondary) {
+  const merged = new Map();
+  primary.forEach((item) => merged.set(item.id, item));
+  secondary.forEach((item) => {
+    const previous = merged.get(item.id);
+    merged.set(item.id, previous ? mergeWfdItem(previous, item) : item);
+  });
+  return [...merged.values()];
 }
 
 function mergeWfdItems(items, { replace }) {
@@ -2069,6 +2094,9 @@ function mergeWfdItem(previous, next) {
     sentence: previous.sentence || next.sentence,
     audio: previous.audio || next.audio || "",
     sources: [...new Set([...(previous.sources || []), ...(next.sources || [])])],
+    sourceCount: Math.max(previous.sourceCount || 0, next.sourceCount || 0),
+    priorityScore: Math.max(previous.priorityScore || 0, next.priorityScore || 0),
+    origin: previous.origin === "custom" || next.origin === "custom" ? "custom" : "builtin",
     updatedAt: next.updatedAt || previous.updatedAt || ""
   };
 }
@@ -2097,6 +2125,9 @@ function normalizeWfdItem(item) {
     sentence,
     sources: sources.map((source) => String(source).trim()).filter(Boolean),
     audio: typeof item?.audio === "string" ? item.audio.trim() : "",
+    sourceCount: Number.isFinite(Number(item?.sourceCount)) ? Number(item.sourceCount) : sources.length,
+    priorityScore: Number.isFinite(Number(item?.priorityScore)) ? Number(item.priorityScore) : 0,
+    origin: item?.origin === "custom" || sources.includes("manual") ? "custom" : "builtin",
     updatedAt: typeof item?.updatedAt === "string" ? item.updatedAt : ""
   };
 }
@@ -3442,6 +3473,12 @@ function formatDateTime(value) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "";
   return `${date.getMonth() + 1}月${date.getDate()}日 ${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+}
+
+function formatDate(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  return `${date.getMonth() + 1}月${date.getDate()}日`;
 }
 
 function readJson(key, fallback) {

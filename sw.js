@@ -1,4 +1,4 @@
-const CACHE_NAME = "pte-we-static-v19";
+const CACHE_NAME = "pte-we-static-v20";
 const IMAGE_CACHE_NAME = "pte-we-images-v5";
 const STATIC_ASSETS = [
   "./",
@@ -7,6 +7,7 @@ const STATIC_ASSETS = [
   "./practice-data.js",
   "./translations.js",
   "./learning-paths.js",
+  "./wfd-data.js",
   "./app.js",
   "./images/pet/study-pet.png"
 ];

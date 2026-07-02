@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "update:wfd": "node scripts/update-wfd-data.js",
     "test": "playwright test",
     "test:headed": "playwright test --headed"
   },
