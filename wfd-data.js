@@ -1,8 +1,8 @@
 window.WFD_DATA = {
   "version": 1,
-  "generatedAt": "2026-07-02T20:38:04.856Z",
+  "generatedAt": "2026-07-03T20:33:48.819Z",
   "sourceCount": 5,
-  "candidateCount": 286,
+  "candidateCount": 233,
   "coreItemLimit": 189,
   "itemCount": 189,
   "sources": [
@@ -23,25 +23,24 @@ window.WFD_DATA = {
     },
     {
       "source": "Sumlingo",
-      "ok": true,
-      "count": 52
+      "ok": false,
+      "error": "fetch failed"
     },
     {
       "source": "79Score",
-      "ok": true,
-      "count": 11
+      "ok": false,
+      "error": "HTTP 403"
     }
   ],
   "items": [
     {
       "sentence": "Formal conclusions could be established through rigorous experiments.",
       "sources": [
-        "79Score",
         "Gurully",
         "LanguageAcademy"
       ],
-      "sourceCount": 3,
-      "priorityScore": 39,
+      "sourceCount": 2,
+      "priorityScore": 27,
       "audio": "https://www.gurully.com/blog/wp-content/uploads/2025/04/WFD_AC_0005-1.mp3?_=85"
     },
     {
@@ -63,96 +62,6 @@ window.WFD_DATA = {
       "sourceCount": 2,
       "priorityScore": 27,
       "audio": "https://www.gurully.com/blog/wp-content/uploads/2025/04/WFD_AC_0007-1.mp3"
-    },
-    {
-      "sentence": "A new article was published regarding the university last week.",
-      "sources": [
-        "79Score",
-        "Gurully"
-      ],
-      "sourceCount": 2,
-      "priorityScore": 26,
-      "audio": "https://www.gurully.com/blog/wp-content/uploads/2025/04/WFD_AC_0003-1.mp3"
-    },
-    {
-      "sentence": "Gravity is the force that attracts two bodies toward one another.",
-      "sources": [
-        "79Score",
-        "Gurully"
-      ],
-      "sourceCount": 2,
-      "priorityScore": 26,
-      "audio": "https://www.gurully.com/blog/wp-content/uploads/2025/04/WFD_AC_0001-2.mp3"
-    },
-    {
-      "sentence": "Many different conferences offer opportunities for volunteer work.",
-      "sources": [
-        "79Score",
-        "Gurully"
-      ],
-      "sourceCount": 2,
-      "priorityScore": 26,
-      "audio": "https://www.gurully.com/blog/wp-content/uploads/2025/04/WFD_AC_0002-1.mp3?_=82"
-    },
-    {
-      "sentence": "Population has a sharp rise in the recent twenty years.",
-      "sources": [
-        "79Score",
-        "Gurully"
-      ],
-      "sourceCount": 2,
-      "priorityScore": 26,
-      "audio": "https://www.gurully.com/blog/wp-content/uploads/2025/04/WFD_AC_0004-1.mp3"
-    },
-    {
-      "sentence": "Social psychology is concerned with the understanding of human behavior.",
-      "sources": [
-        "79Score",
-        "Gurully"
-      ],
-      "sourceCount": 2,
-      "priorityScore": 26,
-      "audio": "https://www.gurully.com/blog/wp-content/uploads/2025/04/WFD_AC_0005-1.mp3"
-    },
-    {
-      "sentence": "Stories often contain messages in our life.",
-      "sources": [
-        "79Score",
-        "Gurully"
-      ],
-      "sourceCount": 2,
-      "priorityScore": 26,
-      "audio": "https://www.gurully.com/blog/wp-content/uploads/2025/04/WFD_AC_0003-1.mp3?_=83"
-    },
-    {
-      "sentence": "The author expressed an idea that modern readers inevitably cannot accept.",
-      "sources": [
-        "79Score",
-        "Gurully"
-      ],
-      "sourceCount": 2,
-      "priorityScore": 26,
-      "audio": "https://www.gurully.com/blog/wp-content/uploads/2025/04/WFD_AC_0001-2.mp3?_=81"
-    },
-    {
-      "sentence": "The notification will not be received until the following week.",
-      "sources": [
-        "79Score",
-        "Gurully"
-      ],
-      "sourceCount": 2,
-      "priorityScore": 26,
-      "audio": "https://www.gurully.com/blog/wp-content/uploads/2025/04/WFD_AC_0004-1.mp3?_=84"
-    },
-    {
-      "sentence": "You are required to attend lectures and write weekly reports.",
-      "sources": [
-        "79Score",
-        "Gurully"
-      ],
-      "sourceCount": 2,
-      "priorityScore": 26,
-      "audio": "https://www.gurully.com/blog/wp-content/uploads/2025/04/WFD_AC_0002-1.mp3"
     },
     {
       "sentence": "A balanced schedule allows time for both study and rest.",
@@ -189,6 +98,15 @@ window.WFD_DATA = {
       "sourceCount": 1,
       "priorityScore": 14,
       "audio": ""
+    },
+    {
+      "sentence": "A new article was published regarding the university last week.",
+      "sources": [
+        "Gurully"
+      ],
+      "sourceCount": 1,
+      "priorityScore": 14,
+      "audio": "https://www.gurully.com/blog/wp-content/uploads/2025/04/WFD_AC_0003-1.mp3"
     },
     {
       "sentence": "Access the lecture slides and notes online after the class ends.",
@@ -479,6 +397,15 @@ window.WFD_DATA = {
       "audio": ""
     },
     {
+      "sentence": "Gravity is the force that attracts two bodies toward one another.",
+      "sources": [
+        "Gurully"
+      ],
+      "sourceCount": 1,
+      "priorityScore": 14,
+      "audio": "https://www.gurully.com/blog/wp-content/uploads/2025/04/WFD_AC_0001-2.mp3"
+    },
+    {
       "sentence": "Houses were built for workers near the factories.",
       "sources": [
         "Gurully"
@@ -522,6 +449,15 @@ window.WFD_DATA = {
       "sourceCount": 1,
       "priorityScore": 14,
       "audio": "https://www.gurully.com/blog/wp-content/uploads/2025/04/WFD_AC_0017.mp3"
+    },
+    {
+      "sentence": "Many different conferences offer opportunities for volunteer work.",
+      "sources": [
+        "Gurully"
+      ],
+      "sourceCount": 1,
+      "priorityScore": 14,
+      "audio": "https://www.gurully.com/blog/wp-content/uploads/2025/04/WFD_AC_0002-1.mp3?_=82"
     },
     {
       "sentence": "Mathematics instructors are presently encountering certain challenges in their teaching roles.",
@@ -650,6 +586,15 @@ window.WFD_DATA = {
       "audio": ""
     },
     {
+      "sentence": "Population has a sharp rise in the recent twenty years.",
+      "sources": [
+        "Gurully"
+      ],
+      "sourceCount": 1,
+      "priorityScore": 14,
+      "audio": "https://www.gurully.com/blog/wp-content/uploads/2025/04/WFD_AC_0004-1.mp3"
+    },
+    {
       "sentence": "Practical experience is a vital part of the engineering course.",
       "sources": [
         "GoArno"
@@ -740,6 +685,15 @@ window.WFD_DATA = {
       "audio": ""
     },
     {
+      "sentence": "Social psychology is concerned with the understanding of human behavior.",
+      "sources": [
+        "Gurully"
+      ],
+      "sourceCount": 1,
+      "priorityScore": 14,
+      "audio": "https://www.gurully.com/blog/wp-content/uploads/2025/04/WFD_AC_0005-1.mp3"
+    },
+    {
       "sentence": "Some old system features have been integrated into the new one.",
       "sources": [
         "Gurully"
@@ -756,6 +710,15 @@ window.WFD_DATA = {
       "sourceCount": 1,
       "priorityScore": 14,
       "audio": ""
+    },
+    {
+      "sentence": "Stories often contain messages in our life.",
+      "sources": [
+        "Gurully"
+      ],
+      "sourceCount": 1,
+      "priorityScore": 14,
+      "audio": "https://www.gurully.com/blog/wp-content/uploads/2025/04/WFD_AC_0003-1.mp3?_=83"
     },
     {
       "sentence": "Structural stability is a key concept in civil engineering.",
@@ -846,6 +809,15 @@ window.WFD_DATA = {
       "sourceCount": 1,
       "priorityScore": 14,
       "audio": "https://www.gurully.com/blog/wp-content/uploads/2025/04/WFD_AC_0038.mp3?_=118"
+    },
+    {
+      "sentence": "The author expressed an idea that modern readers inevitably cannot accept.",
+      "sources": [
+        "Gurully"
+      ],
+      "sourceCount": 1,
+      "priorityScore": 14,
+      "audio": "https://www.gurully.com/blog/wp-content/uploads/2025/04/WFD_AC_0001-2.mp3?_=81"
     },
     {
       "sentence": "The best student has an opportunity to acquire a scholarship.",
@@ -999,6 +971,15 @@ window.WFD_DATA = {
       "sourceCount": 1,
       "priorityScore": 14,
       "audio": ""
+    },
+    {
+      "sentence": "The notification will not be received until the following week.",
+      "sources": [
+        "Gurully"
+      ],
+      "sourceCount": 1,
+      "priorityScore": 14,
+      "audio": "https://www.gurully.com/blog/wp-content/uploads/2025/04/WFD_AC_0004-1.mp3?_=84"
     },
     {
       "sentence": "The professor will discuss the project details in the next lecture.",
@@ -1179,6 +1160,15 @@ window.WFD_DATA = {
       "sourceCount": 1,
       "priorityScore": 14,
       "audio": "https://www.gurully.com/blog/wp-content/uploads/2025/04/WFD_AC_0012.mp3?_=92"
+    },
+    {
+      "sentence": "You are required to attend lectures and write weekly reports.",
+      "sources": [
+        "Gurully"
+      ],
+      "sourceCount": 1,
+      "priorityScore": 14,
+      "audio": "https://www.gurully.com/blog/wp-content/uploads/2025/04/WFD_AC_0002-1.mp3"
     },
     {
       "sentence": "Zoo animals behave differently than their counterparts in the wild.",
