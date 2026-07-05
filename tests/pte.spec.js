@@ -110,6 +110,18 @@ test.describe("desktop flows", () => {
     await page.locator(".level-item").last().click();
     await expect(page.locator(".level-item.is-active .level-item-meta")).toContainText("练过 1 次");
   });
+
+  test("desktop exam accepts four paragraphs separated by single line breaks", async ({ page }) => {
+    await openFresh(page);
+
+    const essay = await page.evaluate(() => window.WE_DATA.articles[0].paragraphs.join("\n"));
+    await page.getByRole("button", { name: "考核" }).click();
+    await page.locator("#examInput").fill(essay);
+    await page.locator("#submitExamButton").click();
+
+    await expect(page.locator("#examResult")).toContainText("满分通过");
+    await expect(page.locator("#examResult")).not.toContainText("段落不匹配");
+  });
 });
 
 test.describe("mobile flows", () => {

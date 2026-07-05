@@ -2562,7 +2562,7 @@ function submitCompositeExam() {
 
 function gradeEssay(article, value) {
   const expectedParagraphs = article.paragraphs.map(normalizeForExact);
-  const actualParagraphs = splitEssayInput(value);
+  const actualParagraphs = splitEssayInput(value, expectedParagraphs.length);
   const diffs = [];
   const max = Math.max(expectedParagraphs.length, actualParagraphs.length);
 
@@ -3294,11 +3294,37 @@ function inputKey(itemId, moduleKey, index) {
   return `${itemId}::${scope}::${moduleKey}::${index}`;
 }
 
-function splitEssayInput(value) {
+function splitEssayInput(value, expectedCount = 4) {
+  const normalized = String(value || "")
+    .replace(/\r\n?/g, "\n")
+    .trim();
+  if (!normalized) return [];
+
+  const candidates = [
+    splitAndClean(normalized, /\n\s*\n+/),
+    splitAndClean(normalized, /\n+/),
+    splitByEssayMarkers(normalized)
+  ].filter((items) => items.length);
+
+  const exact = candidates.find((items) => items.length === expectedCount);
+  if (exact) return exact;
+
+  return candidates.sort((first, second) => (
+    Math.abs(first.length - expectedCount) - Math.abs(second.length - expectedCount) ||
+    second.length - first.length
+  ))[0];
+}
+
+function splitAndClean(value, separator) {
   return value
-    .split(/\n\s*\n/)
+    .split(separator)
     .map(normalizeForExact)
     .filter(Boolean);
+}
+
+function splitByEssayMarkers(value) {
+  const markerPattern = /\s+(?=(?:To begin with|In addition|However|To sum up),)/g;
+  return splitAndClean(value.replace(markerPattern, "\n"), /\n+/);
 }
 
 function normalizeForExact(value) {
