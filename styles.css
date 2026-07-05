@@ -1220,6 +1220,23 @@ textarea:focus {
   text-decoration-thickness: 2px;
 }
 
+.diff-token.whitespace {
+  display: inline-flex;
+  align-items: center;
+  min-height: 20px;
+  margin: 0 2px;
+  padding: 1px 5px;
+  border: 1px dashed #9b7800;
+  border-radius: 4px;
+  background: #fff3a6;
+  color: #5c4200;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1.2;
+  text-decoration: none;
+  vertical-align: baseline;
+}
+
 .muted-token {
   color: var(--muted);
 }

@@ -122,6 +122,19 @@ test.describe("desktop flows", () => {
     await expect(page.locator("#examResult")).toContainText("满分通过");
     await expect(page.locator("#examResult")).not.toContainText("段落不匹配");
   });
+
+  test("desktop exam diff makes extra spaces visible", async ({ page }) => {
+    await openFresh(page);
+
+    const essay = await page.evaluate(() => (
+      window.WE_DATA.articles[0].paragraphs.join("\n").replace("The issue", "The  issue")
+    ));
+    await page.getByRole("button", { name: "考核" }).click();
+    await page.locator("#examInput").fill(essay);
+    await page.locator("#submitExamButton").click();
+
+    await expect(page.locator("#examResult")).toContainText("空格×2");
+  });
 });
 
 test.describe("mobile flows", () => {

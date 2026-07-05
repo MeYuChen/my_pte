@@ -3122,7 +3122,7 @@ function examDiffHtml(diff) {
 }
 
 function diffTokens(value) {
-  return String(value || "").match(/[A-Za-z0-9']+|[^\sA-Za-z0-9']/g) || [];
+  return String(value || "").match(/[A-Za-z0-9']+|\s+|[^\sA-Za-z0-9']/g) || [];
 }
 
 function tokenDiff(expectedTokens, actualTokens) {
@@ -3164,6 +3164,7 @@ function tokenDiff(expectedTokens, actualTokens) {
 function renderDiffTokens(tokens, type) {
   return tokens.map((token, index) => {
     const prefix = index > 0 && shouldSeparate(tokens[index - 1].value, token.value) ? " " : "";
+    if (isWhitespaceToken(token.value)) return renderWhitespaceDiffToken(token, type);
     const className = token.status === "same"
       ? "diff-token"
       : `diff-token ${type === "actual" ? "extra" : "missing"}`;
@@ -3171,12 +3172,24 @@ function renderDiffTokens(tokens, type) {
   }).join("");
 }
 
+function renderWhitespaceDiffToken(token, type) {
+  if (token.status === "same") return escapeHtml(token.value);
+  const count = token.value.length;
+  const className = `diff-token whitespace ${type === "actual" ? "extra" : "missing"}`;
+  return `<mark class="${className}" title="${type === "actual" ? "多余空格" : "缺少空格"}">空格×${count}</mark>`;
+}
+
 function shouldSeparate(previous, current) {
+  if (isWhitespaceToken(previous) || isWhitespaceToken(current)) return false;
   return isWordToken(previous) && isWordToken(current);
 }
 
 function isWordToken(token) {
   return /^[A-Za-z0-9']+$/.test(token);
+}
+
+function isWhitespaceToken(token) {
+  return /^\s+$/.test(token);
 }
 
 function getActiveArticle() {
