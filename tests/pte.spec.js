@@ -179,6 +179,21 @@ test.describe("shared flows", () => {
     );
   });
 
+  test("article translation is hidden by default and can be toggled", async ({ page }) => {
+    await openFresh(page);
+
+    await page.getByRole("button", { name: "文章论点" }).click();
+    await expect(page.locator("#articleSourcePanel")).toBeVisible();
+    await expect(page.locator(".article-source-row.zh-row").first()).toBeHidden();
+
+    await page.getByRole("button", { name: "显示中文" }).click();
+    await expect(page.locator(".article-source-row.zh-row").first()).toBeVisible();
+    await expect(page.locator(".article-source-row.zh-row").first()).toContainText("关于政府是否应该改善公共交通");
+
+    await page.getByRole("button", { name: "隐藏中文" }).click();
+    await expect(page.locator(".article-source-row.zh-row").first()).toBeHidden();
+  });
+
   test("template timer can be customized and persisted", async ({ page }) => {
     await openFresh(page);
 

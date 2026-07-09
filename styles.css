@@ -660,6 +660,13 @@ textarea:focus {
   line-height: 1.4;
 }
 
+.article-source-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
 .article-source-body {
   padding: 16px 18px 18px;
   background: #fffdf7;
@@ -712,6 +719,10 @@ textarea:focus {
   color: #3d4a45;
   font-size: 15px;
   font-weight: 450;
+}
+
+.zh-row[hidden] {
+  display: none;
 }
 
 .core-sentence-highlight {
@@ -2189,6 +2200,17 @@ body.is-catalog-open {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
     margin: -4px 0 12px;
+  }
+
+  .article-source-toolbar {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .article-source-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .prompt-panel,

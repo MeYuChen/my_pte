@@ -343,6 +343,7 @@ const state = {
   filter: "all",
   memoryFilter: "all",
   articleSourceCollapsed: false,
+  articleTranslationVisible: false,
   imageCollapsed: false,
   search: "",
   answersVisible: false,
@@ -435,6 +436,7 @@ const els = {
   articleSourcePanel: document.getElementById("articleSourcePanel"),
   articleSourceBody: document.getElementById("articleSourceBody"),
   toggleArticleSourceButton: document.getElementById("toggleArticleSourceButton"),
+  toggleArticleTranslationButton: document.getElementById("toggleArticleTranslationButton"),
   levelImage: document.getElementById("levelImage"),
   imageFrame: document.getElementById("imageFrame"),
   imagePreviousButton: document.getElementById("imagePreviousButton"),
@@ -588,6 +590,11 @@ function bindEvents() {
   });
   els.toggleArticleSourceButton.addEventListener("click", () => {
     state.articleSourceCollapsed = !state.articleSourceCollapsed;
+    renderArticleSourceState();
+  });
+  els.toggleArticleTranslationButton.addEventListener("click", () => {
+    state.articleTranslationVisible = !state.articleTranslationVisible;
+    renderArticleSource(getActiveArticle());
     renderArticleSourceState();
   });
   els.imageFrame.addEventListener("dblclick", openImageFullscreen);
@@ -1618,7 +1625,12 @@ function renderImagePanelState() {
 function renderArticleSourceState() {
   if (!els.articleSourcePanel) return;
   els.articleSourcePanel.classList.toggle("is-collapsed", state.articleSourceCollapsed);
+  els.articleSourcePanel.classList.toggle("is-translation-visible", state.articleTranslationVisible);
   els.toggleArticleSourceButton.textContent = state.articleSourceCollapsed ? "展开" : "收起";
+  if (els.toggleArticleTranslationButton) {
+    els.toggleArticleTranslationButton.textContent = state.articleTranslationVisible ? "隐藏中文" : "显示中文";
+    els.toggleArticleTranslationButton.setAttribute("aria-pressed", String(state.articleTranslationVisible));
+  }
   els.articleSourceBody.hidden = state.articleSourceCollapsed;
 }
 
@@ -2194,12 +2206,13 @@ function articleSourceParagraphHtml(article, paragraph, paragraphIndex) {
   const chineseHtml = chinese
     ? renderHighlightedText(chinese.text, chinese.ranges, "core-sentence-highlight zh")
     : '<span class="translation-missing">暂无中文翻译，待导入校对版译文后显示。</span>';
+  const zhHidden = state.mode === "article" && !state.articleTranslationVisible ? " hidden" : "";
   return `
     <div class="article-source-row">
       <span class="article-source-label">EN</span>
       <p>${englishHtml}</p>
     </div>
-    <div class="article-source-row zh-row">
+    <div class="article-source-row zh-row"${zhHidden}>
       <span class="article-source-label">中</span>
       <p>${chineseHtml}</p>
     </div>
