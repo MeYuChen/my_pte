@@ -2206,16 +2206,20 @@ function articleSourceParagraphHtml(article, paragraph, paragraphIndex) {
   const chineseHtml = chinese
     ? renderHighlightedText(chinese.text, chinese.ranges, "core-sentence-highlight zh")
     : '<span class="translation-missing">暂无中文翻译，待导入校对版译文后显示。</span>';
-  const zhHidden = state.mode === "article" && !state.articleTranslationVisible ? " hidden" : "";
+  const shouldRenderChinese = state.mode !== "article" || state.articleTranslationVisible;
+  const chineseRowHtml = shouldRenderChinese
+    ? `
+    <div class="article-source-row zh-row">
+      <span class="article-source-label">中</span>
+      <p>${chineseHtml}</p>
+    </div>`
+    : "";
   return `
     <div class="article-source-row">
       <span class="article-source-label">EN</span>
       <p>${englishHtml}</p>
     </div>
-    <div class="article-source-row zh-row"${zhHidden}>
-      <span class="article-source-label">中</span>
-      <p>${chineseHtml}</p>
-    </div>
+    ${chineseRowHtml}
   `;
 }
 

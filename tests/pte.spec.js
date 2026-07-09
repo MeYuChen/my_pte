@@ -184,14 +184,14 @@ test.describe("shared flows", () => {
 
     await page.getByRole("button", { name: "文章论点" }).click();
     await expect(page.locator("#articleSourcePanel")).toBeVisible();
-    await expect(page.locator(".article-source-row.zh-row").first()).toBeHidden();
+    await expect(page.locator(".article-source-row.zh-row")).toHaveCount(0);
 
     await page.getByRole("button", { name: "显示中文" }).click();
     await expect(page.locator(".article-source-row.zh-row").first()).toBeVisible();
     await expect(page.locator(".article-source-row.zh-row").first()).toContainText("关于政府是否应该改善公共交通");
 
     await page.getByRole("button", { name: "隐藏中文" }).click();
-    await expect(page.locator(".article-source-row.zh-row").first()).toBeHidden();
+    await expect(page.locator(".article-source-row.zh-row")).toHaveCount(0);
   });
 
   test("template timer can be customized and persisted", async ({ page }) => {
