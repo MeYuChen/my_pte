@@ -136,6 +136,7 @@ const MEMORY_CARD_META = {
   "#24": { categories: ["technology"], hook: "信息革命：快获取知识 + 网络风险", logic: "benefits and risks", balanced: true },
   "#30": { categories: ["city"], hook: "大型商场：一站式便利 + 创造工作 + 兼顾小店", logic: "mostly positive" },
   "#35": { categories: ["technology"], hook: "大众媒体：塑造价值观 + 也会制造焦虑", logic: "influence young people" },
+  "#101010": { categories: ["technology"], hook: "媒体影响：引导社会舆论 + 塑造个人性格", logic: "society + individuals" },
   "#39": { categories: ["work", "life"], hook: "工作生活平衡：保护健康 + 但压力太大", logic: "important but hard", balanced: true },
   "#40": { categories: ["work", "life"], hook: "私人时间：问题普遍 + 公司个人解决", logic: "widespread + solutions" },
   "#43": { categories: ["rules", "life"], hook: "父母责任：要监督孩子 + 责任也要有限", logic: "partly responsible", balanced: true },
@@ -172,8 +173,8 @@ const MEMORY_CARD_META = {
 };
 
 const MEMORY_FILTERS = [
-  { key: "all", label: "全部", description: "39 篇全部速记卡片" },
-  { key: "round1", label: "第一轮高频迁移", ids: ["#17", "#56", "#63", "#102", "#124", "#170", "#184", "#261", "#24", "#35", "#86", "#159", "#160", "#9", "#43", "#90", "#149", "#174"] },
+  { key: "all", label: "全部", description: "全部速记卡片" },
+  { key: "round1", label: "第一轮高频迁移", ids: ["#17", "#56", "#63", "#102", "#124", "#170", "#184", "#261", "#24", "#35", "#101010", "#86", "#159", "#160", "#9", "#43", "#90", "#149", "#174"] },
   { key: "round2", label: "第二轮场景强化", ids: ["#39", "#40", "#46", "#162", "#166", "#195", "#5", "#30", "#72", "#116", "#171", "#183", "#76", "#155", "#156"] },
   { key: "round3", label: "第三轮专项补强", ids: ["#71", "#77", "#98", "#106", "#173"] },
   { key: "education", label: "教育学习", category: "education" },

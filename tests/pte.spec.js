@@ -146,7 +146,8 @@ test.describe("mobile flows", () => {
     await page.getByRole("button", { name: "刷卡" }).click();
     await page.getByRole("button", { name: "目录" }).click();
     await expect(page.locator("#catalogPanel")).toBeVisible();
-    await expect(page.locator(".catalog-item")).toHaveCount(39);
+    const articleCount = await page.evaluate(() => window.WE_DATA.articles.length);
+    await expect(page.locator(".catalog-item")).toHaveCount(articleCount);
 
     await page.locator('.catalog-filter-button[data-memory-filter="education"]').click();
     await expect(page.locator(".catalog-filter-button.is-active")).toHaveText("教育学习");
@@ -208,8 +209,9 @@ test.describe("shared flows", () => {
     });
     await page.goto("./index.html");
 
+    const articleCount = await page.evaluate(() => window.WE_DATA.articles.length);
     await expect(page.getByRole("button", { name: "模板" })).toBeVisible();
-    await expect(page.locator("#progressSummary")).toContainText("/ 39 已掌握");
+    await expect(page.locator("#progressSummary")).toContainText(`/ ${articleCount} 已掌握`);
     await expect(page.locator("#templateTimerInput")).toHaveValue("6");
     await page.getByRole("button", { name: "刷卡" }).click();
     await expect(page.locator("#drillCardTitle")).toHaveText("#5 Transportation Networks");

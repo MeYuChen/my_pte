@@ -257,36 +257,76 @@ window.WE_DATA = {
       "position": "Agree.",
       "image": "./images/35-mass-media.jpg",
       "paragraphs": [
-        "The issue of whether mass media shapes people's opinions, especially those of young people, has triggered a heated debate in contemporary society. Many people claim that family and school are more influential. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that mass media has a powerful influence on teenagers and young adults.",
-        "To begin with, one of the most compelling reasons for the significance of mass media is that it provides young people with information and values every day. This plays a vital role because teenagers are still developing their understanding of society. To illustrate, studies have shown that news reports, documentaries and public programs can influence how students think about climate change, health and social responsibility. Consequently, mass media can guide young people toward better choices.",
-        "In addition, a crucial factor that cannot be ignored is that mass media can also create negative influence if it is not controlled properly. This point matters greatly because young people may copy unhealthy lifestyles or unrealistic images from television and online platforms. Based on my experience, some teenagers become anxious when they compare themselves with celebrities on social media. As a result, media messages may affect their confidence and behavior.",
-        "To sum up, all the evidence suggests that mass media plays an important role in shaping opinions, mainly due to daily exposure and emotional influence. Therefore, I strongly recommend that young people learn media literacy and that parents and schools help them judge media content carefully."
+        "The issue of whether the mass media shape people's opinions, especially those of young people, has triggered a heated debate in contemporary society. Many people claim that family and school are more influential. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that the mass media have a powerful influence on teenagers and young adults.",
+        "To begin with, one of the most compelling reasons for the significance of the mass media is that they provide young people with information and values every day. This plays a vital role because teenagers are still developing their understanding of society. To illustrate, studies have shown that news reports, documentaries and public programs can influence how students think about climate change, health and social responsibility. Consequently, the mass media can guide young people toward better choices.",
+        "In addition, a crucial factor that cannot be ignored is that the mass media can also create negative influence if they are not controlled properly. This point matters greatly because young people may copy unhealthy lifestyles or unrealistic images from television and online platforms. Based on my experience, some teenagers become anxious when they compare themselves with celebrities on social media. As a result, media messages may affect their confidence and behavior.",
+        "To sum up, all the evidence suggests that the mass media play an important role in shaping opinions, mainly due to daily exposure and emotional influence. Therefore, I strongly recommend that young people learn media literacy and that parents and schools help them judge media content carefully."
       ],
       "modules": {
         "introduction": [
-          "The issue of whether mass media shapes people's opinions, especially those of young people, has triggered a heated debate in contemporary society.",
+          "The issue of whether the mass media shape people's opinions, especially those of young people, has triggered a heated debate in contemporary society.",
           "Many people claim that family and school are more influential.",
           "Nevertheless, others hold different opinions.",
-          "In this essay, I will elaborate on my point of view that mass media has a powerful influence on teenagers and young adults."
+          "In this essay, I will elaborate on my point of view that the mass media have a powerful influence on teenagers and young adults."
         ],
         "argument1": [
-          "To begin with, one of the most compelling reasons for the significance of mass media is that it provides young people with information and values every day.",
+          "To begin with, one of the most compelling reasons for the significance of the mass media is that they provide young people with information and values every day.",
           "This plays a vital role because teenagers are still developing their understanding of society.",
           "To illustrate, studies have shown that news reports, documentaries and public programs can influence how students think about climate change, health and social responsibility.",
-          "Consequently, mass media can guide young people toward better choices."
+          "Consequently, the mass media can guide young people toward better choices."
         ],
         "argument2": [
-          "In addition, a crucial factor that cannot be ignored is that mass media can also create negative influence if it is not controlled properly.",
+          "In addition, a crucial factor that cannot be ignored is that the mass media can also create negative influence if they are not controlled properly.",
           "This point matters greatly because young people may copy unhealthy lifestyles or unrealistic images from television and online platforms.",
           "Based on my experience, some teenagers become anxious when they compare themselves with celebrities on social media.",
           "As a result, media messages may affect their confidence and behavior."
         ],
         "conclusion": [
-          "To sum up, all the evidence suggests that mass media plays an important role in shaping opinions, mainly due to daily exposure and emotional influence.",
+          "To sum up, all the evidence suggests that the mass media play an important role in shaping opinions, mainly due to daily exposure and emotional influence.",
           "Therefore, I strongly recommend that young people learn media literacy and that parents and schools help them judge media content carefully."
         ]
       },
-      "essay": "The issue of whether mass media shapes people's opinions, especially those of young people, has triggered a heated debate in contemporary society. Many people claim that family and school are more influential. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that mass media has a powerful influence on teenagers and young adults.\n\nTo begin with, one of the most compelling reasons for the significance of mass media is that it provides young people with information and values every day. This plays a vital role because teenagers are still developing their understanding of society. To illustrate, studies have shown that news reports, documentaries and public programs can influence how students think about climate change, health and social responsibility. Consequently, mass media can guide young people toward better choices.\n\nIn addition, a crucial factor that cannot be ignored is that mass media can also create negative influence if it is not controlled properly. This point matters greatly because young people may copy unhealthy lifestyles or unrealistic images from television and online platforms. Based on my experience, some teenagers become anxious when they compare themselves with celebrities on social media. As a result, media messages may affect their confidence and behavior.\n\nTo sum up, all the evidence suggests that mass media plays an important role in shaping opinions, mainly due to daily exposure and emotional influence. Therefore, I strongly recommend that young people learn media literacy and that parents and schools help them judge media content carefully."
+      "essay": "The issue of whether the mass media shape people's opinions, especially those of young people, has triggered a heated debate in contemporary society. Many people claim that family and school are more influential. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that the mass media have a powerful influence on teenagers and young adults.\n\nTo begin with, one of the most compelling reasons for the significance of the mass media is that they provide young people with information and values every day. This plays a vital role because teenagers are still developing their understanding of society. To illustrate, studies have shown that news reports, documentaries and public programs can influence how students think about climate change, health and social responsibility. Consequently, the mass media can guide young people toward better choices.\n\nIn addition, a crucial factor that cannot be ignored is that the mass media can also create negative influence if they are not controlled properly. This point matters greatly because young people may copy unhealthy lifestyles or unrealistic images from television and online platforms. Based on my experience, some teenagers become anxious when they compare themselves with celebrities on social media. As a result, media messages may affect their confidence and behavior.\n\nTo sum up, all the evidence suggests that the mass media play an important role in shaping opinions, mainly due to daily exposure and emotional influence. Therefore, I strongly recommend that young people learn media literacy and that parents and schools help them judge media content carefully."
+    },
+    {
+      "id": "#101010 Mass Media and Society",
+      "title": "#101010 Mass Media and Society",
+      "number": "#101010",
+      "name": "Mass Media and Society",
+      "topic": "The mass media, including TV, radio and newspapers, influence our society and shape our opinions and characters. What is your opinion?",
+      "position": "Agree. The mass media strongly influence society and individuals.",
+      "image": "./images/35-mass-media.jpg",
+      "paragraphs": [
+        "The issue of whether the mass media influence society and shape people's opinions and characters has triggered a heated debate in contemporary society. Many people claim that individuals can think independently and are not easily affected by the media. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that the mass media have a profound influence on both society and individuals.",
+        "To begin with, one of the most compelling reasons for the significance of the mass media is that they can direct public opinion in society. This plays a vital role because television, radio and newspapers can decide which topics receive wide attention. To illustrate, studies have shown that repeated news reports about environmental protection can make more citizens discuss climate change and support green policies. Consequently, the mass media can influence social values and collective decisions.",
+        "In addition, a crucial factor that cannot be ignored is that the mass media can shape personal opinions and characters. This point matters greatly because people are exposed to news, stories and role models almost every day. Based on my experience, documentaries about volunteers and successful athletes can encourage young people to become more responsible, confident and empathetic. As a result, media content may gradually affect how people think and behave.",
+        "To sum up, all the evidence suggests that the mass media have a strong influence on society and individuals, mainly due to public opinion and personal development. Therefore, I strongly recommend that people improve media literacy and choose reliable programs instead of accepting every media message passively."
+      ],
+      "modules": {
+        "introduction": [
+          "The issue of whether the mass media influence society and shape people's opinions and characters has triggered a heated debate in contemporary society.",
+          "Many people claim that individuals can think independently and are not easily affected by the media.",
+          "Nevertheless, others hold different opinions.",
+          "In this essay, I will elaborate on my point of view that the mass media have a profound influence on both society and individuals."
+        ],
+        "argument1": [
+          "To begin with, one of the most compelling reasons for the significance of the mass media is that they can direct public opinion in society.",
+          "This plays a vital role because television, radio and newspapers can decide which topics receive wide attention.",
+          "To illustrate, studies have shown that repeated news reports about environmental protection can make more citizens discuss climate change and support green policies.",
+          "Consequently, the mass media can influence social values and collective decisions."
+        ],
+        "argument2": [
+          "In addition, a crucial factor that cannot be ignored is that the mass media can shape personal opinions and characters.",
+          "This point matters greatly because people are exposed to news, stories and role models almost every day.",
+          "Based on my experience, documentaries about volunteers and successful athletes can encourage young people to become more responsible, confident and empathetic.",
+          "As a result, media content may gradually affect how people think and behave."
+        ],
+        "conclusion": [
+          "To sum up, all the evidence suggests that the mass media have a strong influence on society and individuals, mainly due to public opinion and personal development.",
+          "Therefore, I strongly recommend that people improve media literacy and choose reliable programs instead of accepting every media message passively."
+        ]
+      },
+      "essay": "The issue of whether the mass media influence society and shape people's opinions and characters has triggered a heated debate in contemporary society. Many people claim that individuals can think independently and are not easily affected by the media. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that the mass media have a profound influence on both society and individuals.\n\nTo begin with, one of the most compelling reasons for the significance of the mass media is that they can direct public opinion in society. This plays a vital role because television, radio and newspapers can decide which topics receive wide attention. To illustrate, studies have shown that repeated news reports about environmental protection can make more citizens discuss climate change and support green policies. Consequently, the mass media can influence social values and collective decisions.\n\nIn addition, a crucial factor that cannot be ignored is that the mass media can shape personal opinions and characters. This point matters greatly because people are exposed to news, stories and role models almost every day. Based on my experience, documentaries about volunteers and successful athletes can encourage young people to become more responsible, confident and empathetic. As a result, media content may gradually affect how people think and behave.\n\nTo sum up, all the evidence suggests that the mass media have a strong influence on society and individuals, mainly due to public opinion and personal development. Therefore, I strongly recommend that people improve media literacy and choose reliable programs instead of accepting every media message passively."
     },
     {
       "id": "#39 Right Balance",
@@ -820,7 +860,7 @@ window.WE_DATA = {
       "position": "Experience is important, but it should work with formal education.",
       "image": "./images/102-life-experience.jpg",
       "paragraphs": [
-        "The issue of whether experience is the best teacher has triggered a heated debate in contemporary society. Many people claim that books and formal education are less useful than real-life experience. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that experience is very important, but it should be combined with formal education.",
+        "The issue of whether experience is the best teacher has triggered a heated debate in contemporary society. Many people claim that books and formal education are less useful than real-life experiences. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that experience is very important, but it should be combined with formal education.",
         "To begin with, one of the most compelling reasons for the significance of life experience is that it teaches practical lessons. This plays a vital role because people often remember lessons better when they face real consequences. To illustrate, studies have shown that a student who runs a small business project can learn communication, planning and responsibility more directly than by only reading a textbook. Consequently, experience can develop confidence and problem-solving ability.",
         "In addition, a crucial factor that cannot be ignored is that formal education provides systematic knowledge. This point matters greatly because experience alone may be limited or even misleading. Based on my experience, books can explain theories, facts and methods that individuals may not discover by themselves. For example, a person learning medicine cannot depend only on personal experience. As a result, education can make experience safer and more meaningful.",
         "To sum up, all the evidence suggests that life experience is valuable but incomplete, mainly due to practical lessons and systematic knowledge. Therefore, I strongly recommend that students learn from both real practice and formal education in order to develop balanced abilities."
@@ -828,7 +868,7 @@ window.WE_DATA = {
       "modules": {
         "introduction": [
           "The issue of whether experience is the best teacher has triggered a heated debate in contemporary society.",
-          "Many people claim that books and formal education are less useful than real-life experience.",
+          "Many people claim that books and formal education are less useful than real-life experiences.",
           "Nevertheless, others hold different opinions.",
           "In this essay, I will elaborate on my point of view that experience is very important, but it should be combined with formal education."
         ],
@@ -850,7 +890,7 @@ window.WE_DATA = {
           "Therefore, I strongly recommend that students learn from both real practice and formal education in order to develop balanced abilities."
         ]
       },
-      "essay": "The issue of whether experience is the best teacher has triggered a heated debate in contemporary society. Many people claim that books and formal education are less useful than real-life experience. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that experience is very important, but it should be combined with formal education.\n\nTo begin with, one of the most compelling reasons for the significance of life experience is that it teaches practical lessons. This plays a vital role because people often remember lessons better when they face real consequences. To illustrate, studies have shown that a student who runs a small business project can learn communication, planning and responsibility more directly than by only reading a textbook. Consequently, experience can develop confidence and problem-solving ability.\n\nIn addition, a crucial factor that cannot be ignored is that formal education provides systematic knowledge. This point matters greatly because experience alone may be limited or even misleading. Based on my experience, books can explain theories, facts and methods that individuals may not discover by themselves. For example, a person learning medicine cannot depend only on personal experience. As a result, education can make experience safer and more meaningful.\n\nTo sum up, all the evidence suggests that life experience is valuable but incomplete, mainly due to practical lessons and systematic knowledge. Therefore, I strongly recommend that students learn from both real practice and formal education in order to develop balanced abilities."
+      "essay": "The issue of whether experience is the best teacher has triggered a heated debate in contemporary society. Many people claim that books and formal education are less useful than real-life experiences. Nevertheless, others hold different opinions. In this essay, I will elaborate on my point of view that experience is very important, but it should be combined with formal education.\n\nTo begin with, one of the most compelling reasons for the significance of life experience is that it teaches practical lessons. This plays a vital role because people often remember lessons better when they face real consequences. To illustrate, studies have shown that a student who runs a small business project can learn communication, planning and responsibility more directly than by only reading a textbook. Consequently, experience can develop confidence and problem-solving ability.\n\nIn addition, a crucial factor that cannot be ignored is that formal education provides systematic knowledge. This point matters greatly because experience alone may be limited or even misleading. Based on my experience, books can explain theories, facts and methods that individuals may not discover by themselves. For example, a person learning medicine cannot depend only on personal experience. As a result, education can make experience safer and more meaningful.\n\nTo sum up, all the evidence suggests that life experience is valuable but incomplete, mainly due to practical lessons and systematic knowledge. Therefore, I strongly recommend that students learn from both real practice and formal education in order to develop balanced abilities."
     },
     {
       "id": "#106 Effective Study",
