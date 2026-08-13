@@ -1,8 +1,8 @@
 window.WFD_DATA = {
   "version": 1,
-  "generatedAt": "2026-08-12T20:05:19.365Z",
+  "generatedAt": "2026-08-13T19:59:52.347Z",
   "sourceCount": 5,
-  "candidateCount": 286,
+  "candidateCount": 285,
   "coreItemLimit": 189,
   "itemCount": 189,
   "sources": [
@@ -24,7 +24,7 @@ window.WFD_DATA = {
     {
       "source": "Sumlingo",
       "ok": true,
-      "count": 52
+      "count": 51
     },
     {
       "source": "79Score",
