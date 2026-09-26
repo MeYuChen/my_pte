@@ -1,6 +1,6 @@
 window.WFD_DATA = {
   "version": 1,
-  "generatedAt": "2026-09-25T22:23:10.188Z",
+  "generatedAt": "2026-09-26T21:58:18.876Z",
   "sourceCount": 5,
   "candidateCount": 284,
   "coreItemLimit": 189,
