@@ -1,8 +1,8 @@
 window.WFD_DATA = {
   "version": 1,
-  "generatedAt": "2026-09-28T23:49:59.945Z",
+  "generatedAt": "2026-09-29T22:59:06.053Z",
   "sourceCount": 5,
-  "candidateCount": 284,
+  "candidateCount": 281,
   "coreItemLimit": 189,
   "itemCount": 189,
   "sources": [
@@ -19,7 +19,7 @@ window.WFD_DATA = {
     {
       "source": "LanguageAcademy",
       "ok": true,
-      "count": 109
+      "count": 106
     },
     {
       "source": "Sumlingo",
@@ -1388,15 +1388,6 @@ window.WFD_DATA = {
       "audio": ""
     },
     {
-      "sentence": "Leave a Comment Cancel Reply.",
-      "sources": [
-        "LanguageAcademy"
-      ],
-      "sourceCount": 1,
-      "priorityScore": 13,
-      "audio": ""
-    },
-    {
       "sentence": "Leaving valuable possessions unattended in public places is risky.",
       "sources": [
         "LanguageAcademy"
@@ -1460,25 +1451,16 @@ window.WFD_DATA = {
       "audio": ""
     },
     {
-      "sentence": "Naati CCL Coaching Parramatta.",
-      "sources": [
-        "LanguageAcademy"
-      ],
-      "sourceCount": 1,
-      "priorityScore": 13,
-      "audio": ""
-    },
-    {
-      "sentence": "Naati CCL Coaching Sydney.",
-      "sources": [
-        "LanguageAcademy"
-      ],
-      "sourceCount": 1,
-      "priorityScore": 13,
-      "audio": ""
-    },
-    {
       "sentence": "Native speakers are exempt from the language tests in their own languages.",
+      "sources": [
+        "LanguageAcademy"
+      ],
+      "sourceCount": 1,
+      "priorityScore": 13,
+      "audio": ""
+    },
+    {
+      "sentence": "Need Help With Experts?",
       "sources": [
         "LanguageAcademy"
       ],
@@ -1533,15 +1515,6 @@ window.WFD_DATA = {
     },
     {
       "sentence": "Purity is one feature that makes gold expensive.",
-      "sources": [
-        "LanguageAcademy"
-      ],
-      "sourceCount": 1,
-      "priorityScore": 13,
-      "audio": ""
-    },
-    {
-      "sentence": "Save my name, email, and website in this browser for the next time I comment.",
       "sources": [
         "LanguageAcademy"
       ],
@@ -1740,6 +1713,33 @@ window.WFD_DATA = {
     },
     {
       "sentence": "The new technician dropped the microscope in the biology lab.",
+      "sources": [
+        "LanguageAcademy"
+      ],
+      "sourceCount": 1,
+      "priorityScore": 13,
+      "audio": ""
+    },
+    {
+      "sentence": "The plight of wildlife has been ignored by local developers.",
+      "sources": [
+        "LanguageAcademy"
+      ],
+      "sourceCount": 1,
+      "priorityScore": 13,
+      "audio": ""
+    },
+    {
+      "sentence": "The professor took a year off to work on her book.",
+      "sources": [
+        "LanguageAcademy"
+      ],
+      "sourceCount": 1,
+      "priorityScore": 13,
+      "audio": ""
+    },
+    {
+      "sentence": "The railway makes long-distance travel possible for everyone.",
       "sources": [
         "LanguageAcademy"
       ],
