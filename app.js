@@ -27,45 +27,45 @@ const DRILL_TYPES = [
 ];
 
 const MEMORY_CARD_FILES = {
-  "#5": "./images/memory-cards/005_Transportation_Networks_memory_card.png",
-  "#9": "./images/memory-cards/009_Global_Issue_memory_card.png",
-  "#17": "./images/memory-cards/017_Formal_Written_Examination_memory_card.png",
-  "#24": "./images/memory-cards/024_Information_Revolution_memory_card.png",
-  "#30": "./images/memory-cards/030_Shopping_Malls_memory_card.png",
-  "#35": "./images/memory-cards/035_Mass_Media_memory_card.png",
-  "#39": "./images/memory-cards/039_Right_Balance_memory_card.png",
-  "#40": "./images/memory-cards/040_Personal_Life_memory_card.png",
-  "#43": "./images/memory-cards/043_Legal_Responsibility_memory_card.png",
-  "#46": "./images/memory-cards/046_Worker_Decision_Making_memory_card.png",
-  "#56": "./images/memory-cards/056_Experiential_Learning_memory_card.png",
-  "#63": "./images/memory-cards/063_Mark_Deduction_memory_card.png",
-  "#71": "./images/memory-cards/071_Extending_Life_Expectancy_memory_card.png",
-  "#72": "./images/memory-cards/072_Building_Effects_memory_card.png",
-  "#76": "./images/memory-cards/076_Facing_Issues_memory_card.png",
-  "#77": "./images/memory-cards/077_Studying_Theater_memory_card.png",
-  "#86": "./images/memory-cards/086_Digital_Materials_memory_card.png",
-  "#90": "./images/memory-cards/090_Age_Limit_memory_card.png",
-  "#98": "./images/memory-cards/098_International_Organizations_memory_card.png",
-  "#102": "./images/memory-cards/102_Life_Experience_memory_card.png",
-  "#106": "./images/memory-cards/106_Effective_Study_memory_card.png",
-  "#116": "./images/memory-cards/116_Public_Transportation_memory_card.png",
-  "#124": "./images/memory-cards/124_Studying_Abroad_memory_card.png",
-  "#149": "./images/memory-cards/149_Law_Effect_memory_card.png",
-  "#155": "./images/memory-cards/155_Studying_Climate_Change_memory_card.png",
-  "#156": "./images/memory-cards/156_Tourism_s_Pros_and_Cons_memory_card.png",
-  "#159": "./images/memory-cards/159_Inventions_memory_card.png",
-  "#160": "./images/memory-cards/160_Television_memory_card.png",
-  "#162": "./images/memory-cards/162_Fewer_Work_Hours_memory_card.png",
-  "#163": "./images/memory-cards/163_Celebrities_Privacy_memory_card.png",
-  "#166": "./images/memory-cards/166_Short_Weeks_memory_card.png",
-  "#170": "./images/memory-cards/170_Compulsory_Learning_memory_card.png",
-  "#171": "./images/memory-cards/171_Old_or_Modern_Buildings_memory_card.png",
-  "#173": "./images/memory-cards/173_Harder_Life_memory_card.png",
-  "#174": "./images/memory-cards/174_Wage_Cap_memory_card.png",
-  "#183": "./images/memory-cards/183_City_or_Countryside_memory_card.png",
-  "#184": "./images/memory-cards/184_Foreign_Languages_memory_card.png",
-  "#195": "./images/memory-cards/195_Marketing_in_Companies_memory_card.png",
-  "#261": "./images/memory-cards/261_Travel_for_Education_memory_card.png"
+  "#5": "./images/memory-cards/005_Transportation_Networks_memory_card.png?v=20261005-8",
+  "#9": "./images/memory-cards/009_Global_Issue_memory_card.png?v=20261005-8",
+  "#17": "./images/memory-cards/017_Formal_Written_Examination_memory_card.png?v=20261005-8",
+  "#24": "./images/memory-cards/024_Information_Revolution_memory_card.png?v=20261005-8",
+  "#30": "./images/memory-cards/030_Shopping_Malls_memory_card.png?v=20261005-8",
+  "#35": "./images/memory-cards/035_Mass_Media_memory_card.png?v=20261005-8",
+  "#39": "./images/memory-cards/039_Right_Balance_memory_card.png?v=20261005-8",
+  "#40": "./images/memory-cards/040_Personal_Life_memory_card.png?v=20261005-8",
+  "#43": "./images/memory-cards/043_Legal_Responsibility_memory_card.png?v=20261005-8",
+  "#46": "./images/memory-cards/046_Worker_Decision_Making_memory_card.png?v=20261005-8",
+  "#56": "./images/memory-cards/056_Experiential_Learning_memory_card.png?v=20261005-8",
+  "#63": "./images/memory-cards/063_Mark_Deduction_memory_card.png?v=20261005-8",
+  "#71": "./images/memory-cards/071_Extending_Life_Expectancy_memory_card.png?v=20261005-8",
+  "#72": "./images/memory-cards/072_Building_Effects_memory_card.png?v=20261005-8",
+  "#76": "./images/memory-cards/076_Facing_Issues_memory_card.png?v=20261005-8",
+  "#77": "./images/memory-cards/077_Studying_Theater_memory_card.png?v=20261005-8",
+  "#86": "./images/memory-cards/086_Digital_Materials_memory_card.png?v=20261005-8",
+  "#90": "./images/memory-cards/090_Age_Limit_memory_card.png?v=20261005-8",
+  "#98": "./images/memory-cards/098_International_Organizations_memory_card.png?v=20261005-8",
+  "#102": "./images/memory-cards/102_Life_Experience_memory_card.png?v=20261005-8",
+  "#106": "./images/memory-cards/106_Effective_Study_memory_card.png?v=20261005-8",
+  "#116": "./images/memory-cards/116_Public_Transportation_memory_card.png?v=20261005-8",
+  "#124": "./images/memory-cards/124_Studying_Abroad_memory_card.png?v=20261005-8",
+  "#149": "./images/memory-cards/149_Law_Effect_memory_card.png?v=20261005-8",
+  "#155": "./images/memory-cards/155_Studying_Climate_Change_memory_card.png?v=20261005-8",
+  "#156": "./images/memory-cards/156_Tourism_s_Pros_and_Cons_memory_card.png?v=20261005-8",
+  "#159": "./images/memory-cards/159_Inventions_memory_card.png?v=20261005-8",
+  "#160": "./images/memory-cards/160_Television_memory_card.png?v=20261005-8",
+  "#162": "./images/memory-cards/162_Fewer_Work_Hours_memory_card.png?v=20261005-8",
+  "#163": "./images/memory-cards/163_Celebrities_Privacy_memory_card.png?v=20261005-8",
+  "#166": "./images/memory-cards/166_Short_Weeks_memory_card.png?v=20261005-8",
+  "#170": "./images/memory-cards/170_Compulsory_Learning_memory_card.png?v=20261005-8",
+  "#171": "./images/memory-cards/171_Old_or_Modern_Buildings_memory_card.png?v=20261005-8",
+  "#173": "./images/memory-cards/173_Harder_Life_memory_card.png?v=20261005-8",
+  "#174": "./images/memory-cards/174_Wage_Cap_memory_card.png?v=20261005-8",
+  "#183": "./images/memory-cards/183_City_or_Countryside_memory_card.png?v=20261005-8",
+  "#184": "./images/memory-cards/184_Foreign_Languages_memory_card.png?v=20261005-8",
+  "#195": "./images/memory-cards/195_Marketing_in_Companies_memory_card.png?v=20261005-8",
+  "#261": "./images/memory-cards/261_Travel_for_Education_memory_card.png?v=20261005-8"
 };
 
 const MEMORY_CATEGORIES = {
@@ -541,7 +541,7 @@ const articleImageUrls = new Set([
   ...articles.map((article) => assetUrl(memoryCardImagePath(article))).filter(Boolean)
 ]);
 const IMAGE_PRELOAD_CONCURRENCY = 3;
-const IMAGE_CACHE_NAME = "pte-we-images-v7";
+const IMAGE_CACHE_NAME = "pte-we-images-v8";
 const imagePreload = {
   active: 0,
   queue: [],
@@ -2491,7 +2491,7 @@ function showAdjacentImage(direction) {
 async function registerImageCacheWorker() {
   if (!("serviceWorker" in navigator)) return;
   try {
-    await navigator.serviceWorker.register("./sw.js?v=20261005-23", { updateViaCache: "none" });
+    await navigator.serviceWorker.register("./sw.js?v=20261005-24", { updateViaCache: "none" });
   } catch {
     // The page still works without the persistent cache worker.
   }

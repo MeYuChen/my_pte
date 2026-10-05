@@ -5,7 +5,7 @@ All notable changes to this project are recorded here.
 ## 2026-10-05 Published
 
 - Published the user-approved PDF integration to master.
-- Add explicit versions to CSS/scripts and service-worker registration to prevent mixed old/new assets during deployment; static cache v23.
+- Add explicit versions to CSS/scripts and service-worker registration to prevent mixed old/new assets during deployment; static cache v24; version memory-card URLs and image cache v8 to invalidate previously cached card images.
 
 ## Unreleased
 
