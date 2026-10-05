@@ -18,22 +18,6 @@ const MODE_LIMITS = {
 const DEFAULT_TEMPLATE_TIMER_MINUTES = 5;
 const MIN_TEMPLATE_TIMER_MINUTES = 1;
 const MAX_TEMPLATE_TIMER_MINUTES = 60;
-const DEFAULT_DAILY_GOALS = {
-  cards: 30,
-  familiar: 1,
-  writing: 1,
-  minutes: 25
-};
-const DAILY_GOAL_LIMITS = {
-  cards: [5, 200],
-  familiar: [0, 10],
-  writing: [0, 10],
-  minutes: [5, 180]
-};
-const PET_DEFAULT_POSITION = { right: 22, bottom: 96 };
-const PET_FATIGUE_MINUTES = 45;
-const PET_FATIGUE_COOLDOWN_MS = 20 * 60 * 1000;
-
 const DRILL_TYPES = [
   { key: "route", label: "中文路线" },
   { key: "keywords", label: "英文关键词" },
@@ -85,106 +69,360 @@ const MEMORY_CARD_FILES = {
 };
 
 const MEMORY_CATEGORIES = {
-  education: {
-    label: "教育学习",
-    fullLabel: "教育学习类",
-    parentLogic: "教育 = 公平 / 能力 / 实践 / 未来机会 / 不是唯一",
-    summary: "教育方法有用，但不能绝对化；要看公平、能力、实践和机会。"
+  "education": {
+    "label": "教育 · 学习 · 考试",
+    "fullLabel": "教育 · 学习 · 考试"
   },
-  technology: {
-    label: "科技媒体",
-    fullLabel: "科技与媒体类",
-    parentLogic: "科技/媒体 = 信息便利 / 效率提升 / 风险控制 / 理性使用",
-    summary: "科技媒体可以提高效率和获取信息，但需要判断力和控制风险。"
+  "language": {
+    "label": "语言 · 留学 · 教育视野",
+    "fullLabel": "语言 · 留学 · 教育视野"
   },
-  work: {
-    label: "工作公司",
-    fullLabel: "工作与公司类",
-    parentLogic: "工作/公司 = 效率 / 健康 / 成本 / 员工状态 / 长期价值",
-    summary: "公司政策要兼顾效率、员工状态、成本和长期发展。"
+  "technology": {
+    "label": "科技 · 媒体 · 信息",
+    "fullLabel": "科技 · 媒体 · 信息"
   },
-  rules: {
-    label: "政府法律",
-    fullLabel: "政府、法律与社会规则类",
-    parentLogic: "政府/法律 = 规则 / 资源 / 公平 / 保护 / 限度",
-    summary: "规则可以保护公平和安全，但不能过度，要有教育和弹性。"
+  "work": {
+    "label": "工作 · 职场 · 经济",
+    "fullLabel": "工作 · 职场 · 经济"
   },
-  environment: {
-    label: "环境气候",
-    fullLabel: "环境、气候与可持续发展类",
-    parentLogic: "环境 = 污染 / 全球风险 / 生活影响 / 合作治理 / 可持续管理",
-    summary: "环境问题不是单点问题，而是生活、经济、政府和全球合作的问题。"
+  "life": {
+    "label": "社会问题 · 家庭 · 个人生活",
+    "fullLabel": "社会问题 · 家庭 · 个人生活"
   },
-  city: {
-    label: "城市公共",
-    fullLabel: "城市、建筑与公共生活类",
-    parentLogic: "城市 = 便利 / 机会 / 安全 / 公共资源 / 文化保护",
-    summary: "城市题基本都围绕便利、机会、安全、公共资源和文化价值。"
+  "city": {
+    "label": "城市 · 交通 · 建筑",
+    "fullLabel": "城市 · 交通 · 建筑"
   },
-  life: {
-    label: "个人家庭",
-    fullLabel: "个人、家庭、健康与社会压力类",
-    parentLogic: "个人生活 = 健康 / 压力 / 责任 / 幸福 / 社会支持",
-    summary: "个人生活题不要写空泛，要落到健康、压力、家庭责任和支持系统。"
+  "environment": {
+    "label": "环境 · 全球问题 · 旅游",
+    "fullLabel": "环境 · 全球问题 · 旅游"
   }
 };
 
 const MEMORY_CARD_META = {
-  "#5": { categories: ["environment", "city"], hook: "公交优先：少车少堵 + 照顾弱势 + 少污染", logic: "public transport first" },
-  "#9": { categories: ["rules"], hook: "气候治理：政府立法 + 资金投入 + 企业配合", logic: "government leads" },
-  "#17": { categories: ["education"], hook: "正式笔试：公平测基础 + 测不了综合能力", logic: "useful but incomplete", balanced: true },
-  "#24": { categories: ["technology"], hook: "信息革命：快获取知识 + 网络风险", logic: "benefits and risks", balanced: true },
-  "#30": { categories: ["city"], hook: "大型商场：一站式便利 + 创造工作 + 兼顾小店", logic: "mostly positive" },
-  "#35": { categories: ["technology"], hook: "大众媒体：塑造价值观 + 也会制造焦虑", logic: "influence young people" },
-  "#101010": { categories: ["technology"], hook: "媒体影响：引导社会舆论 + 塑造个人性格", logic: "society + individuals" },
-  "#39": { categories: ["work", "life"], hook: "工作生活平衡：保护健康 + 但压力太大", logic: "important but hard", balanced: true },
-  "#40": { categories: ["work", "life"], hook: "私人时间：问题普遍 + 公司个人解决", logic: "widespread + solutions" },
-  "#43": { categories: ["rules", "life"], hook: "父母责任：要监督孩子 + 责任也要有限", logic: "partly responsible", balanced: true },
-  "#46": { categories: ["work"], hook: "员工参与：懂一线问题 + 但会拖慢决策", logic: "advantages > disadvantages", balanced: true },
-  "#56": { categories: ["education"], hook: "体验式学习：用中学 + 为工作做准备", logic: "practical learning + job preparation" },
-  "#63": { categories: ["education"], hook: "迟交扣分：维护公平 + 但要有弹性", logic: "fairness + flexibility", balanced: true },
-  "#71": { categories: ["life"], hook: "寿命延长：救命减痛苦 + 老人也能贡献", logic: "blessing" },
-  "#72": { categories: ["city"], hook: "建筑设计：影响效率舒适 + 差设计有危险", logic: "design affects life" },
-  "#76": { categories: ["environment"], hook: "全球问题：气候最紧迫 + 需要国际合作", logic: "climate is most pressing" },
-  "#77": { categories: ["education"], hook: "古典戏剧：有文化价值 + 但理解困难", logic: "cultural value + teaching difficulty", balanced: true },
-  "#86": { categories: ["technology"], hook: "数字材料：方便更新 + 但不能替代图书馆", logic: "useful but not enough", balanced: true },
-  "#90": { categories: ["rules"], hook: "年龄限制：判断力不足 + 保护个人和社会", logic: "necessary for risky activities" },
-  "#98": { categories: ["rules"], hook: "国际组织：气候跨国界 + 贫困也要合作", logic: "international cooperation" },
-  "#102": { categories: ["education"], hook: "生活经验：教实践 + 也要系统教育", logic: "experience + formal education", balanced: true },
-  "#106": { categories: ["education"], hook: "边学边工：学习要专注 + 兼职也有好处", logic: "concentration + work benefits", balanced: true },
-  "#116": { categories: ["environment", "city"], hook: "低价公交：降低生活成本 + 但会拥挤缺钱", logic: "cheaper transport", balanced: true },
-  "#124": { categories: ["education"], hook: "留学：开阔视野 + 但不是人人必须", logic: "valuable but not necessary", balanced: true },
-  "#149": { categories: ["rules"], hook: "法律作用：制造后果 + 长期改变习惯", logic: "law + education" },
-  "#155": { categories: ["environment"], hook: "气候研究：极端天气 + 粮食安全", logic: "extreme weather + food security" },
-  "#156": { categories: ["environment"], hook: "旅游业：赚钱就业 + 但有污染压力", logic: "economy + environmental pressure", balanced: true },
-  "#159": { categories: ["technology"], hook: "AI助手：提高效率 + 帮助资源不足的人", logic: "efficiency + equal support" },
-  "#160": { categories: ["technology"], hook: "电视作用：放松娱乐 + 也能教育陪伴", logic: "relaxation + education" },
-  "#162": { categories: ["work"], hook: "少工作时间：技术提效 + 重视健康生活", logic: "technology + wellbeing" },
-  "#163": { categories: [], hook: "名人隐私：公众兴趣 + 个人边界", logic: "privacy balance", balanced: true },
-  "#166": { categories: ["work"], hook: "短工作周：创造岗位 + 但成本收入有风险", logic: "benefits + cost risk", balanced: true },
-  "#170": { categories: ["education"], hook: "外语必修：全球沟通 + 训练大脑", logic: "communication + personal development" },
-  "#171": { categories: ["city"], hook: "古建vs住房：保护文化 + 也要解决住房", logic: "heritage + housing", balanced: true },
-  "#173": { categories: ["life"], hook: "孩子更难：竞争压力大 + 数字风险高", logic: "harder childhood" },
-  "#174": { categories: ["rules"], hook: "工资上限：限制极端不公 + 但保留激励", logic: "fairness + motivation", balanced: true },
-  "#183": { categories: ["city"], hook: "城市生活：机会更多 + 生活更方便", logic: "city is better for me" },
-  "#184": { categories: ["education"], hook: "外语学习：AI不能懂文化 + 外语提升能力", logic: "AI cannot replace real language" },
-  "#195": { categories: ["work"], hook: "公司营销：信誉建信任 + 折扣会伤品牌", logic: "reputation > discounts" },
-  "#261": { categories: ["education"], hook: "教育旅行：直接经验有用 + 但不是必需", logic: "useful but not necessary", balanced: true }
+  "#17": {
+    "categories": [
+      "education"
+    ],
+    "hook": "笔试能公平测基础知识，但测不了创造力、合作和实践能力；所以保留笔试，但不能只靠笔试。",
+    "logic": "公平测知识 → 能力覆盖有限 → 组合评估"
+  },
+  "#56": {
+    "categories": [
+      "education"
+    ],
+    "hook": "边做边学能把知识学深，也更接近真实工作；因此适合学校，但最好与传统教学结合。",
+    "logic": "理解更深 → 准备真实工作 → 两种教学结合"
+  },
+  "#63": {
+    "categories": [
+      "education"
+    ],
+    "hook": "扣分能维护公平并训练责任感，但处罚不能压过学习本身；所以可以扣，但要有弹性。",
+    "logic": "公平与责任 → 处罚服务学习 → 灵活扣分"
+  },
+  "#77": {
+    "categories": [
+      "education"
+    ],
+    "hook": "老戏剧能教文化、语言和人性，但语言难、容易无聊；所以要用现代方法教。",
+    "logic": "文化与思考 → 语言难 易失去兴趣 → 现代化教学"
+  },
+  "#86": {
+    "categories": [
+      "education"
+    ],
+    "hook": "数字资料快、方便、易获取，但纸书和图书馆更稳定、专注、可靠；所以两者都需要。",
+    "logic": "快速方便 → 纸书稳定可靠 → 数字+传统并存"
+  },
+  "#102": {
+    "categories": [
+      "education"
+    ],
+    "hook": "经验让人真正会做事，正规教育提供系统知识；所以经验重要，但不能替代教育。",
+    "logic": "实践能力 → 系统知识 → 经验+教育"
+  },
+  "#106": {
+    "categories": [
+      "education"
+    ],
+    "hook": "边学习边工作能赚收入、积经验，但容易疲惫影响学习；所以可以结合，但必须平衡。",
+    "logic": "收入与经验 → 压力与疲劳 → 平衡结合"
+  },
+  "#124": {
+    "categories": [
+      "language"
+    ],
+    "hook": "留学能长见识、练独立，但费用高而且不是人人需要；所以有价值但不是必要条件。",
+    "logic": "视野与独立 → 成本高 非人人需要 → 有价值非必需"
+  },
+  "#170": {
+    "categories": [
+      "language"
+    ],
+    "hook": "外语帮助全球沟通，也训练大脑和拓宽思维；所以学校应当必修。",
+    "logic": "全球沟通 → 思维与个人发展 → 应当必修"
+  },
+  "#184": {
+    "categories": [
+      "language"
+    ],
+    "hook": "AI能翻译文字，却代替不了文化理解和语言训练；所以外语仍然需要学。",
+    "logic": "文化沟通 → 个人能力 → AI不能替代外语"
+  },
+  "#261": {
+    "categories": [
+      "language"
+    ],
+    "hook": "旅行能给直接体验，但成本高，而且不旅行也能获得好教育；所以旅行有价值但不是必需。",
+    "logic": "直接体验 → 成本 可替代 → 有价值非必需"
+  },
+  "#24": {
+    "categories": [
+      "technology"
+    ],
+    "hook": "信息革命让知识触手可及，也带来假信息、网瘾和网络风险；所以明显利弊并存。",
+    "logic": "快速获取知识 → 误导与网络风险 → 利弊并存"
+  },
+  "#35": {
+    "categories": [
+      "technology"
+    ],
+    "hook": "媒体天天影响年轻人的信息和价值观，也可能制造焦虑和坏榜样；所以影响非常强。",
+    "logic": "信息与价值观 → 焦虑与负面模仿 → 媒体影响强"
+  },
+  "#159": {
+    "categories": [
+      "technology"
+    ],
+    "hook": "AI助手提高效率，也让缺资源的人获得学习和工作帮助；所以总体利大于弊。",
+    "logic": "提高效率 → 扩大可及性 → 总体有益"
+  },
+  "#160": {
+    "categories": [
+      "technology"
+    ],
+    "hook": "电视既能让人放松，也能教育和提供陪伴；所以它有多种积极功能。",
+    "logic": "放松 → 教育 + 陪伴 → 多种用途"
+  },
+  "#30": {
+    "categories": [
+      "work"
+    ],
+    "hook": "商场把购物集中到一处更方便，也能创造就业和税收；所以总体是积极发展。",
+    "logic": "一站式便利 → 就业与经济 → 总体积极"
+  },
+  "#46": {
+    "categories": [
+      "work"
+    ],
+    "hook": "员工懂一线，意见能让决策更现实；但参与过多会拖慢速度；所以听员工，管理层最终拍板。",
+    "logic": "一线经验 → 决策变慢 → 利大于弊"
+  },
+  "#162": {
+    "categories": [
+      "work"
+    ],
+    "hook": "自动化会减少重复劳动，人们又越来越重视健康和生活；所以未来可能工作更少。",
+    "logic": "技术替代重复劳动 → 更重视生活 → 工时可能减少"
+  },
+  "#166": {
+    "categories": [
+      "work"
+    ],
+    "hook": "短工周可能把工作机会分给更多人，但会增加成本、降低收入；若实行应公平覆盖全体。",
+    "logic": "分配更多岗位 → 成本与收入 → 谨慎实施"
+  },
+  "#174": {
+    "categories": [
+      "work"
+    ],
+    "hook": "极端高薪会伤公平，但死工资上限会削弱人才激励；所以应控制差距，而不是硬封顶。",
+    "logic": "公平与差距 → 激励与人才 → 控制但不封顶"
+  },
+  "#195": {
+    "categories": [
+      "work"
+    ],
+    "hook": "信誉能建立长期信任，而频繁打折会伤品牌价值；所以企业应更重视声誉。",
+    "logic": "长期信任 → 短促伤品牌 → 声誉优先"
+  },
+  "#39": {
+    "categories": [
+      "life"
+    ],
+    "hook": "平衡能保护身心健康，但生活成本高、工作随时在线让它很难实现。",
+    "logic": "健康与休息 → 成本 + 工作需求 → 平衡很重要"
+  },
+  "#40": {
+    "categories": [
+      "life"
+    ],
+    "hook": "工作侵占私人时间已很普遍；企业尊重私人时间，加上个人时间管理，可以缓解。",
+    "logic": "跨行业普遍 → 企业政策 + 时间管理 → 可以改善"
+  },
+  "#43": {
+    "categories": [
+      "life"
+    ],
+    "hook": "父母有监督义务，但不可能控制孩子所有行为；只有明显疏忽时才应承担有限责任。",
+    "logic": "监督义务 → 责任要有限公平 → 疏忽才担责"
+  },
+  "#71": {
+    "categories": [
+      "life"
+    ],
+    "hook": "医疗技术能救命、减少痛苦，老年人也能继续贡献；所以寿命延长总体是福。",
+    "logic": "救命减痛苦 → 老人仍可贡献 → 总体是福"
+  },
+  "#90": {
+    "categories": [
+      "life"
+    ],
+    "hook": "高风险活动需要成熟判断，驾驶尤其关系公共安全；所以年龄门槛必要，18岁合理。",
+    "logic": "成熟与判断 → 公共安全 → 18岁合理"
+  },
+  "#149": {
+    "categories": [
+      "life"
+    ],
+    "hook": "法律一方面靠惩罚阻止坏行为，另一方面划清社会规范；所以确实能影响人的行为。",
+    "logic": "惩罚威慑 → 道德与规则引导 → 法律有效"
+  },
+  "#163": {
+    "categories": [
+      "life"
+    ],
+    "hook": "名人仍然是普通人，隐私关系尊严；过度曝光还会恶化公共文化；所以不应放弃隐私权。",
+    "logic": "人类尊严 → 公共文化 → 保留隐私"
+  },
+  "#173": {
+    "categories": [
+      "life"
+    ],
+    "hook": "现代孩子承受更强学业社交压力，又面对过去很少有的网络风险；所以成长环境更难。",
+    "logic": "竞争与压力 → 数字风险 → 大体同意"
+  },
+  "#5": {
+    "categories": [
+      "city"
+    ],
+    "hook": "堵车靠大运量公交解决；公平+环保让更多人受益；所以优先投公交，不继续扩路。",
+    "logic": "减拥堵 大运量 → 可负担 + 环保 → 公交优先"
+  },
+  "#72": {
+    "categories": [
+      "city"
+    ],
+    "hook": "好设计提升舒适和效率，坏设计会带来不便甚至危险；所以建筑直接影响生活和工作。",
+    "logic": "舒适与效率 → 不便与安全 → 设计很重要"
+  },
+  "#116": {
+    "categories": [
+      "city"
+    ],
+    "hook": "低价公交能减车流、帮助低收入者，但会增加容量和财政压力；管理好时利大于弊。",
+    "logic": "减车流 + 公平 → 容量与财政 → 管理好则利大于弊"
+  },
+  "#171": {
+    "categories": [
+      "city"
+    ],
+    "hook": "古建筑值得保文化，但住房是现实刚需；所以要保护古建筑，却不能挤占现代住房投入。",
+    "logic": "文化与身份 → 住房需求 → 部分同意"
+  },
+  "#183": {
+    "categories": [
+      "city"
+    ],
+    "hook": "城市给我更多教育就业机会，也更方便；所以对我而言城市生活更合适。",
+    "logic": "机会更多 → 生活方便 → 我选城市"
+  },
+  "#9": {
+    "categories": [
+      "environment"
+    ],
+    "hook": "政府有立法权，也有资源组织大规模行动；所以应由政府牵头，企业和个人配合。",
+    "logic": "法律与政策 → 资源与协调 → 政府牵头"
+  },
+  "#76": {
+    "categories": [
+      "environment"
+    ],
+    "hook": "气候变化影响所有国家、后果长期，而且必须国际合作；所以它是最紧迫问题。",
+    "logic": "全球影响 → 国际合作 → 气候最紧迫"
+  },
+  "#98": {
+    "categories": [
+      "environment"
+    ],
+    "hook": "全球问题跨国界，一个政府单独解决不了；所以政府必须和国际组织合作。",
+    "logic": "问题跨国界 → 合作与资源共享 → 国际合作"
+  },
+  "#155": {
+    "categories": [
+      "environment"
+    ],
+    "hook": "极端天气先毁农业，再威胁粮食安全、健康和稳定；所以这是最值得研究的方向。",
+    "logic": "极端天气毁农业 → 粮食安全与稳定 → 研究重点"
+  },
+  "#156": {
+    "categories": [
+      "environment"
+    ],
+    "hook": "旅游带来收入和就业，也会造成污染与文化压力；管理得好时，发展中国家仍可利大于弊。",
+    "logic": "经济与就业 → 环境与文化压力 → 管理好则利大于弊"
+  },
+  "#101010": {
+    "categories": [
+      "technology"
+    ],
+    "hook": "媒体影响：引导社会舆论 + 塑造个人性格",
+    "logic": "society + individuals"
+  }
 };
 
 const MEMORY_FILTERS = [
-  { key: "all", label: "全部", description: "全部速记卡片" },
-  { key: "round1", label: "第一轮高频迁移", ids: ["#17", "#56", "#63", "#102", "#124", "#170", "#184", "#261", "#24", "#35", "#101010", "#86", "#159", "#160", "#9", "#43", "#90", "#149", "#174"] },
-  { key: "round2", label: "第二轮场景强化", ids: ["#39", "#40", "#46", "#162", "#166", "#195", "#5", "#30", "#72", "#116", "#171", "#183", "#76", "#155", "#156"] },
-  { key: "round3", label: "第三轮专项补强", ids: ["#71", "#77", "#98", "#106", "#173"] },
-  { key: "education", label: "教育学习", category: "education" },
-  { key: "technology", label: "科技媒体", category: "technology" },
-  { key: "work", label: "工作公司", category: "work" },
-  { key: "rules", label: "政府法律", category: "rules" },
-  { key: "environment", label: "环境气候", category: "environment" },
-  { key: "city", label: "城市公共", category: "city" },
-  { key: "life", label: "个人家庭", category: "life" },
-  { key: "balanced", label: "正反平衡题", balanced: true }
+  {
+    "key": "all",
+    "label": "全部",
+    "description": "全部作文"
+  },
+  {
+    "key": "education",
+    "label": "教育 · 学习 · 考试",
+    "category": "education"
+  },
+  {
+    "key": "language",
+    "label": "语言 · 留学 · 教育视野",
+    "category": "language"
+  },
+  {
+    "key": "technology",
+    "label": "科技 · 媒体 · 信息",
+    "category": "technology"
+  },
+  {
+    "key": "work",
+    "label": "工作 · 职场 · 经济",
+    "category": "work"
+  },
+  {
+    "key": "life",
+    "label": "社会问题 · 家庭 · 个人生活",
+    "category": "life"
+  },
+  {
+    "key": "city",
+    "label": "城市 · 交通 · 建筑",
+    "category": "city"
+  },
+  {
+    "key": "environment",
+    "label": "环境 · 全球问题 · 旅游",
+    "category": "environment"
+  }
 ];
 
 const ARTICLE_TRANSLATIONS = window.WE_TRANSLATIONS || {};
@@ -198,6 +436,7 @@ const DEFAULT_WFD_ITEMS = normalizeWfdItems(DEFAULT_WFD_DATA.items || []).map((i
 
 const ARTICLE_SLOT_PATTERNS = {
   introduction: [
+    { regex: /^In this essay, I will describe (.+), and explain why (.+)\.$/, labels: ["描述对象", "我的观点"], suffixes: ["", "."] },
     {
       regex: /^The issue of (.+) has triggered a heated debate in contemporary society\.$/,
       labels: ["议题"],
@@ -216,8 +455,11 @@ const ARTICLE_SLOT_PATTERNS = {
     }
   ],
   argument1: [
+    { regex: /^To begin with, one of the most compelling reasons why (.+) is that (.+)\.$/, labels: ["议题", "分论点"], suffixes: ["", "."] },
+    { regex: /^To begin with, one of the strongest reasons (.+) is that (.+)\.$/, labels: ["议题", "分论点"], suffixes: ["", "."] },
+    { regex: /^To begin with, one of the most compelling advantages of (.+) is that (.+)\.$/, labels: ["议题", "分论点"], suffixes: ["", "."] },
     {
-      regex: /^To begin with, one of the most compelling reasons for the significance of (.+) is that (.+)\.$/,
+      regex: /^To begin with, one of the most compelling reasons for (?:the significance of )?(.+) is that (.+)\.$/,
       labels: ["关键词", "分论点"],
       suffixes: ["", "."]
     },
@@ -227,7 +469,7 @@ const ARTICLE_SLOT_PATTERNS = {
       suffixes: ["."]
     },
     {
-      regex: /^To illustrate, studies have shown that (.+)\.$/,
+      regex: /^To illustrate, (?:studies have shown that )?(.+)\.$/,
       labels: ["例子"],
       suffixes: ["."]
     },
@@ -249,7 +491,7 @@ const ARTICLE_SLOT_PATTERNS = {
       suffixes: ["."]
     },
     {
-      regex: /^Based on my experience, (.+)\.$/,
+      regex: /^(?:Based on my (?:experience|observation)|From my own [^,]+), (.+)\.$/,
       labels: ["个人例子"],
       suffixes: ["."]
     },
@@ -261,6 +503,7 @@ const ARTICLE_SLOT_PATTERNS = {
     }
   ],
   conclusion: [
+    { regex: /^Therefore, I strongly (?:believe|agree) that (.+)\.$/, labels: ["总结观点"], suffixes: ["."] },
     {
       regex: /^To sum up, all the evidence suggests that (.+), mainly due to (.+) and (.+)\.$/,
       labels: ["总结观点", "理由一", "理由二"],
@@ -279,6 +522,9 @@ const ARTICLE_SLOT_PATTERNS = {
   ]
 };
 
+ARTICLE_SLOT_PATTERNS.conclusion.push({ regex: /^Therefore, I strongly recommend (.+)\.$/, labels: ["推荐句"], suffixes: ["."] });
+ARTICLE_SLOT_PATTERNS.conclusion.push({ regex: /^To sum up, all the evidence suggests that (.+)\.$/, labels: ["总结观点"], suffixes: ["."] });
+
 const MASTERY_STEPS = [
   { key: "new", label: "未熟悉", minCorrect: 0 },
   { key: "familiar", label: "熟悉", minCorrect: 1 },
@@ -295,7 +541,7 @@ const articleImageUrls = new Set([
   ...articles.map((article) => assetUrl(memoryCardImagePath(article))).filter(Boolean)
 ]);
 const IMAGE_PRELOAD_CONCURRENCY = 3;
-const IMAGE_CACHE_NAME = "pte-we-images-v5";
+const IMAGE_CACHE_NAME = "pte-we-images-v6";
 const imagePreload = {
   active: 0,
   queue: [],
@@ -311,7 +557,6 @@ const persisted = readJson(STORAGE_KEY, {
   drafts: {},
   examDrafts: {},
   drill: {},
-  pet: {},
   settings: {}
 });
 persisted.progress ||= {};
@@ -325,12 +570,6 @@ persisted.wfd.index = normalizeWfdIndex(persisted.wfd.index, persisted.wfd.items
 persisted.wfd.syncUrl ||= "";
 persisted.wfd.lastSyncedAt ||= "";
 persisted.wfd.seedGeneratedAt = DEFAULT_WFD_GENERATED_AT;
-persisted.pet ||= {};
-persisted.pet.daily ||= {};
-persisted.pet.position ||= null;
-persisted.pet.goals = normalizedDailyGoals(persisted.pet.goals);
-persisted.pet.examDate = normalizedDateKey(persisted.pet.examDate) || "";
-persisted.pet.selectedDate = normalizedDateKey(persisted.pet.selectedDate) || todayKey();
 persisted.settings ||= {};
 persisted.settings.templateTimerMinutes = normalizedTemplateTimerMinutes(persisted.settings.templateTimerMinutes);
 
@@ -339,7 +578,6 @@ const state = {
   examType: "single",
   activeArticleId: articles[0]?.id || null,
   sidebarCollapsed: readJson(SIDEBAR_STATE_KEY, false),
-  calendarMonth: startOfMonth(dateFromKey(persisted.pet.selectedDate)),
   filter: "all",
   memoryFilter: "all",
   articleSourceCollapsed: false,
@@ -374,14 +612,6 @@ const state = {
     dragging: false,
     lastX: 0,
     lastY: 0
-  },
-  pet: {
-    panelOpen: false,
-    dragging: false,
-    moved: false,
-    dragOffsetX: 0,
-    dragOffsetY: 0,
-    fatigueNotifiedAt: 0
   }
 };
 
@@ -467,30 +697,6 @@ const els = {
   examProgress: document.getElementById("examProgress"),
   examInput: document.getElementById("examInput"),
   examResult: document.getElementById("examResult"),
-  calendarGrid: document.getElementById("calendarGrid"),
-  calendarTodayButton: document.getElementById("calendarTodayButton"),
-  calendarPreviousMonthButton: document.getElementById("calendarPreviousMonthButton"),
-  calendarNextMonthButton: document.getElementById("calendarNextMonthButton"),
-  studyPet: document.getElementById("studyPet"),
-  studyPetCard: document.getElementById("studyPetCard"),
-  studyPetFace: document.getElementById("studyPetFace"),
-  studyPetTitle: document.getElementById("studyPetTitle"),
-  studyPetStatus: document.getElementById("studyPetStatus"),
-  studyPetPanel: document.getElementById("studyPetPanel"),
-  studyPetMood: document.getElementById("studyPetMood"),
-  studyPetMessage: document.getElementById("studyPetMessage"),
-  studyPetGoals: document.getElementById("studyPetGoals"),
-  studyPetCloseButton: document.getElementById("studyPetCloseButton"),
-  selectedStudyDateLabel: document.getElementById("selectedStudyDateLabel"),
-  selectedStudySummary: document.getElementById("selectedStudySummary"),
-  examCountdownCard: document.getElementById("examCountdownCard"),
-  dailyGoalCardsInput: document.getElementById("dailyGoalCardsInput"),
-  dailyGoalFamiliarInput: document.getElementById("dailyGoalFamiliarInput"),
-  dailyGoalWritingInput: document.getElementById("dailyGoalWritingInput"),
-  dailyGoalMinutesInput: document.getElementById("dailyGoalMinutesInput"),
-  resetDailyGoalsButton: document.getElementById("resetDailyGoalsButton"),
-  examDateInput: document.getElementById("examDateInput"),
-  clearExamDateButton: document.getElementById("clearExamDateButton"),
   wfdPanel: document.getElementById("wfdPanel"),
   wfdSummary: document.getElementById("wfdSummary"),
   wfdPreviousButton: document.getElementById("wfdPreviousButton"),
@@ -515,8 +721,6 @@ const els = {
 bindEvents();
 renderMemoryFilters();
 renderSidebarState();
-renderStudyCalendar();
-renderStudyPet();
 render();
 registerImageCacheWorker().finally(scheduleImageCacheWarmup);
 
@@ -529,24 +733,6 @@ function bindEvents() {
   });
 
   els.sidebarToggle.addEventListener("click", toggleSidebar);
-  els.calendarPreviousMonthButton.addEventListener("click", () => shiftStudyCalendarMonth(-1));
-  els.calendarNextMonthButton.addEventListener("click", () => shiftStudyCalendarMonth(1));
-  els.calendarTodayButton.addEventListener("click", showCurrentStudyCalendarMonth);
-  els.calendarGrid.addEventListener("click", handleStudyCalendarDayClick);
-  els.studyPetCard.addEventListener("click", toggleStudyPetPanel);
-  els.studyPetCard.addEventListener("dblclick", resetStudyPetPosition);
-  els.studyPetCard.addEventListener("pointerdown", startStudyPetDrag);
-  els.studyPetCard.addEventListener("dragstart", (event) => event.preventDefault());
-  els.studyPetCloseButton.addEventListener("click", closeStudyPetPanel);
-  els.dailyGoalCardsInput.addEventListener("change", saveDailyGoalSettings);
-  els.dailyGoalFamiliarInput.addEventListener("change", saveDailyGoalSettings);
-  els.dailyGoalWritingInput.addEventListener("change", saveDailyGoalSettings);
-  els.dailyGoalMinutesInput.addEventListener("change", saveDailyGoalSettings);
-  els.resetDailyGoalsButton.addEventListener("click", resetDailyGoalSettings);
-  els.examDateInput.addEventListener("change", saveExamDateSetting);
-  els.clearExamDateButton.addEventListener("click", clearExamDateSetting);
-  window.addEventListener("pointermove", moveStudyPet);
-  window.addEventListener("pointerup", endStudyPetDrag);
   els.openCatalogButton.addEventListener("click", openCatalog);
   els.closeCatalogButton.addEventListener("click", closeCatalog);
   els.catalogBackdrop.addEventListener("click", closeCatalog);
@@ -689,432 +875,6 @@ function renderSidebarState() {
   els.sidebarToggle.setAttribute("aria-label", state.sidebarCollapsed ? "展开左侧栏" : "收起左侧栏");
 }
 
-function shiftStudyCalendarMonth(direction) {
-  state.calendarMonth = addMonths(state.calendarMonth, direction);
-  renderStudyCalendar();
-  renderStudyPet();
-}
-
-function showCurrentStudyCalendarMonth() {
-  state.calendarMonth = startOfMonth(new Date());
-  persisted.pet.selectedDate = todayKey();
-  writeState();
-  renderStudyCalendar();
-  renderStudyPet();
-}
-
-function renderStudyCalendar() {
-  if (!els.calendarGrid) return;
-  const month = startOfMonth(state.calendarMonth);
-  const today = new Date();
-  const selected = dateFromKey(persisted.pet.selectedDate);
-  const monthStartOffset = (month.getDay() + 6) % 7;
-  const gridStart = new Date(month);
-  gridStart.setDate(month.getDate() - monthStartOffset);
-
-  els.calendarTodayButton.textContent = `${month.getFullYear()}年${month.getMonth() + 1}月`;
-
-  const days = Array.from({ length: 42 }, (_, index) => {
-    const day = new Date(gridStart);
-    day.setDate(gridStart.getDate() + index);
-    const key = dateKey(day);
-    const stats = statsForDate(key);
-    const completed = completedDailyGoalCount(stats);
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "study-pet-calendar-day";
-    button.dataset.date = key;
-    button.innerHTML = `<span>${day.getDate()}</span>`;
-    button.setAttribute("aria-label", `${day.getFullYear()}年${day.getMonth() + 1}月${day.getDate()}日`);
-    button.classList.toggle("is-outside-month", day.getMonth() !== month.getMonth());
-    button.classList.toggle("is-weekend", day.getDay() === 0 || day.getDay() === 6);
-    button.classList.toggle("is-today", isSameDate(day, today));
-    button.classList.toggle("is-selected", isSameDate(day, selected));
-    button.classList.toggle("has-study", hasStudyActivity(stats));
-    button.classList.toggle("is-complete", completed >= 2);
-    button.classList.toggle("is-partial", hasStudyActivity(stats) && completed < 2);
-    if (isSameDate(day, today)) button.setAttribute("aria-current", "date");
-    return button;
-  });
-
-  els.calendarGrid.replaceChildren(...days);
-}
-
-function handleStudyCalendarDayClick(event) {
-  const button = event.target.closest(".study-pet-calendar-day");
-  if (!button) return;
-  persisted.pet.selectedDate = button.dataset.date;
-  state.calendarMonth = startOfMonth(dateFromKey(persisted.pet.selectedDate));
-  writeState();
-  renderStudyCalendar();
-  renderStudyPet();
-}
-
-function toggleStudyPetPanel() {
-  if (state.pet.moved) return;
-  state.pet.panelOpen = !state.pet.panelOpen;
-  renderStudyPet();
-}
-
-function closeStudyPetPanel(event) {
-  event.stopPropagation();
-  state.pet.panelOpen = false;
-  renderStudyPet();
-}
-
-function startStudyPetDrag(event) {
-  if (event.button !== 0) return;
-  event.preventDefault();
-  const rect = els.studyPet.getBoundingClientRect();
-  state.pet.dragging = true;
-  state.pet.moved = false;
-  state.pet.dragOffsetX = event.clientX - rect.left;
-  state.pet.dragOffsetY = event.clientY - rect.top;
-  els.studyPet.classList.add("is-dragging");
-  els.studyPetCard.setPointerCapture?.(event.pointerId);
-}
-
-function moveStudyPet(event) {
-  if (!state.pet.dragging) return;
-  event.preventDefault();
-  state.pet.moved = true;
-  applyStudyPetPosition(clampedStudyPetPosition(
-    event.clientX - state.pet.dragOffsetX,
-    event.clientY - state.pet.dragOffsetY
-  ));
-}
-
-function endStudyPetDrag() {
-  if (!state.pet.dragging) return;
-  state.pet.dragging = false;
-  els.studyPet.classList.remove("is-dragging");
-  const rect = els.studyPet.getBoundingClientRect();
-  persisted.pet.position = clampedStudyPetPosition(rect.left, rect.top);
-  applyStudyPetPosition(persisted.pet.position);
-  writeState();
-  window.setTimeout(() => {
-    state.pet.moved = false;
-  }, 0);
-}
-
-function resetStudyPetPosition(event) {
-  event.preventDefault();
-  persisted.pet.position = null;
-  writeState();
-  renderStudyPet();
-}
-
-function renderStudyPet() {
-  if (!els.studyPet) return;
-  ensureTodayPetStats();
-  const todayStats = todayPetStats();
-  const selectedKey = normalizedDateKey(persisted.pet.selectedDate) || todayKey();
-  const selectedStats = statsForDate(selectedKey);
-  const goals = dailyGoals();
-  const level = petLevel();
-  const status = petStatus(todayStats);
-  applyStudyPetPosition(persisted.pet.position);
-  els.studyPet.classList.toggle("is-panel-open", state.pet.panelOpen);
-  els.studyPetPanel.hidden = !state.pet.panelOpen;
-  els.studyPetFace.textContent = status.face;
-  els.studyPetTitle.textContent = `Lv${level.level} ${level.label}`;
-  els.studyPetStatus.textContent = `粮食 ${todayStats.food} · 目标 ${completedDailyGoalCount(todayStats)}/4`;
-  els.studyPetMood.textContent = status.mood;
-  els.studyPetMessage.textContent = status.message;
-  els.selectedStudyDateLabel.textContent = selectedDateLabel(selectedKey);
-  els.selectedStudySummary.textContent = `目标 ${completedDailyGoalCount(selectedStats)}/4 · 粮食 ${selectedStats.food}`;
-  renderExamCountdown();
-  renderDailyGoalInputs();
-  els.studyPetGoals.replaceChildren(
-    petGoalRow("刷卡", selectedStats.cards, goals.cards),
-    petGoalRow("熟悉新文章", selectedStats.familiar, goals.familiar),
-    petGoalRow("默写/考核", selectedStats.writing, goals.writing),
-    petGoalRow("计时学习", selectedStats.minutes, goals.minutes, "分钟")
-  );
-}
-
-function applyStudyPetPosition(position) {
-  if (!els.studyPet) return;
-  if (!position) {
-    els.studyPet.style.left = "";
-    els.studyPet.style.top = "";
-    els.studyPet.style.right = `${PET_DEFAULT_POSITION.right}px`;
-    els.studyPet.style.bottom = `${PET_DEFAULT_POSITION.bottom}px`;
-    return;
-  }
-  const { left, top } = clampedStudyPetPosition(position.left, position.top);
-  els.studyPet.style.left = `${left}px`;
-  els.studyPet.style.top = `${top}px`;
-  els.studyPet.style.right = "auto";
-  els.studyPet.style.bottom = "auto";
-}
-
-function clampedStudyPetPosition(left, top) {
-  const width = els.studyPet.offsetWidth;
-  const height = els.studyPet.offsetHeight;
-  return {
-    left: Math.round(clamp(left, 8, Math.max(8, window.innerWidth - width - 8))),
-    top: Math.round(clamp(top, 8, Math.max(8, window.innerHeight - height - 8)))
-  };
-}
-
-function petGoalRow(label, value, target, suffix = "") {
-  const row = document.createElement("div");
-  row.className = "study-pet-goal";
-  const capped = Math.min(value, target);
-  const percent = target ? Math.min(100, Math.round((capped / target) * 100)) : 0;
-  row.innerHTML = `
-    <div>
-      <span>${escapeHtml(label)}</span>
-      <strong>${capped} / ${target}${suffix ? ` ${escapeHtml(suffix)}` : ""}</strong>
-    </div>
-    <div class="study-pet-progress"><span style="width: ${percent}%"></span></div>
-  `;
-  return row;
-}
-
-function renderExamCountdown() {
-  const examDate = normalizedDateKey(persisted.pet.examDate);
-  if (!examDate) {
-    els.examCountdownCard.innerHTML = `
-      <span>考试倒计时</span>
-      <strong>未设置</strong>
-      <p>设置考试日期后，宠物会帮你倒计时。</p>
-    `;
-    return;
-  }
-  const days = daysUntil(examDate);
-  const text = days > 0 ? `还有 ${days} 天` : days === 0 ? "就是今天" : `已过去 ${Math.abs(days)} 天`;
-  els.examCountdownCard.innerHTML = `
-    <span>考试倒计时</span>
-    <strong>${escapeHtml(text)}</strong>
-    <p>${escapeHtml(examDate)}</p>
-  `;
-}
-
-function renderDailyGoalInputs() {
-  const goals = dailyGoals();
-  els.dailyGoalCardsInput.value = String(goals.cards);
-  els.dailyGoalFamiliarInput.value = String(goals.familiar);
-  els.dailyGoalWritingInput.value = String(goals.writing);
-  els.dailyGoalMinutesInput.value = String(goals.minutes);
-  els.examDateInput.value = normalizedDateKey(persisted.pet.examDate) || "";
-}
-
-function saveDailyGoalSettings() {
-  persisted.pet.goals = normalizedDailyGoals({
-    cards: els.dailyGoalCardsInput.value,
-    familiar: els.dailyGoalFamiliarInput.value,
-    writing: els.dailyGoalWritingInput.value,
-    minutes: els.dailyGoalMinutesInput.value
-  });
-  writeState();
-  renderStudyCalendar();
-  renderStudyPet();
-}
-
-function resetDailyGoalSettings() {
-  persisted.pet.goals = { ...DEFAULT_DAILY_GOALS };
-  writeState();
-  renderStudyCalendar();
-  renderStudyPet();
-}
-
-function saveExamDateSetting() {
-  persisted.pet.examDate = normalizedDateKey(els.examDateInput.value) || "";
-  writeState();
-  renderStudyPet();
-}
-
-function clearExamDateSetting() {
-  persisted.pet.examDate = "";
-  writeState();
-  renderStudyPet();
-}
-
-function dailyGoals() {
-  persisted.pet.goals = normalizedDailyGoals(persisted.pet.goals);
-  return persisted.pet.goals;
-}
-
-function completedDailyGoalCount(stats) {
-  const goals = dailyGoals();
-  return [
-    goalReached(stats.cards, goals.cards),
-    goalReached(stats.familiar, goals.familiar),
-    goalReached(stats.writing, goals.writing),
-    goalReached(stats.minutes, goals.minutes)
-  ].filter(Boolean).length;
-}
-
-function goalReached(value, target) {
-  return target <= 0 || value >= target;
-}
-
-function recordDrillPetProgress(cardId, grade) {
-  const stats = todayPetStats();
-  stats.reviewedCards ||= {};
-  if (!stats.reviewedCards[cardId]) {
-    stats.cards += 1;
-    stats.reviewedCards[cardId] = true;
-  }
-  if (grade === "known") stats.food += 3;
-  if (grade === "vague") stats.food += 1;
-  recordPetActivity();
-}
-
-function recordWritingPetProgress(key) {
-  const stats = todayPetStats();
-  stats.writingKeys ||= {};
-  if (!stats.writingKeys[key]) {
-    stats.writing += 1;
-    stats.food += 5;
-    stats.writingKeys[key] = true;
-  }
-  recordPetActivity();
-}
-
-function recordWfdPetProgress(key, passed) {
-  const stats = todayPetStats();
-  stats.writingKeys ||= {};
-  if (!stats.writingKeys[`wfd:${key}`]) {
-    stats.writing += 1;
-    stats.writingKeys[`wfd:${key}`] = true;
-  }
-  stats.food += passed ? 4 : 1;
-  recordPetActivity();
-}
-
-function recordFamiliarPetProgress(previousProgress, nextProgress) {
-  if (windowCorrectCount(previousProgress) >= 1 || windowCorrectCount(nextProgress) < 1) return;
-  const stats = todayPetStats();
-  stats.familiar += 1;
-  stats.food += 8;
-  recordPetActivity();
-}
-
-function recordTimedStudySeconds(seconds) {
-  if (seconds < 20) return;
-  const stats = todayPetStats();
-  stats.minutes += Math.max(1, Math.round(seconds / 60));
-  stats.food += Math.max(1, Math.round(seconds / 300));
-  recordPetActivity();
-}
-
-function recordPetActivity() {
-  const stats = todayPetStats();
-  const now = Date.now();
-  stats.lastActivityAt = new Date(now).toISOString();
-  stats.firstActivityAt ||= stats.lastActivityAt;
-  maybeShowPetFatigue(stats, now);
-  writeState();
-  renderStudyCalendar();
-  renderStudyPet();
-}
-
-function maybeShowPetFatigue(stats, now) {
-  if (!stats.firstActivityAt) return;
-  const first = new Date(stats.firstActivityAt).getTime();
-  const lastPrompt = new Date(stats.lastFatiguePromptAt || 0).getTime();
-  const studiedLongEnough = now - first >= PET_FATIGUE_MINUTES * 60 * 1000;
-  const cooledDown = now - lastPrompt >= PET_FATIGUE_COOLDOWN_MS;
-  if (!studiedLongEnough || !cooledDown) return;
-  stats.lastFatiguePromptAt = new Date(now).toISOString();
-  state.pet.panelOpen = true;
-  showToast("你已经学了 45 分钟，宠物有点担心你。休息 3 分钟再继续。", true);
-}
-
-function todayPetStats() {
-  return ensureTodayPetStats();
-}
-
-function ensureTodayPetStats() {
-  const key = todayKey();
-  persisted.pet.daily[key] ||= {
-    cards: 0,
-    familiar: 0,
-    writing: 0,
-    minutes: 0,
-    food: 0,
-    reviewedCards: {},
-    writingKeys: {},
-    firstActivityAt: null,
-    lastActivityAt: null,
-    lastFatiguePromptAt: null
-  };
-  return persisted.pet.daily[key];
-}
-
-function statsForDate(key) {
-  const normalized = normalizedDateKey(key);
-  if (!normalized) return emptyPetStats();
-  return persisted.pet.daily[normalized] || emptyPetStats();
-}
-
-function emptyPetStats() {
-  return {
-    cards: 0,
-    familiar: 0,
-    writing: 0,
-    minutes: 0,
-    food: 0,
-    reviewedCards: {},
-    writingKeys: {},
-    firstActivityAt: null,
-    lastActivityAt: null,
-    lastFatiguePromptAt: null
-  };
-}
-
-function hasStudyActivity(stats) {
-  return Boolean(stats.food || stats.cards || stats.familiar || stats.writing || stats.minutes);
-}
-
-function normalizedDailyGoals(value = {}) {
-  return {
-    cards: normalizedGoalNumber(value.cards, "cards"),
-    familiar: normalizedGoalNumber(value.familiar, "familiar"),
-    writing: normalizedGoalNumber(value.writing, "writing"),
-    minutes: normalizedGoalNumber(value.minutes, "minutes")
-  };
-}
-
-function normalizedGoalNumber(value, key) {
-  const [min, max] = DAILY_GOAL_LIMITS[key];
-  const fallback = DEFAULT_DAILY_GOALS[key];
-  const parsed = Number.parseInt(value, 10);
-  if (!Number.isFinite(parsed)) return fallback;
-  return clamp(parsed, min, max);
-}
-
-function petLevel() {
-  const mastered = articles.filter((article) => masteryLevel(getProgress(article.id)).key === "skilled").length;
-  if (mastered >= 30) return { level: 4, label: "考前搭子" };
-  if (mastered >= 15) return { level: 3, label: "陪练员" };
-  if (mastered >= 5) return { level: 2, label: "小伙伴" };
-  return { level: 1, label: "新手蛋" };
-}
-
-function petStatus(stats) {
-  const completed = completedDailyGoalCount(stats);
-  if (completed >= 2) {
-    return { face: "😌", mood: "今天吃饱了", message: "今日目标达标了，别硬熬。" };
-  }
-  if (stats.food > 0) {
-    return { face: "😋", mood: "进食中", message: nextPetGoalMessage(stats) };
-  }
-  return { face: "🥺", mood: "有点饿", message: "刷几张卡，我就开始吃饭。" };
-}
-
-function nextPetGoalMessage(stats) {
-  const goals = dailyGoals();
-  if (!goalReached(stats.cards, goals.cards)) return `还差 ${goals.cards - stats.cards} 张卡，今天就更稳。`;
-  if (!goalReached(stats.familiar, goals.familiar)) return "再把 1 篇推进到熟悉，宠物就长经验。";
-  if (!goalReached(stats.writing, goals.writing)) return "补 1 次默写/考核，今天质量就够了。";
-  if (!goalReached(stats.minutes, goals.minutes)) return `再计时学习 ${goals.minutes - stats.minutes} 分钟。`;
-  return "今天已经够了，可以收工。";
-}
-
 function setMode(mode) {
   state.mode = mode;
   state.answersVisible = false;
@@ -1204,7 +964,7 @@ function renderMemoryMeta(article) {
   const meta = memoryMeta(article);
   const category = meta?.categories?.map((key) => MEMORY_CATEGORIES[key]).filter(Boolean)[0];
   els.memoryParentLogicText.textContent = category
-    ? `${category.fullLabel}：${category.parentLogic}`
+    ? category.fullLabel
     : "未归入母逻辑：按卡片直接速记。";
   els.memoryHookText.textContent = meta?.hook || "暂无中文钩子";
   els.memoryWritingLogicText.textContent = meta?.logic || category?.summary || "按图片链路记忆。";
@@ -1254,7 +1014,6 @@ function filteredByMemoryRange({ requireMemoryCard = false } = {}) {
   return articles.filter((article) => {
     const hasMemoryCard = Boolean(memoryCardImagePath(article));
     if (requireMemoryCard && !hasMemoryCard) return false;
-    if (!hasMemoryCard && filter.key !== "all") return false;
     const number = article.number;
     const meta = memoryMeta(article);
     if (filter.ids) return filter.ids.includes(number);
@@ -1807,7 +1566,7 @@ function handleDrillGrade(event) {
     grade,
     reviewedAt: new Date().toISOString()
   };
-  recordDrillPetProgress(key, grade);
+
   writeState();
   nextDrillCard();
 }
@@ -1942,7 +1701,7 @@ function checkCurrentWfd() {
   progress.updatedAt = new Date().toISOString();
   state.wfd.checked = true;
   state.wfd.answerVisible = true;
-  recordWfdPetProgress(item.id, passed);
+
   writeState();
   renderWfd();
 }
@@ -2489,10 +2248,9 @@ function checkPractice() {
   });
 
   const id = item.id;
-  const previousProgress = getProgress(id);
   const progress = updateProgressWithResult(id, correct === total, { correct, total });
-  recordFamiliarPetProgress(previousProgress, progress);
-  recordWritingPetProgress(`practice:${id}`);
+
+
   writeState();
   els.levelScore.textContent = scoreText(id);
   renderSummary();
@@ -2518,15 +2276,14 @@ function submitExam(options = {}) {
     return;
   }
   const { passed, diffs } = gradeEssay(article, els.examInput.value);
-  const previousProgress = getProgress(article.id);
   const progress = updateProgressWithResult(article.id, passed, {
     examChecked: true,
     examPassed: passed,
     total: sentenceCount(article),
     correct: passed ? sentenceCount(article) : 0
   });
-  recordFamiliarPetProgress(previousProgress, progress);
-  recordWritingPetProgress(`exam:${article.id}`);
+
+
   writeState();
   renderSummary();
   renderLevelList();
@@ -2551,15 +2308,14 @@ function submitCompositeExam() {
     const article = articles.find((item) => item.id === id);
     const value = persisted.examDrafts[id] || "";
     const { passed, diffs } = gradeEssay(article, value);
-    const previousProgress = getProgress(article.id);
-    const progress = updateProgressWithResult(article.id, passed, {
+      const progress = updateProgressWithResult(article.id, passed, {
       examChecked: true,
       examPassed: passed,
       total: sentenceCount(article),
       correct: passed ? sentenceCount(article) : 0
     });
-    recordFamiliarPetProgress(previousProgress, progress);
-    recordWritingPetProgress(`exam:${article.id}`);
+
+
     return {
       id: article.id,
       title: article.title,
@@ -2948,9 +2704,6 @@ function advanceCompositeAfterTimeout() {
 }
 
 function stopTimer(ended) {
-  if (state.timer.interval && state.timer.startedAt) {
-    recordTimedStudySeconds((Date.now() - state.timer.startedAt) / 1000);
-  }
   if (state.timer.interval) window.clearInterval(state.timer.interval);
   state.timer.interval = null;
   if (ended) {
@@ -3466,64 +3219,6 @@ function applyImageViewerTransform() {
 
 function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
-}
-
-function startOfMonth(value) {
-  const date = new Date(value);
-  return new Date(date.getFullYear(), date.getMonth(), 1);
-}
-
-function addMonths(value, amount) {
-  const date = startOfMonth(value);
-  date.setMonth(date.getMonth() + amount);
-  return date;
-}
-
-function isSameDate(first, second) {
-  return first.getFullYear() === second.getFullYear() &&
-    first.getMonth() === second.getMonth() &&
-    first.getDate() === second.getDate();
-}
-
-function todayKey() {
-  return dateKey(new Date());
-}
-
-function dateKey(date) {
-  return [
-    date.getFullYear(),
-    String(date.getMonth() + 1).padStart(2, "0"),
-    String(date.getDate()).padStart(2, "0")
-  ].join("-");
-}
-
-function normalizedDateKey(value) {
-  if (!value) return "";
-  const match = String(value).match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  if (!match) return "";
-  const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
-  if (Number.isNaN(date.getTime())) return "";
-  return dateKey(date) === value ? value : "";
-}
-
-function dateFromKey(value) {
-  const normalized = normalizedDateKey(value) || todayKey();
-  const [year, month, day] = normalized.split("-").map(Number);
-  return new Date(year, month - 1, day);
-}
-
-function selectedDateLabel(key) {
-  const date = dateFromKey(key);
-  const today = new Date();
-  if (isSameDate(date, today)) return "今天";
-  return `${date.getMonth() + 1}月${date.getDate()}日`;
-}
-
-function daysUntil(key) {
-  const target = dateFromKey(key);
-  const today = new Date();
-  const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  return Math.round((target.getTime() - todayStart.getTime()) / 86400000);
 }
 
 function formatDateTime(value) {

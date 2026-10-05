@@ -99,7 +99,7 @@
 
         <section class="memory-meta-panel" id="memoryMetaPanel" hidden>
           <div>
-            <span>母逻辑</span>
+            <span>分类</span>
             <p id="memoryParentLogicText"></p>
           </div>
           <div>
@@ -115,7 +115,7 @@
         <section class="learning-path-panel" id="learningPathPanel" hidden>
           <div class="learning-path-heading">
             <div>
-              <span>分层背诵</span>
+              <span>Part A 速记</span>
               <p>先压缩，再提取，再扩展。</p>
             </div>
             <p id="learningPathHook"></p>
@@ -297,69 +297,6 @@
         </section>
       </main>
     </div>
-
-    <aside class="study-pet" id="studyPet" aria-label="学习宠物">
-      <button class="study-pet-card" id="studyPetCard" type="button" aria-label="查看今日学习目标">
-        <span class="study-pet-avatar-wrap">
-          <img class="study-pet-avatar" id="studyPetAvatar" src="./images/pet/study-pet.png" alt="" draggable="false">
-          <span class="study-pet-mood-badge" id="studyPetFace">🥺</span>
-        </span>
-        <span class="study-pet-info">
-          <strong id="studyPetTitle">Lv1 新手蛋</strong>
-          <span id="studyPetStatus">今天还没开饭</span>
-        </span>
-      </button>
-      <div class="study-pet-panel" id="studyPetPanel" hidden>
-        <div class="study-pet-panel-heading">
-          <div>
-            <span id="studyPetMood">有点饿</span>
-            <h3 id="studyPetMessage">刷几张卡，我就开始吃饭。</h3>
-          </div>
-          <button class="study-pet-close" id="studyPetCloseButton" type="button" aria-label="收起宠物面板">×</button>
-        </div>
-        <div class="study-pet-dashboard">
-          <section class="study-pet-calendar" aria-label="学习记录日历">
-            <div class="study-pet-calendar-header">
-              <button class="study-pet-icon-button" id="calendarPreviousMonthButton" type="button" aria-label="上个月">‹</button>
-              <button class="study-pet-calendar-title" id="calendarTodayButton" type="button">今天</button>
-              <button class="study-pet-icon-button" id="calendarNextMonthButton" type="button" aria-label="下个月">›</button>
-            </div>
-            <div class="study-pet-weekdays" aria-hidden="true">
-              <span>一</span>
-              <span>二</span>
-              <span>三</span>
-              <span>四</span>
-              <span>五</span>
-              <span>六</span>
-              <span>日</span>
-            </div>
-            <div class="study-pet-calendar-grid" id="calendarGrid"></div>
-          </section>
-          <section class="study-pet-status-panel" aria-label="学习状态">
-            <div class="exam-countdown-card" id="examCountdownCard"></div>
-            <div class="study-pet-selected-summary">
-              <span id="selectedStudyDateLabel">今天</span>
-              <strong id="selectedStudySummary">目标 0/4 · 粮食 0</strong>
-            </div>
-            <div class="study-pet-goals" id="studyPetGoals"></div>
-            <details class="study-pet-settings">
-              <summary>目标与考试设置</summary>
-              <div class="study-pet-settings-grid">
-                <label>刷卡<input id="dailyGoalCardsInput" type="number" min="5" max="200" step="1"></label>
-                <label>熟悉<input id="dailyGoalFamiliarInput" type="number" min="0" max="10" step="1"></label>
-                <label>默写<input id="dailyGoalWritingInput" type="number" min="0" max="10" step="1"></label>
-                <label>分钟<input id="dailyGoalMinutesInput" type="number" min="5" max="180" step="5"></label>
-              </div>
-              <label class="study-pet-exam-date">考试日期<input id="examDateInput" type="date"></label>
-              <div class="study-pet-settings-actions">
-                <button class="secondary-button" id="resetDailyGoalsButton" type="button">恢复默认</button>
-                <button class="secondary-button" id="clearExamDateButton" type="button">清除考试日期</button>
-              </div>
-            </details>
-          </section>
-        </div>
-      </div>
-    </aside>
 
     <script src="./practice-data.js"></script>
     <script src="./translations.js"></script>

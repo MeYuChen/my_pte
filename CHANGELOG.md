@@ -4,6 +4,14 @@ All notable changes to this project are recorded here.
 
 ## Unreleased
 
+### PDF integration (acceptance branch)
+- Integrate PDF locked v3 into the existing master application: update 33 essay bodies, practice modules, exam answers and corresponding Chinese translations; leave six unchanged essays and the extra #101010 intact.
+- Replace old overlapping categories and round filters with the PDF's seven exclusive categories across catalog, recall, essay and exam views.
+- Replace 39 existing memory images with cropped Part A cards, and synchronize hooks, routes, English anchors and updated skeletons.
+- Remove the pet UI, event handlers and tracking logic; preserve practice progress, drafts, WFD and timer settings.
+- Remove the standalone WE preview folder from this branch. Master deployment requires user approval after preview.
+- Bump static cache to v21 and image cache to v6; add content consistency checks and update browser acceptance tests.
+
 ### Added
 - Added a mobile-friendly card drilling mode with route, keyword, skeleton, and mixed recall cards.
 - Added local drill grading with three outcomes: forgot, vague, and known.
