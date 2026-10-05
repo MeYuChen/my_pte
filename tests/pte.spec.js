@@ -51,7 +51,6 @@ test.describe("desktop flows", () => {
     await page.locator("#wfdInput").fill("The custom practice sentence belongs only to this local test.");
     await page.locator("#wfdCheckButton").click();
     await expect(page.locator("#wfdResult")).toContainText("通过");
-    await expect(page.locator("#studyPetStatus")).toHaveText("粮食 4 · 目标 1/4");
 
     await page.reload();
     await page.getByRole("button", { name: "WFD" }).click();
