@@ -21,4 +21,4 @@ All 39 Part A cards and their hooks, routes and English anchors are integrated i
 
 ## Release gate
 
-Do not merge or deploy to master until the user has reviewed the branch preview and explicitly approves publication.
+The user approved publication on 2026-10-05. The accepted branch was fast-forwarded to master. GitHub Pages deployment succeeded, and the production site was verified with eight filter buttons (all + seven categories), the full mnemonic, no pet and a loaded 2046 × 1904 card. CSS/scripts/SW use explicit version 20261005-25; card URL query parameters invalidate older images. Production screenshot: pdf-integration-preview.jpg.
