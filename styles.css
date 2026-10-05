@@ -1999,3 +1999,15 @@ body.is-catalog-open {
   }
 
 }
+
+/* Keep the PDF card text legible on high-density displays. */
+.image-frame img[src*="memory-cards/"] {
+  filter: contrast(1.2);
+}
+
+.learning-mnemonic {
+  margin: 8px 0 0;
+  color: var(--ink);
+  line-height: 1.75;
+  font-weight: 550;
+}

@@ -4,6 +4,9 @@ All notable changes to this project are recorded here.
 
 ## Unreleased
 
+- Re-render all 39 Part A cards at 2046 × 1904 pixels (lossless PNG), increase card display contrast and bump image cache to v7/static cache to v22.
+- Replace Chinese route lists with the full one-sentence mnemonic in the learning panel and recall cards.
+
 ### PDF integration (acceptance branch)
 - Integrate PDF locked v3 into the existing master application: update 33 essay bodies, practice modules, exam answers and corresponding Chinese translations; leave six unchanged essays and the extra #101010 intact.
 - Replace old overlapping categories and round filters with the PDF's seven exclusive categories across catalog, recall, essay and exam views.

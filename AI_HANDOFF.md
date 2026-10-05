@@ -10,6 +10,8 @@
 
 ## 本次 PDF 整合（待验收）
 
+最新验收调整：39 张卡片提升至 2046 × 1904 无损 PNG，显示对比度为 1.2；分层背诵左列与 route 刷卡均改为「一句话串记」，直接使用 cnHook 全句，cnRoute 数据保留供兼容但不再渲染列表。缓存 static v22 / images v7。
+
 - 分支：`feature/pdf-we-integration`，基于 master `765567b`；用户验收预览并明确批准前不得合并或部署 master。
 - 保留 master 的全部原有模式、布局、文章 ID 和学习记录。已撤掉 `preview/we-study/` 独立页面。
 - 39 篇以 PDF locked v3 正文为准，33 篇更新正文、四段 modules、essay 和中文译文；#77、#86、#106、#124、#170、#46 正文和译文保持不变。额外 #101010 原文与译文保留。

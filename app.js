@@ -19,7 +19,7 @@ const DEFAULT_TEMPLATE_TIMER_MINUTES = 5;
 const MIN_TEMPLATE_TIMER_MINUTES = 1;
 const MAX_TEMPLATE_TIMER_MINUTES = 60;
 const DRILL_TYPES = [
-  { key: "route", label: "中文路线" },
+  { key: "route", label: "一句话串记" },
   { key: "keywords", label: "英文关键词" },
   { key: "skeleton", label: "4 句骨架" },
   { key: "mixed", label: "混合提取" },
@@ -541,7 +541,7 @@ const articleImageUrls = new Set([
   ...articles.map((article) => assetUrl(memoryCardImagePath(article))).filter(Boolean)
 ]);
 const IMAGE_PRELOAD_CONCURRENCY = 3;
-const IMAGE_CACHE_NAME = "pte-we-images-v6";
+const IMAGE_CACHE_NAME = "pte-we-images-v7";
 const imagePreload = {
   active: 0,
   queue: [],
@@ -977,14 +977,14 @@ function renderLearningPath(article) {
   els.learningPathPanel.hidden = !shouldShow;
   if (!shouldShow) {
     els.learningPathHook.textContent = "";
-    fillList(els.learningRouteList, []);
+    els.learningRouteList.textContent = "";
     fillList(els.learningKeywordList, []);
     fillList(els.learningSkeletonList, []);
     return;
   }
 
   els.learningPathHook.textContent = path.cnHook || "";
-  fillList(els.learningRouteList, path.cnRoute || []);
+  els.learningRouteList.textContent = path.cnHook || "";
   fillList(els.learningKeywordList, path.keywords || []);
   fillList(els.learningSkeletonList, path.skeleton || []);
 }
@@ -1463,16 +1463,15 @@ function renderDrill() {
 function drillQuestionHtml(article, path, type) {
   if (type === "route") {
     return `
-      <span class="drill-prompt-label">看到题目，回忆中文路线</span>
+      <span class="drill-prompt-label">看到题目，回忆一句话串记</span>
       <strong>${escapeHtml(article.topic)}</strong>
-      <p>说出：总论点 -> 分论点1 -> 分论点2 -> 总结建议。</p>
+      <p>用一句话串起立场、两个分论点和结论。</p>
     `;
   }
   if (type === "keywords") {
     return `
-      <span class="drill-prompt-label">根据中文钩子，回忆 5 个英文关键词</span>
+      <span class="drill-prompt-label">根据一句话串记，回忆英文锚点</span>
       <strong>${escapeHtml(path.cnHook)}</strong>
-      <p>${escapeHtml(path.cnRoute.join(" -> "))}</p>
     `;
   }
   if (type === "skeleton") {
@@ -1491,15 +1490,14 @@ function drillQuestionHtml(article, path, type) {
   return `
     <span class="drill-prompt-label">混合提取</span>
     <strong>${escapeHtml(article.topic)}</strong>
-    <p>直接说出中文钩子、5 个关键词和 4 句英文骨架。</p>
+    <p>直接说出一句话串记、英文锚点和 4 句英文骨架。</p>
   `;
 }
 
 function drillAnswerHtml(article, path, type) {
   const routeBlock = `
     <section>
-      <span>中文路线</span>
-      ${orderedListHtml(path.cnRoute)}
+      <span>一句话串记</span>
       <p class="drill-hook">${escapeHtml(path.cnHook)}</p>
     </section>
   `;

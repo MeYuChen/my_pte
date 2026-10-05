@@ -21,6 +21,8 @@ test.describe("desktop flows", () => {
     await page.locator('.memory-filter-button[data-memory-filter="education"]').click();
     await expect(page.locator("#levelList .level-item")).toHaveCount(7);
     await expect(page.locator("#learningPathHook")).toContainText("笔试能公平测基础知识");
+    await expect(page.locator("#learningRouteList")).toHaveText("笔试能公平测基础知识，但测不了创造力、合作和实践能力；所以保留笔试，但不能只靠笔试。");
+    await expect(page.locator("#learningRouteList li")).toHaveCount(0);
     await expect(page.locator("#levelImage")).toHaveAttribute("src", /017_Formal_Written_Examination_memory_card/);
   });
 
