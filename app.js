@@ -2491,7 +2491,7 @@ function showAdjacentImage(direction) {
 async function registerImageCacheWorker() {
   if (!("serviceWorker" in navigator)) return;
   try {
-    await navigator.serviceWorker.register("./sw.js");
+    await navigator.serviceWorker.register("./sw.js?v=20261005-23", { updateViaCache: "none" });
   } catch {
     // The page still works without the persistent cache worker.
   }

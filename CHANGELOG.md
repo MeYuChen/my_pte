@@ -2,6 +2,11 @@
 
 All notable changes to this project are recorded here.
 
+## 2026-10-05 Published
+
+- Published the user-approved PDF integration to master.
+- Add explicit versions to CSS/scripts and service-worker registration to prevent mixed old/new assets during deployment; static cache v23.
+
 ## Unreleased
 
 - Re-render all 39 Part A cards at 2046 × 1904 pixels (lossless PNG), increase card display contrast and bump image cache to v7/static cache to v22.
