@@ -11,6 +11,9 @@ All notable changes to this project are recorded here.
 - Keep `速记` and `默写` separate: `速记` is for fast review only, while `默写` is for input practice.
 
 ### Added
+- Added a dedicated 39-essay categorized study page (`study.html`) with seven topic groups, question translations, mnemonic cards, reliable hash navigation, and four-paragraph English originals with small inline Chinese translations.
+- Preserved the locked v3 essay texts and template-variable highlights in `study-data.js`; the existing practice/exam dataset and localStorage are unchanged.
+- Added a homepage entry and offline caching for the new study page.
 - Added immersive memory review with a full-screen card layout, custom per-card countdown, pause/resume, and early next navigation.
 - Added a dedicated memory review mode for fast card study with next-article navigation.
 - Added an article memory card preview generated from extracted core fields, with editable mnemonic hooks.
