@@ -1,14 +1,14 @@
-const CACHE_NAME = "pte-we-static-v24";
+const CACHE_NAME = "pte-we-static-v25";
 const IMAGE_CACHE_NAME = "pte-we-images-v8";
 const STATIC_ASSETS = [
   "./",
   "./index.html",
-  "./styles.css?v=20261005-24",
-  "./practice-data.js?v=20261005-24",
-  "./translations.js?v=20261005-24",
-  "./learning-paths.js?v=20261005-24",
-  "./wfd-data.js?v=20261005-24",
-  "./app.js?v=20261005-24"
+  "./styles.css?v=20261005-25",
+  "./practice-data.js?v=20261005-25",
+  "./translations.js?v=20261005-25",
+  "./learning-paths.js?v=20261005-25",
+  "./wfd-data.js?v=20261005-25",
+  "./app.js?v=20261005-25"
 ];
 
 self.addEventListener("install", (event) => {

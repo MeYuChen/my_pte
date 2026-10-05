@@ -2491,7 +2491,7 @@ function showAdjacentImage(direction) {
 async function registerImageCacheWorker() {
   if (!("serviceWorker" in navigator)) return;
   try {
-    await navigator.serviceWorker.register("./sw.js?v=20261005-24", { updateViaCache: "none" });
+    await navigator.serviceWorker.register("./sw.js?v=20261005-25", { updateViaCache: "none" });
   } catch {
     // The page still works without the persistent cache worker.
   }
@@ -3121,10 +3121,14 @@ function normalizeForPractice(value) {
 }
 
 function assetUrl(rawPath) {
-  return String(rawPath || "").split("/").map((segment) => {
+  const value = String(rawPath || "");
+  const suffixStart = value.search(/[?#]/);
+  const path = suffixStart < 0 ? value : value.slice(0, suffixStart);
+  const suffix = suffixStart < 0 ? "" : value.slice(suffixStart);
+  return path.split("/").map((segment) => {
     if (segment === "." || segment === "..") return segment;
     return encodeURIComponent(decodeURIComponent(segment));
-  }).join("/");
+  }).join("/") + suffix;
 }
 
 function openImageFullscreen() {

@@ -39,3 +39,10 @@ for (const article of window.WE_DATA.articles) {
 assert.ok(!/studyPet|persisted\.pet|record\w*Pet/.test(app));
 assert.ok(!fs.readFileSync(path.join(root, 'index.html'), 'utf8').includes('study-pet'));
 console.log('Passed: 40 synchronized essays, four paragraphs and modules each, translations, learning paths, seven exclusive categories, no pet runtime.');
+
+const assetContext = {};
+vm.runInNewContext(app.slice(app.indexOf('function assetUrl('), app.indexOf('function openImageFullscreen(')) + ';globalThis.asset=assetUrl', assetContext);
+assert.equal(assetContext.asset('./images/memory-cards/test.png?v=20261005-8'), './images/memory-cards/test.png?v=20261005-8');
+assert.equal(assetContext.asset('./images/中文 card.png?v=8'), './images/%E4%B8%AD%E6%96%87%20card.png?v=8');
+assert.equal(assetContext.asset('./images/encoded%20card.png'), './images/encoded%20card.png');
+console.log('Passed: image URL versions remain query parameters and filenames stay encoded.');
