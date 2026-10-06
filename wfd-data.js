@@ -1,8 +1,8 @@
 window.WFD_DATA = {
   "version": 1,
-  "generatedAt": "2026-10-04T22:20:56.296Z",
+  "generatedAt": "2026-10-06T00:50:12.527Z",
   "sourceCount": 5,
-  "candidateCount": 284,
+  "candidateCount": 287,
   "coreItemLimit": 189,
   "itemCount": 189,
   "sources": [
@@ -19,12 +19,12 @@ window.WFD_DATA = {
     {
       "source": "LanguageAcademy",
       "ok": true,
-      "count": 109
+      "count": 110
     },
     {
       "source": "Sumlingo",
       "ok": true,
-      "count": 50
+      "count": 52
     },
     {
       "source": "79Score",
@@ -1343,6 +1343,15 @@ window.WFD_DATA = {
       "audio": ""
     },
     {
+      "sentence": "How Long Is a NAATI CCL Credential Valid?",
+      "sources": [
+        "LanguageAcademy"
+      ],
+      "sourceCount": 1,
+      "priorityScore": 13,
+      "audio": ""
+    },
+    {
       "sentence": "I thought it was through the small meeting room.",
       "sources": [
         "LanguageAcademy"
@@ -1731,15 +1740,6 @@ window.WFD_DATA = {
     },
     {
       "sentence": "The marketing budget has doubled since the beginning of the year.",
-      "sources": [
-        "LanguageAcademy"
-      ],
-      "sourceCount": 1,
-      "priorityScore": 13,
-      "audio": ""
-    },
-    {
-      "sentence": "The new technician dropped the microscope in the biology lab.",
       "sources": [
         "LanguageAcademy"
       ],
