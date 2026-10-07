@@ -138,7 +138,7 @@ test.describe("shared flows", () => {
 
     await page.getByRole("button", { name: "显示中文" }).click();
     await expect(page.locator(".article-source-row.zh-row").first()).toBeVisible();
-    await expect(page.locator(".article-source-row.zh-row").first()).toContainText("关于政府是否应该改善公共交通");
+    await expect(page.locator(".article-source-row.zh-row").first()).toContainText("政府是否应该改善公共交通，而不是为私家车修建更多道路");
 
     await page.getByRole("button", { name: "隐藏中文" }).click();
     await expect(page.locator(".article-source-row.zh-row")).toHaveCount(0);
