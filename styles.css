@@ -171,6 +171,16 @@ button {
   background: #dce9f8;
 }
 
+.sst-entry {
+  border-color: #c7ded8;
+  background: #eaf5f2;
+  color: var(--accent-strong);
+}
+
+.sst-entry:hover {
+  background: var(--accent-soft);
+}
+
 .field {
   display: grid;
   gap: 6px;

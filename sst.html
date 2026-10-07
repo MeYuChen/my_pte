@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PTE SST 学习与考核</title>
+    <link rel="stylesheet" href="./styles.css?v=20261008-4">
+    <link rel="stylesheet" href="./sst.css?v=20261008-4">
+  </head>
+  <body>
+    <div class="app-shell" id="appShell">
+      <aside class="sidebar">
+        <div class="brand"><div><h1>PTE SST</h1><p id="progressSummary">0 / 54 已掌握</p></div></div>
+        <div class="sidebar-tools">
+          <div class="mode-tabs sst-mode-tabs" role="tablist" aria-label="SST 学习模式">
+            <button class="mode-tab is-active" data-mode="template" type="button">模板</button>
+            <button class="mode-tab" data-mode="learn" type="button">学习</button>
+            <button class="mode-tab" data-mode="drill" type="button">速记</button>
+            <button class="mode-tab" data-mode="exam" type="button">考核</button>
+          </div>
+          <div class="module-links"><a href="./index.html">← WE</a><a href="./reading.html">Reading →</a></div>
+          <label class="field"><span>搜索题目</span><input id="searchInput" type="search" placeholder="编号 / 标题 / 关键词"></label>
+          <label class="field category-field"><span>主题分类</span><select id="categoryFilter"><option value="all">全部 8 类</option></select></label>
+          <div class="segmented" role="group" aria-label="状态筛选">
+            <button class="segment is-active" data-filter="all" type="button">全部</button>
+            <button class="segment" data-filter="todo" type="button">未过</button>
+            <button class="segment" data-filter="mastered" type="button">已掌握</button>
+          </div>
+        </div>
+        <nav class="level-list" id="levelList" aria-label="SST 题目列表"></nav>
+      </aside>
+      <button class="sidebar-toggle" id="sidebarToggle" type="button" aria-label="收起左侧栏" aria-expanded="true">‹</button>
+
+      <main class="workspace">
+        <section class="level-header">
+          <div><p class="eyebrow" id="levelNumber">SST 方法</p><h2 id="levelTitle">听记与成文方法</h2></div>
+          <div class="header-actions">
+            <div class="timer" id="timerDisplay">10:00</div>
+            <button class="secondary-button" id="previousButton" type="button">上一篇</button>
+            <button class="secondary-button" id="markMasteredButton" type="button">标记已会</button>
+            <button class="primary-button" id="nextButton" type="button">下一篇</button>
+          </div>
+        </section>
+
+        <section class="sst-template" id="templatePanel">
+          <div class="method-hero">
+            <p class="eyebrow">考试时只走这条线</p>
+            <h3>听主题 → 抓名词关系 → 拼成 50–70 词</h3>
+            <p>先保住内容词，再处理句子。不要边听边追求漂亮表达。</p>
+          </div>
+          <div class="category-overview" id="categoryOverview"></div>
+          <div class="method-grid">
+            <article><b>1 · 定主题</b><p>重点听开头 1–2 句和反复出现的名词，先写下“这段在讲什么”。</p></article>
+            <article><b>2 · 记关系</b><p>优先记 V+N、ADJ+N、N+N；用箭头标因果，用 VS 标对比，用数字标顺序。</p></article>
+            <article><b>3 · 组句</b><p>每组笔记只写一个短句。没听清的细节不猜，先把主干写完整。</p></article>
+            <article><b>4 · 复查</b><p>全文 50–70 词；检查主谓、时态、单复数和拼写，最后删重复。</p></article>
+          </div>
+          <div class="template-card">
+            <div class="panel-heading"><div><span>兜底模板</span><h3>内容不足时使用，内容够则直接总结</h3></div></div>
+            <ol>
+              <li>The lecture shows information about <mark>名词短语</mark>.</li>
+              <li>Firstly, the speaker talks about <mark>名词短语</mark>.</li>
+              <li>In addition, he mentions that <mark>完整句子</mark>.</li>
+              <li>Lastly, we know that <mark>完整句子</mark>.</li>
+              <li>In summary, the lecture indicates that <mark>完整句子</mark>.</li>
+            </ol>
+            <div class="rule-strip"><b>别接错：</b><code>about + 名词/名词短语</code><code>that + 主语 + 谓语</code></div>
+          </div>
+        </section>
+
+        <section class="sst-learn" id="learnPanel" hidden>
+          <div class="sst-meta"><span id="itemCode"></span><span id="itemType"></span><span id="itemDifficulty"></span><span id="sourceWordCount"></span></div>
+          <div class="learn-grid">
+            <article class="study-card logic-card"><span>中文逻辑</span><div id="logicText"></div></article>
+            <article class="study-card"><span>听到就记</span><div class="keyword-list" id="keywordList"></div></article>
+          </div>
+          <article class="study-card mnemonic-card"><span>助记图 · 看图回忆内容</span><img id="mnemonicImage" alt="" loading="eager"></article>
+          <article class="study-card answer-card"><span>成品答案</span><div id="answerSentences"></div></article>
+        </section>
+
+        <section class="sst-drill" id="drillPanel" hidden>
+          <div class="drill-topbar"><div><span>逻辑 → 关键词 → 英文</span><h3 id="drillTitle"></h3></div><div class="drill-progress" id="drillProgress"></div></div>
+          <div class="drill-card sst-drill-card">
+            <div class="drill-question"><p class="drill-logic" id="drillLogic"></p><div class="keyword-list is-prompt" id="drillKeywords"></div><img class="drill-mnemonic" id="drillMnemonicImage" alt=""></div>
+            <button class="primary-button drill-reveal-button" id="revealButton" type="button">显示成品答案</button>
+            <div class="drill-answer" id="drillAnswer" hidden></div>
+          </div>
+          <div class="drill-actions" id="drillActions" hidden>
+            <button class="drill-grade-button is-forgot" data-grade="forgot" type="button">忘了</button>
+            <button class="drill-grade-button is-vague" data-grade="vague" type="button">模糊</button>
+            <button class="drill-grade-button is-known" data-grade="known" type="button">记住了</button>
+          </div>
+        </section>
+
+        <section class="sst-exam" id="examPanel" hidden>
+          <div class="exam-brief"><div><span>模拟任务</span><h3 id="examTitle"></h3></div><p>根据题目和中文逻辑写一段 50–70 词总结。当前资料无音频，因此本页训练成文与内容覆盖，不模拟听力。</p></div>
+          <div class="exam-hints"><b>笔记线索</b><div id="examLogic"></div></div>
+          <textarea id="examInput" rows="10" placeholder="在这里写一段英文总结……"></textarea>
+          <div class="exam-toolbar"><span id="wordCount">0 words</span><div><button class="secondary-button" id="restartButton" type="button">重新开始</button><button class="primary-button" id="submitButton" type="button">提交检查</button></div></div>
+          <div class="exam-result" id="examResult" hidden></div>
+        </section>
+      </main>
+    </div>
+    <div class="toast" id="toast" role="status" hidden></div>
+    <script src="./sst-data.js?v=20261008-4"></script>
+    <script src="./sst.js?v=20261008-4"></script>
+  </body>
+</html>

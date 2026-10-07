@@ -1,5 +1,6 @@
-const CACHE_NAME = "pte-we-static-v35-reading-review-return";
+const CACHE_NAME = "pte-we-static-v39-sst-mnemonics";
 const IMAGE_CACHE_NAME = "pte-we-images-v8";
+const SST_IMAGE_ASSETS = Array.from({ length: 54 }, (_, index) => `./images/sst/S${String(index + 1).padStart(3, "0")}.webp`);
 const STATIC_ASSETS = [
   "./",
   "./index.html",
@@ -15,7 +16,14 @@ const STATIC_ASSETS = [
   "./reading-data.js",
   "./reading-method-guides.js",
   "./reading-explanations.js",
-  "./reading.js"
+  "./reading-collocations.js",
+  "./reading-study.js",
+  "./reading.js",
+  "./sst.html",
+  "./sst.css?v=20261008-4",
+  "./sst-data.js?v=20261008-4",
+  "./sst.js?v=20261008-4",
+  ...SST_IMAGE_ASSETS
 ];
 
 self.addEventListener("install", (event) => {
