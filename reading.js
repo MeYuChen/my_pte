@@ -7,6 +7,10 @@
 
   const STORAGE_KEY = "pte-reading-progress-v1";
   const methodsById = new Map(data.methods.map((method) => [method.id, method]));
+  Object.entries(window.READING_METHOD_GUIDES || {}).forEach(([id, guide]) => {
+    const method = methodsById.get(id);
+    if (method) Object.assign(method, guide);
+  });
   applyLearnerFacingMethodFixes();
 
   const state = {
@@ -190,12 +194,18 @@
       <h3 class="section-heading">固定解题顺序</h3>
       <ol class="step-list">${method.decision_steps.map((step) => `<li>${escapeHtml(step)}</li>`).join("")}</ol>`;
     const boundaryTitle = method.id === "C08" ? "不能只靠固定搭配的情况" : "容易混淆的情况";
+    const quickChecks = method.quick_checks || [];
+    const judgmentContent = quickChecks.length
+      ? `<ul>${quickChecks.map((tip) => `<li>${escapeHtml(tip)}</li>`).join("")}</ul>`
+      : `<div class="example-list">${renderExamples(method.normal_examples)}</div>`;
+    const boundaryContent = quickChecks.length ? "" : `
+      <section class="tip-card tip-card-wide"><h4>${boundaryTitle}</h4><div class="example-list">${renderExamples(method.contrast_examples)}</div></section>`;
     el.tipsPanel.innerHTML = `
       <div class="tip-grid">
         ${method.memory_rule ? `<section class="memory-rule-card"><span>做题口诀</span><strong>${escapeHtml(method.memory_rule)}</strong></section>` : ""}
         <section class="tip-card"><h4>最容易错在哪里</h4><ul>${method.traps.map((tip) => `<li>${escapeHtml(tip)}</li>`).join("")}</ul></section>
-        <section class="tip-card"><h4>怎么判断</h4><div class="example-list">${renderExamples(method.normal_examples)}</div></section>
-        <section class="tip-card tip-card-wide"><h4>${boundaryTitle}</h4><div class="example-list">${renderExamples(method.contrast_examples)}</div></section>
+        <section class="tip-card"><h4>${quickChecks.length ? "一眼识别" : "怎么判断"}</h4>${judgmentContent}</section>
+        ${boundaryContent}
       </div>`;
   }
 

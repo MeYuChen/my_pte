@@ -10,6 +10,11 @@ test.describe("Reading module", () => {
     await expect(page).toHaveURL(/reading\.html/);
     await expect(page.locator(".point-item")).toHaveCount(44);
     await expect(page.locator("#dataSummary")).toContainText("54 题 · 295 空");
+    const guideCoverage = await page.evaluate(() => ({
+      total: window.READING_DATA.methods.length,
+      withRule: window.READING_DATA.methods.filter((method) => method.memory_rule).length
+    }));
+    expect(guideCoverage).toEqual({ total: 44, withRule: 44 });
 
     await page.getByRole("button", { name: "技巧", exact: true }).click();
     await expect(page.locator(".memory-rule-card")).toContainText("先砍词性，再锁搭配，再对句意");

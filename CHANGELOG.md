@@ -10,7 +10,7 @@ All notable changes to this project are recorded here.
 ## Unreleased
 
 - Add a standalone Reading module with 44 audited knowledge points and four linked views: concept, method, tips and practice.
-- Replace audit-style S02/C08 notes with memorable learner rules, executable decision steps and clue-driven examples.
+- Replace audit-style Reading notes across all 44 knowledge points with memorable learner rules; add two quick-recognition cues to each of the 42 standard guides and retain hand-curated clue-driven examples for S02/C08.
 - Add 54 representative Reading questions (295 blanks), per-question timing, blank-level grading and wrong-answer knowledge-point tracing.
 - Preserve original RW options; present R questions as a per-question answer pool without inventing unavailable institutional distractors or requiring typed input.
 - Re-render all 39 Part A cards at 2046 × 1904 pixels (lossless PNG), increase card display contrast and bump image cache to v7/static cache to v22.

@@ -7,9 +7,16 @@ const root = path.resolve(__dirname, "..");
 const core = require(path.join(root, "reading-core.js"));
 const context = { window: {} };
 vm.runInNewContext(fs.readFileSync(path.join(root, "reading-data.js"), "utf8"), context);
+vm.runInNewContext(fs.readFileSync(path.join(root, "reading-method-guides.js"), "utf8"), context);
 const data = context.window.READING_DATA;
+const guides = context.window.READING_METHOD_GUIDES;
 
 assert.equal(data.methods.length, 44, "should include all audited knowledge points");
+assert.equal(Object.keys(guides).length, 42, "all non-curated points should have learner guides");
+data.methods.filter((method) => !["S02", "C08"].includes(method.id)).forEach((method) => {
+  assert.ok(guides[method.id]?.memory_rule, `${method.id} should have a memorable learner rule`);
+  assert.ok(guides[method.id]?.quick_checks?.length >= 2, `${method.id} should have quick recognition checks`);
+});
 assert.equal(data.questions.length, 54, "should include all representative questions");
 assert.equal(data.questions.reduce((sum, question) => sum + question.answers.length, 0), 295, "blank total should match audit");
 assert.ok(data.questions.some((question) => question.type === "RW"), "should contain RW option questions");
