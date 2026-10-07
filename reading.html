@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="./reading.css">
   </head>
   <body>
-    <div class="reading-shell">
+    <div class="reading-shell" id="readingShell" data-mode="points">
       <aside class="reading-sidebar">
         <header class="reading-brand">
           <a href="./index.html" aria-label="返回首页">PTE</a>
@@ -31,6 +31,105 @@
       </aside>
 
       <main class="reading-main">
+        <nav class="reading-mode-switcher" id="readingModeSwitcher" aria-label="Reading 学习方式">
+          <button type="button" data-reading-mode="guide">考场总纲</button>
+          <button class="is-active" type="button" data-reading-mode="points">考点学习</button>
+          <button type="button" data-reading-mode="collocations">固定搭配</button>
+        </nav>
+
+        <section class="standalone-module guide-module" id="examGuide" hidden>
+          <header class="module-heading">
+            <p class="eyebrow">1—2 分钟的做题路线</p>
+            <h2>先形，后搭，再逻辑，最后词义</h2>
+            <p>不要在考场搜索 44 个考点。每个空只按下面四步判断，在哪一步获得排他证据就停止。</p>
+          </header>
+          <div class="guide-route">
+            <article><span>01 · 形</span><h3>形式不同，先看语法</h3><p>词性、时态、主动被动、单复数、非谓语和并列形式。</p></article>
+            <article><span>02 · 搭</span><h3>前后卡得紧，看搭配</h3><p>把空格与前后 2—4 个词连读，识别固定结构、短语动词和学术词块。</p></article>
+            <article><span>03 · 逻</span><h3>连接句子，看逻辑</h3><p>判断因果、转折、让步、递进、举例、指代和主题词链。</p></article>
+            <article><span>04 · 义</span><h3>形式都相同，再比词义</h3><p>比较动作对象、褒贬、范围、强弱与全文事实，不凭中文近义硬猜。</p></article>
+          </div>
+          <div class="guide-bottom">
+            <section>
+              <h3>10 秒识别器</h3>
+              <ul>
+                <li>选项词形不同 → 先走“形”。</li>
+                <li>选项是介词、小词或短语 → 先走“搭”。</li>
+                <li>选项是连接词或逻辑副词 → 先走“逻”。</li>
+                <li>选项词性、形式都相同 → 进入“义”。</li>
+              </ul>
+            </section>
+            <section>
+              <h3>时间上限</h3>
+              <p><strong>每空 8—12 秒。</strong>超过 15 秒仍剩两个选项，先选更符合搭配和上下文的一个，继续下一空；最后再整句回读。</p>
+            </section>
+          </div>
+        </section>
+
+        <section class="standalone-module collocation-module" id="collocationModule" hidden>
+          <header class="module-heading">
+            <p class="eyebrow">全题库词块</p>
+            <h2>固定搭配卡片</h2>
+            <p>共 <strong id="collocationCount">—</strong> 条。选择编号范围后，只学习这一组；记住的本轮不再出现，没记住的稍后随机重现。</p>
+          </header>
+
+          <section class="range-card" id="collocationSetup">
+            <div class="range-fields">
+              <label>起始编号 <span>K</span><input id="rangeStart" type="number" min="1" value="1" inputmode="numeric"></label>
+              <label>结束编号 <span>K</span><input id="rangeEnd" type="number" min="1" value="30" inputmode="numeric"></label>
+              <button class="primary-button" id="startCollocationSession" type="button">生成学习卡片</button>
+            </div>
+            <div class="range-presets" aria-label="常用范围">
+              <button type="button" data-range-size="20">20 条</button>
+              <button type="button" data-range-size="30">30 条</button>
+              <button type="button" data-range-size="50">50 条</button>
+            </div>
+            <p class="range-message" id="rangeMessage">例如：K001—K030。建议一次学习 20—50 条。</p>
+          </section>
+
+          <section class="deck-panel" id="collocationStudy" hidden>
+            <div class="session-bar">
+              <div><span>学习范围</span><strong id="studyRange">—</strong></div>
+              <div><span>已经记住</span><strong id="rememberedCount">0 / 0</strong></div>
+              <div><span>本轮出现</span><strong id="studySeenCount">0 次</strong></div>
+              <button class="secondary-button" type="button" data-reset-collocations>更换范围</button>
+            </div>
+            <article class="memory-card">
+              <div class="memory-card-meta"><span id="cardId">K001</span><span id="cardCategory">结构搭配</span></div>
+              <div class="memory-pair"><strong id="cardPhrase">—</strong><span aria-hidden="true">→</span><p id="cardMeaning">—</p></div>
+            </article>
+            <div class="memory-actions">
+              <button class="secondary-button not-yet-button" id="notYetCollocation" type="button">还没记住 · 稍后再来</button>
+              <button class="primary-button remembered-button" id="rememberCollocation" type="button">记住了 · 本轮移除</button>
+            </div>
+          </section>
+
+          <section class="deck-panel" id="collocationTest" hidden>
+            <div class="session-bar">
+              <div><span>测试范围</span><strong id="testRange">—</strong></div>
+              <div><span>进度</span><strong id="testProgress">1 / 30</strong></div>
+              <div><span>已作答</span><strong id="testAnswered">0</strong></div>
+            </div>
+            <article class="test-card">
+              <span class="eyebrow" id="testCardId">K001</span>
+              <h3 id="testPhrase">—</h3>
+              <p>选择最准确的中文意思</p>
+              <div class="test-options" id="testOptions"></div>
+            </article>
+          </section>
+
+          <section class="deck-panel test-result-panel" id="collocationResult" hidden>
+            <p class="eyebrow">本组完成</p>
+            <h3 id="collocationResultTitle">测试完成</h3>
+            <div class="score-strip" id="collocationScore"></div>
+            <div class="collocation-wrong-list" id="collocationWrongList"></div>
+            <div class="result-actions">
+              <button class="secondary-button" id="retryWrongCollocations" type="button">重测错题</button>
+              <button class="primary-button" type="button" data-reset-collocations>选择新范围</button>
+            </div>
+          </section>
+        </section>
+
         <header class="reading-header">
           <div>
             <p class="eyebrow" id="pointModule">考点模块</p>
@@ -95,7 +194,9 @@
     <script src="./reading-data.js"></script>
     <script src="./reading-method-guides.js"></script>
     <script src="./reading-explanations.js"></script>
+    <script src="./reading-collocations.js"></script>
     <script src="./reading-core.js"></script>
     <script src="./reading.js"></script>
+    <script src="./reading-study.js"></script>
   </body>
 </html>

@@ -120,4 +120,63 @@ test.describe("Reading module", () => {
     await expect(page.locator("#passageCard input")).toHaveCount(0);
     await expect(page.locator("#passageCard select")).toHaveCount(target.answers.length);
   });
+
+  test("exam guide reduces the point catalogue to four live decision routes", async ({ page }) => {
+    await page.goto("./reading.html");
+    await page.getByRole("button", { name: "考场总纲" }).click();
+
+    await expect(page.locator("#examGuide")).toBeVisible();
+    await expect(page.locator(".guide-route article")).toHaveCount(4);
+    await expect(page.locator("#examGuide")).toContainText("先形，后搭，再逻辑，最后词义");
+    await expect(page.locator(".reading-sidebar")).toBeHidden();
+    await expect(page.locator("#pointPanel")).toBeHidden();
+  });
+
+  test("collocation range studies each card once remembered and then tests the whole range", async ({ page }) => {
+    await page.goto("./reading.html");
+    await page.evaluate(() => sessionStorage.clear());
+    await page.reload();
+    await page.getByRole("button", { name: "固定搭配" }).click();
+
+    await expect(page.locator("#collocationCount")).toHaveText("683");
+    await page.locator("#rangeStart").fill("1");
+    await page.locator("#rangeEnd").fill("3");
+    await page.getByRole("button", { name: "生成学习卡片" }).click();
+    await expect(page.locator("#collocationStudy")).toBeVisible();
+
+    const learnedIds = [];
+    for (let index = 0; index < 3; index += 1) {
+      learnedIds.push(await page.locator("#cardId").textContent());
+      await page.getByRole("button", { name: "记住了 · 本轮移除" }).click();
+    }
+    expect(new Set(learnedIds).size).toBe(3);
+    await expect(page.locator("#collocationTest")).toBeVisible();
+
+    for (let index = 0; index < 3; index += 1) {
+      const correctMeaning = await page.evaluate(() => {
+        const phrase = document.getElementById("testPhrase").textContent;
+        return window.READING_COLLOCATIONS.items.find((item) => item.phrase === phrase).meaning;
+      });
+      await page.locator("#testOptions button").filter({ hasText: correctMeaning }).click();
+    }
+
+    await expect(page.locator("#collocationResult")).toBeVisible();
+    await expect(page.locator("#collocationResultTitle")).toHaveText("本组全部掌握");
+    await expect(page.locator("#collocationScore")).toContainText("100%");
+  });
+
+  test("an unremembered collocation stays in the selected learning pool", async ({ page }) => {
+    await page.goto("./reading.html");
+    await page.evaluate(() => sessionStorage.clear());
+    await page.reload();
+    await page.getByRole("button", { name: "固定搭配" }).click();
+    await page.locator("#rangeStart").fill("1");
+    await page.locator("#rangeEnd").fill("2");
+    await page.getByRole("button", { name: "生成学习卡片" }).click();
+
+    const firstId = await page.locator("#cardId").textContent();
+    await page.getByRole("button", { name: "还没记住 · 稍后再来" }).click();
+    await expect(page.locator("#rememberedCount")).toHaveText("0 / 2");
+    await expect(page.locator("#cardId")).not.toHaveText(firstId);
+  });
 });
