@@ -153,6 +153,24 @@ button {
   color: #fff;
 }
 
+.reading-entry {
+  display: block;
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border: 1px solid #c7d8ef;
+  border-radius: 8px;
+  background: #e9f1fb;
+  color: #254d7b;
+  text-align: center;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.reading-entry:hover {
+  background: #dce9f8;
+}
+
 .field {
   display: grid;
   gap: 6px;

@@ -9,6 +9,9 @@ All notable changes to this project are recorded here.
 
 ## Unreleased
 
+- Add a standalone Reading module with 44 audited knowledge points and four linked views: concept, method, tips and practice.
+- Add 54 representative Reading questions (295 blanks), per-question timing, blank-level grading and wrong-answer knowledge-point tracing.
+- Preserve original RW options; train R questions as answer recall without inventing distractor pools.
 - Re-render all 39 Part A cards at 2046 × 1904 pixels (lossless PNG), increase card display contrast and bump image cache to v7/static cache to v22.
 - Replace Chinese route lists with the full one-sentence mnemonic in the learning panel and recall cards.
 

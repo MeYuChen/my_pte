@@ -22,6 +22,12 @@
 - 已移除宠物界面、监听器、计数和日历相关运行逻辑。其他进度、草稿和设置继续保留；历史 localStorage 中已有的 pet 字段不主动清空。
 - 检查：`node tests/content-consistency.cjs`；Playwright 用例已更新七类目录和移除宠物的验收标准。
 
+## Reading 模块（feature/reading-module）
+
+Reading 是与 WE 平行的独立页面：`reading.html`。数据位于 `reading-data.js`，包含 44 个审定考点和 54 道代表题（295 空）；`reading-core.js` 提供可独立测试的判分、计时格式和考点匹配函数。每个考点有“考点 / 解法 / 技巧 / 练习”四页，提交后按空显示主考点、关联考点及题内证据。进度保存在 `pte-reading-progress-v1`。
+
+R 原始材料没有机构干扰词池，因此使用输入回忆，不虚构选项；RW 保留原始选项。
+
 ## 当前目标
 
 当前优先级：

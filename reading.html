@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PTE Reading 考点训练</title>
+    <link rel="stylesheet" href="./reading.css">
+  </head>
+  <body>
+    <div class="reading-shell">
+      <aside class="reading-sidebar">
+        <header class="reading-brand">
+          <a href="./index.html" aria-label="返回首页">PTE</a>
+          <div>
+            <h1>Reading</h1>
+            <p id="dataSummary">载入题库中…</p>
+          </div>
+        </header>
+        <div class="sidebar-controls">
+          <label>
+            <span>搜索考点</span>
+            <input id="pointSearch" type="search" placeholder="时态 / 搭配 / S02" autocomplete="off">
+          </label>
+          <div class="point-filters" aria-label="考点筛选">
+            <button class="is-active" type="button" data-point-filter="all">全部</button>
+            <button type="button" data-point-filter="high">高频</button>
+            <button type="button" data-point-filter="weak">待补</button>
+          </div>
+        </div>
+        <nav class="point-list" id="pointList" aria-label="Reading 考点列表"></nav>
+      </aside>
+
+      <main class="reading-main">
+        <header class="reading-header">
+          <div>
+            <p class="eyebrow" id="pointModule">考点模块</p>
+            <h2 id="pointTitle">选择一个考点</h2>
+          </div>
+          <div class="header-stats">
+            <span id="pointFrequency">频次 —</span>
+            <span id="pointProgress">尚未练习</span>
+          </div>
+        </header>
+
+        <nav class="content-tabs" id="contentTabs" aria-label="考点学习模块">
+          <button class="is-active" type="button" data-tab="point">考点</button>
+          <button type="button" data-tab="method">解法</button>
+          <button type="button" data-tab="tips">技巧</button>
+          <button type="button" data-tab="practice">练习</button>
+        </nav>
+
+        <section class="tab-panel" id="pointPanel" data-panel="point"></section>
+        <section class="tab-panel" id="methodPanel" data-panel="method" hidden></section>
+        <section class="tab-panel" id="tipsPanel" data-panel="tips" hidden></section>
+        <section class="tab-panel practice-panel" id="practicePanel" data-panel="practice" hidden>
+          <div class="practice-toolbar">
+            <div>
+              <p class="eyebrow" id="questionSource">考点专项练习</p>
+              <h3 id="questionTitle">请选择并开始一道题</h3>
+              <p id="questionMeta"></p>
+            </div>
+            <div class="practice-actions">
+              <div class="question-timer" id="questionTimer">00:00</div>
+              <button class="secondary-button" id="previousQuestion" type="button">上一题</button>
+              <button class="secondary-button" id="nextQuestion" type="button">下一题</button>
+              <button class="primary-button" id="startQuestion" type="button">开始本题</button>
+              <button class="primary-button" id="submitQuestion" type="button" disabled>提交判分</button>
+            </div>
+          </div>
+          <div class="practice-status" id="practiceStatus">点击“开始本题”后开始计时。</div>
+          <article class="passage-card is-locked" id="passageCard"></article>
+        </section>
+      </main>
+    </div>
+
+    <dialog class="result-dialog" id="resultDialog">
+      <div class="dialog-heading">
+        <div>
+          <p class="eyebrow">本题结果</p>
+          <h2 id="resultTitle">判分完成</h2>
+        </div>
+        <button class="icon-button" id="closeResult" type="button" aria-label="关闭">×</button>
+      </div>
+      <div class="score-strip" id="scoreStrip"></div>
+      <div class="wrong-points" id="wrongPoints"></div>
+      <div class="dialog-actions">
+        <button class="secondary-button" id="reviewFirstWrong" type="button">复习错误考点</button>
+        <button class="primary-button" id="continuePractice" type="button">继续下一题</button>
+      </div>
+    </dialog>
+
+    <script src="./reading-data.js"></script>
+    <script src="./reading-core.js"></script>
+    <script src="./reading.js"></script>
+  </body>
+</html>
