@@ -116,8 +116,8 @@
 
   function applyLearnerFacingMethodFixes() {
     const fixedChunks = methodsById.get("C08");
-    if (!fixedChunks) return;
-    Object.assign(fixedChunks, {
+    if (fixedChunks) Object.assign(fixedChunks, {
+      memory_rule: "先看词性，前后连块；搭配分不出，再看整句义。",
       core_method: "先把空格与前后 2—4 个词连起来读，判断它是否组成固定搭配、短语动词或学术术语；搭配无法排除时，再比较整句意思。",
       decision_steps: [
         "先判断空格需要什么词性，例如名词、动词或介词。",
@@ -130,13 +130,39 @@
         "at stake、in danger 等近义表达都可能通顺，此时必须依靠上下文，而不是硬背唯一搭配。"
       ],
       normal_examples: [
-        { bid: "RW596:3", answer: "turn up", evidence: "turn up 在这里表示‘出现’：a rare bird may turn up（稀有鸟类可能出现）。" },
-        { bid: "RW577:4", answer: "fade away", evidence: "fade away 表示‘逐渐消失’：far from fading away（远未消失）。" },
-        { bid: "RW95:5", answer: "self-fulfilling prophecy", evidence: "这是完整固定术语，意思是‘自我实现的预言’。" }
+        { bid: "RW596:3", answer: "turn up", evidence: "看到 turn ___：此处说稀有鸟类可能‘出现’，锁定 turn up。" },
+        { bid: "RW577:4", answer: "fade away", evidence: "看到 fading ___：句意是传统远未‘逐渐消失’，锁定 fade away。" },
+        { bid: "RW95:5", answer: "self-fulfilling prophecy", evidence: "看到 self-fulfilling ___：这是完整术语‘自我实现的预言’，直接锁定 prophecy。" }
       ],
       contrast_examples: [
-        { bid: "RW534:2", answer: "in some way", evidence: "in some way（在某种程度上）、in no way（绝不）、by the way（顺便说）结构都成立，必须根据句意选择。" },
-        { bid: "RW620:8", answer: "at stake", evidence: "at stake 与 in danger 都能表示‘处于危险中’，单靠搭配无法排除，必须查看前后逻辑。" }
+        { bid: "RW534:2", answer: "in some way", evidence: "in some way、in no way、by the way 结构都成立，必须根据整句是‘某种程度’、‘绝不’还是‘顺便说’来选。" },
+        { bid: "RW620:8", answer: "at stake", evidence: "at stake 与 in danger 都能表示‘处于危险中’，单靠搭配无法排除，继续查看前后逻辑。" }
+      ]
+    });
+
+    const synonymChoice = methodsById.get("S02");
+    if (synonymChoice) Object.assign(synonymChoice, {
+      memory_rule: "先砍词性，再锁搭配，再对句意；两个都能用，就别背假规则。",
+      core_method: "近义词不要只比较中文翻译。按“词性 → 搭配 → 精确句意 → 上下文”逐层筛选，哪一层出现排他证据就在哪一层作答。",
+      decision_steps: [
+        "词性：先看空格位置需要名词、动词、形容词还是副词，形式不对的直接排除。",
+        "搭配：查看空格前后的动词、名词或介词，优先选择真实常用的组合。",
+        "句意：比较选项的对象、范围、强弱和褒贬，选择最准确描述当前关系的词。",
+        "上下文：用前后句的指代、重复词和逻辑方向作最后确认；仍有两个都成立，说明题目缺少唯一证据。"
+      ],
+      traps: [
+        "中文翻译差不多，不代表放进这个句子都一样准确。",
+        "先找排他证据，不要凭‘这个词更高级’或‘答案表这样写’硬选。",
+        "如果两个词在词性、搭配和句意上都成立，这类题只记语境倾向，不背虚构区别。"
+      ],
+      normal_examples: [
+        { bid: "RW121:4", answer: "personal", evidence: "线索：作者观察的是自己与狗的相处，还承认可能受个人愿望影响。这里强调‘个人亲历’，所以选 personal。" },
+        { bid: "RW13:4", answer: "equally", evidence: "先砍词性：applies 需要副词，equality 出局；再看句意：列出的几类儿童都‘同样适用’，所以选 equally。" },
+        { bid: "RW395:5", answer: "deterrence", evidence: "线索：restitution and ___ 并列两个惩罚目的。restitution 是补偿，另一个常见目的就是 deterrence（威慑）。" }
+      ],
+      contrast_examples: [
+        { bid: "RW35:1", answer: "technologies", evidence: "前文 modern technology 与后文 brain imaging technologies 形成词汇呼应，因此倾向 technologies；但 methods 也能成立，这不是值得死背的唯一规则。" },
+        { bid: "RW619:5", answer: "transforming", evidence: "transforming、converting、altering 在该句中都可能成立，题内没有足够排他线索。结论：标记为重叠题，不编造词义禁区。" }
       ]
     });
   }
@@ -166,6 +192,7 @@
     const boundaryTitle = method.id === "C08" ? "不能只靠固定搭配的情况" : "容易混淆的情况";
     el.tipsPanel.innerHTML = `
       <div class="tip-grid">
+        ${method.memory_rule ? `<section class="memory-rule-card"><span>做题口诀</span><strong>${escapeHtml(method.memory_rule)}</strong></section>` : ""}
         <section class="tip-card"><h4>最容易错在哪里</h4><ul>${method.traps.map((tip) => `<li>${escapeHtml(tip)}</li>`).join("")}</ul></section>
         <section class="tip-card"><h4>怎么判断</h4><div class="example-list">${renderExamples(method.normal_examples)}</div></section>
         <section class="tip-card tip-card-wide"><h4>${boundaryTitle}</h4><div class="example-list">${renderExamples(method.contrast_examples)}</div></section>

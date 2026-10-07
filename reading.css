@@ -91,6 +91,18 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px v
 .tip-card p, .tip-card li { color: #405047; line-height: 1.65; }
 .tip-card ul { margin: 0; padding-left: 20px; }
 .tip-card-wide { grid-column: 1 / -1; }
+.memory-rule-card {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 18px 22px;
+  border-radius: 11px;
+  background: var(--accent);
+  color: #fff;
+}
+.memory-rule-card span { font-size: 12px; font-weight: 850; opacity: .78; }
+.memory-rule-card strong { font-size: 20px; letter-spacing: .02em; }
 .example-list { display: grid; gap: 9px; margin-top: 10px; }
 .example { padding: 11px; border-radius: 8px; background: var(--surface-soft); font-size: 13px; line-height: 1.55; }
 .example strong { color: var(--accent-dark); }

@@ -11,6 +11,10 @@ test.describe("Reading module", () => {
     await expect(page.locator(".point-item")).toHaveCount(44);
     await expect(page.locator("#dataSummary")).toContainText("54 题 · 295 空");
 
+    await page.getByRole("button", { name: "技巧", exact: true }).click();
+    await expect(page.locator(".memory-rule-card")).toContainText("先砍词性，再锁搭配，再对句意");
+    await expect(page.locator("#tipsPanel")).not.toContainText("给定答案不自动等于唯一答案");
+
     await page.getByRole("button", { name: "练习", exact: true }).click();
     await page.getByRole("button", { name: "开始本题" }).click();
     await expect(page.locator("#submitQuestion")).toBeEnabled();
