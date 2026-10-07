@@ -1,4 +1,4 @@
-const CACHE_NAME = "pte-we-static-v27-reading-guides";
+const CACHE_NAME = "pte-we-static-v28-reading-explanations";
 const IMAGE_CACHE_NAME = "pte-we-images-v8";
 const STATIC_ASSETS = [
   "./",
@@ -14,6 +14,7 @@ const STATIC_ASSETS = [
   "./reading-core.js",
   "./reading-data.js",
   "./reading-method-guides.js",
+  "./reading-explanations.js",
   "./reading.js"
 ];
 

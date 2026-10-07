@@ -26,7 +26,7 @@ test.describe("Reading module", () => {
     await page.locator("#submitQuestion").click();
 
     await expect(page.locator("#resultDialog")).toBeVisible();
-    await expect(page.locator(".wrong-card").first()).toContainText("主考点");
+    await expect(page.locator(".wrong-card").first()).toContainText("决定性考点");
     await expect(page.locator("#scoreStrip")).toContainText("答错");
   });
 
@@ -55,6 +55,29 @@ test.describe("Reading module", () => {
     const sessions = await page.evaluate(() => JSON.parse(localStorage.getItem("pte-reading-progress-v1")).sessions);
     expect(sessions).toHaveLength(1);
     expect(sessions[0].correct).toBe(sessions[0].total);
+  });
+
+  test("wrong-answer review explains the decisive clue instead of repeating audit boilerplate", async ({ page }) => {
+    await page.goto("./reading.html#S02");
+    await page.getByRole("button", { name: "练习", exact: true }).click();
+    await page.getByRole("button", { name: "开始本题" }).click();
+    const answers = await page.evaluate(() => window.READING_DATA.questions.find((item) => item.source === "RW539").answers);
+    const wrongAnswers = { 1: "has been", 5: "forbidden", 6: "improved" };
+    const selects = page.locator("#passageCard select");
+    for (let index = 0; index < answers.length; index += 1) {
+      await selects.nth(index).selectOption({ label: wrongAnswers[index] || answers[index] });
+    }
+    await page.locator("#submitQuestion").click();
+
+    await expect(page.locator(".wrong-card")).toHaveCount(3);
+    const review = page.locator("#wrongPoints");
+    await expect(review).toContainText("although 表示转折");
+    await expect(review).toContainText("规则禁止统一原则");
+    await expect(review).toContainText("false wit、puns、ambiguity");
+    await expect(review).not.toContainText("逐项比较");
+    await expect(review).toContainText("决定性考点 D04");
+    await expect(review).toContainText("决定性考点 S01");
+    await expect(review).toContainText("决定性考点 S03");
   });
 
   test("R questions use an answer pool instead of text entry", async ({ page }) => {

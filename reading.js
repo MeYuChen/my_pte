@@ -12,6 +12,7 @@
     if (method) Object.assign(method, guide);
   });
   applyLearnerFacingMethodFixes();
+  applyExplanationOverrides();
 
   const state = {
     pointId: resolveInitialPoint(),
@@ -169,6 +170,31 @@
         { bid: "RW619:5", answer: "transforming", evidence: "transforming、converting、altering 在该句中都可能成立，题内没有足够排他线索。结论：标记为重叠题，不编造词义禁区。" }
       ]
     });
+  }
+
+  function applyExplanationOverrides() {
+    const overrides = window.READING_EXPLANATIONS || {};
+    data.questions.forEach((question) => {
+      (question.blank_map || []).forEach((blank) => {
+        const override = overrides[blank.bid];
+        if (!override) return;
+        const primary = methodsById.get(override.primary_point);
+        Object.assign(blank, {
+          primary_point: override.primary_point,
+          primary_name: primary ? primary.name : blank.primary_name,
+          secondary_points: override.secondary_points || [],
+          explanation: override.reason,
+          reviewed_explanation: true
+        });
+      });
+    });
+  }
+
+  function learnerExplanation(knowledge) {
+    if (knowledge.reviewed_explanation && knowledge.explanation) return knowledge.explanation;
+    const method = methodsById.get(knowledge.primary_point);
+    const path = method?.memory_rule || method?.core_method || "先检查语法、搭配和上下文";
+    return `判断路径：${path} 当前这个空只有考点归类，尚未完成人工选项排除说明，不能把原来的自动判定文字当成完整解析。`;
   }
 
   function renderPointContent() {
@@ -369,8 +395,8 @@
         return `<article class="wrong-card" data-point-id="${escapeHtml(knowledge.primary_point || "")}">
           <h4>第 ${detail.index + 1} 空：${escapeHtml(knowledge.primary_point || "未分类")} · ${escapeHtml(knowledge.primary_name || "待复核")}</h4>
           <p>你的答案：<strong>${escapeHtml(detail.response || "（未作答）")}</strong>　正确答案：<strong>${escapeHtml(detail.answer)}</strong></p>
-          <p>${escapeHtml(knowledge.evidence || "暂无题内证据说明。")}</p>
-          <span class="point-chip">主考点 ${escapeHtml(knowledge.primary_point || "—")}</span>
+          <div class="answer-reason"><strong>为什么选 ${escapeHtml(detail.answer)}</strong><p>${escapeHtml(learnerExplanation(knowledge))}</p></div>
+          <span class="point-chip">${knowledge.reviewed_explanation ? "决定性考点" : "归类考点"} ${escapeHtml(knowledge.primary_point || "—")}</span>
           ${secondary.map((point) => `<span class="point-chip">关联 ${escapeHtml(point.id)} · ${escapeHtml(point.name)}</span>`).join("")}
         </article>`;
       }).join("");

@@ -8,11 +8,17 @@ const core = require(path.join(root, "reading-core.js"));
 const context = { window: {} };
 vm.runInNewContext(fs.readFileSync(path.join(root, "reading-data.js"), "utf8"), context);
 vm.runInNewContext(fs.readFileSync(path.join(root, "reading-method-guides.js"), "utf8"), context);
+vm.runInNewContext(fs.readFileSync(path.join(root, "reading-explanations.js"), "utf8"), context);
 const data = context.window.READING_DATA;
 const guides = context.window.READING_METHOD_GUIDES;
+const explanations = context.window.READING_EXPLANATIONS;
 
 assert.equal(data.methods.length, 44, "should include all audited knowledge points");
 assert.equal(Object.keys(guides).length, 42, "all non-curated points should have learner guides");
+assert.equal(Object.keys(explanations).length, 8, "the full RW539 question should have reviewed answer reasons");
+assert.equal(explanations["RW539:2"].primary_point, "D04", "contrast, not tense alone, decides RW539:2 polarity");
+assert.equal(explanations["RW539:6"].primary_point, "S01", "semantic role decides RW539:6");
+assert.equal(explanations["RW539:7"].primary_point, "S03", "negative direction decides RW539:7");
 data.methods.filter((method) => !["S02", "C08"].includes(method.id)).forEach((method) => {
   assert.ok(guides[method.id]?.memory_rule, `${method.id} should have a memorable learner rule`);
   assert.ok(guides[method.id]?.quick_checks?.length >= 2, `${method.id} should have quick recognition checks`);
