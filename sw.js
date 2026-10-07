@@ -1,4 +1,4 @@
-const CACHE_NAME = "pte-we-static-v30-reading-explanations-batch2";
+const CACHE_NAME = "pte-we-static-v31-reading-explanations-batch3";
 const IMAGE_CACHE_NAME = "pte-we-images-v8";
 const STATIC_ASSETS = [
   "./",

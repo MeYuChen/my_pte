@@ -15,8 +15,8 @@ const explanations = context.window.READING_EXPLANATIONS;
 
 assert.equal(data.methods.length, 44, "should include all audited knowledge points");
 assert.equal(Object.keys(guides).length, 42, "all non-curated points should have learner guides");
-assert.equal(Object.keys(explanations).length, 73, "eleven full questions should have reviewed answer reasons");
-["RW539", "RW160", "RW600", "RW49", "RW423", "RW418", "RW289", "RW512", "RW148", "RW461", "RW97"].forEach((source) => {
+assert.equal(Object.keys(explanations).length, 130, "twenty-one full questions should have reviewed answer reasons");
+["RW539", "RW160", "RW600", "RW49", "RW423", "RW418", "RW289", "RW512", "RW148", "RW461", "RW97", "RW449", "RW91", "RW495", "RW90", "RW99", "RW127", "RW396", "RW602", "RW251", "RW535"].forEach((source) => {
   const question = data.questions.find((item) => item.source === source);
   question.answers.forEach((_, index) => {
     assert.ok(explanations[`${source}:${index + 1}`]?.reason, `${source}:${index + 1} should have a reviewed answer reason`);

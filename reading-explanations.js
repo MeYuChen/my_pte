@@ -363,6 +363,291 @@ window.READING_EXPLANATIONS = {
     reason: "国际化进程是“由学生流动增加所推动”，by 后给出施动原因，因此必须用被动 was initially driven。was driving/initially drove 是主动方向；had driven 既主动又缺少合适宾语。",
     primary_point: "G04",
     secondary_points: ["G02", "S05"]
+  },
+  "RW449:1": {
+    reason: "空格是 artistic ___，后面又说明作品表达 life、truth、beauty 等内容，指的是作品持续存在的“艺术品质”，所以选 quality。facade 是外表，bid 是尝试/出价，clime 是地域或气候，都不能概括作品的艺术价值。",
+    primary_point: "S01",
+    secondary_points: ["C02", "S04"]
+  },
+  "RW449:2": {
+    reason: "作品是“被写成”的，且前面已有 was，因此需要过去分词 written 构成被动 was written。writing 是主动/进行分词，write 与 to write 都不能直接接在 was 后表示作品的创作年代。",
+    primary_point: "G04",
+    secondary_points: ["G02"]
+  },
+  "RW449:3": {
+    reason: "本句强调经典地位不取决于销量或大众欢迎度，固定结构 regardless of 表“不管、不受……影响”。according to 表根据，方向相反；lacking of 和 related with 都不是这里的正确搭配。",
+    primary_point: "C08",
+    secondary_points: ["D04", "C04"]
+  },
+  "RW449:4": {
+    reason: "段落讨论经典文学的一般特征，而非绝对定义，因此用 usually merits lasting recognition，表示“通常值得长期认可”。exclusively 表仅仅且排他，merely 有贬低意味，consequently 表因果结果，都不符合概括性语气。",
+    primary_point: "S07",
+    secondary_points: ["F05", "S02"]
+  },
+  "RW449:5": {
+    reason: "固定结构 be characterized by 表“以……为特征”，与 technical achievement or critical acclaim 搭配。formed by 只表示形成，不能表达作品的显著特征；notified/concluded by 语义不成立。",
+    primary_point: "C04",
+    secondary_points: ["G04", "C08"]
+  },
+  "RW449:6": {
+    reason: "received positively 表“获得正面评价”，与前面的 acknowledged 并列；句子整体说即便当时没有被认可或好评，后来仍可能成为经典。imposingly/efficiently 不能描述评价，arguably 表“可以说”而非接受方式。",
+    primary_point: "C01",
+    secondary_points: ["S03", "F02"]
+  },
+  "RW91:1": {
+    reason: "固定结构 refer to A as B 的被动形式是 be referred to as，意思是“通常被称为物质文化研究”。subject to 是受制于，compared with 是与……比较，across from 是在对面，均不能接 as 命名。",
+    primary_point: "C08",
+    secondary_points: ["G04", "C04"]
+  },
+  "RW91:2": {
+    reason: "研究物质文化需要仔细研究并观察实体物品，因此是 study and observation，两个名词并列。experiment 需要实验语境，modification 是修改，consumption 是消费，都不是理解历史物件的基本研究动作。",
+    primary_point: "G10",
+    secondary_points: ["S01", "F01"]
+  },
+  "RW91:3": {
+    reason: "主句已完整为 The source material ... is exceptionally wide，后面用 including 引出所包含的例子。includes 会形成第二个谓语且无连词；included/had included 也破坏主句结构。",
+    primary_point: "G07",
+    secondary_points: ["G01", "S04"]
+  },
+  "RW91:4": {
+    reason: "reign supreme 是固定搭配，表示物质文化研究在某些学科中占主导地位。at all、everywhere、far and wide 都是范围副词，不能与 reign 构成“最重要”的判断。",
+    primary_point: "C08",
+    secondary_points: ["S01"]
+  },
+  "RW91:5": {
+    reason: "上一句限定了 written evidence patchy or non-existent 的情形，下一句说在“这种情况下”物件是唯一证据，所以选 In such cases。In this way 表方式，In essence 表本质概括，By no means 表绝不，均不能回指具体条件。",
+    primary_point: "D01",
+    secondary_points: ["D06", "F04"]
+  },
+  "RW91:6": {
+    reason: "as in the case of 是固定举例结构，表示“正如中世纪及后中世纪考古学的情况”。as long as 表条件，as if 表仿佛，as a result of 表原因，都不能引出一个佐证领域。",
+    primary_point: "C08",
+    secondary_points: ["D06"]
+  },
+  "RW495:1": {
+    reason: "rather than 是固定对比结构：预期寿命关注生命长度，而不是生活质量。more than 表数量超过，better than 表优劣比较，none than 不成立。",
+    primary_point: "C08",
+    secondary_points: ["D04"]
+  },
+  "RW495:2": {
+    reason: "指标用于总结该领域取得的“进展”，固定表达 a measure of progress。density、volume、surface 都是物理量或表面概念，无法概括人口健康改善。",
+    primary_point: "C06",
+    secondary_points: ["D02", "S04"]
+  },
+  "RW495:3": {
+    reason: "女孩预期 83.9 岁，男孩 79.3 岁，两个完整分句形成同期对比，因此用 while。which/that 会变成关系从句但没有合适先行词；as 更偏同时或原因，不能清楚突出性别对照。",
+    primary_point: "D04",
+    secondary_points: ["P02", "G09"]
+  },
+  "RW495:4": {
+    reason: "男孩增加 3.1 年、女孩增加 2.1 年，只是多增加 1 年，因此是 slightly more。slowly 描述速度而非差额；significantly/dramatically 会夸大这一小幅差别，也不符合随后 gap decrease by one year。",
+    primary_point: "Q01",
+    secondary_points: ["S07", "S02"]
+  },
+  "RW495:5": {
+    reason: "固定搭配 an increase/increases in something 表“某方面的增长”，所以是 increases in life expectancy。at/for/above 都不能标记增长所发生的指标。",
+    primary_point: "C04",
+    secondary_points: ["C08"]
+  },
+  "RW495:6": {
+    reason: "most of the 20th century 表“20 世纪的大部分时间”。the most 需要比较范围，a majority 通常接 of + 可数复数群体，a few 不能修饰不可数的时间跨度。",
+    primary_point: "Q02",
+    secondary_points: ["F03"]
+  },
+  "RW90:1": {
+    reason: "there has been an 后需要单数名词，an emphasis on 表“重视……”。emphases 是复数，与 an 冲突；emphasize 是动词；emphasizing 是分词，均不适合该名词槽。",
+    primary_point: "F03",
+    secondary_points: ["C04", "G03"]
+  },
+  "RW90:2": {
+    reason: "科学研究的作用是探究人性的不同方面，studies explore aspects 是自然搭配。exceed 是超过，excel 通常接 in/at，separate 是分开，都不表达调查研究。",
+    primary_point: "C01",
+    secondary_points: ["S01"]
+  },
+  "RW90:3": {
+    reason: "括号直接列出 touch, taste, smell, sight and hearing，这五项都是 senses，因此答案由下位词清单反推上位词。brains/minds/feelings 都不能统摄这五种感官。",
+    primary_point: "S04",
+    secondary_points: ["D02"]
+  },
+  "RW90:4": {
+    reason: "前文列举 many scientific studies，后文说这些研究共同帮助理解人性，因此用 scientific investigations 回指研究活动。results 是研究结果，但 all contribute 的主语在此概括的是前述各项调查；assumptions/correlations 只覆盖特定研究内容。",
+    primary_point: "D02",
+    secondary_points: ["C02", "S04"]
+  },
+  "RW90:5": {
+    reason: "an understanding of psychology 是固定名词结构，表示“对心理学的理解”，并与后文 people who have knowledge of psychology 同义复现。ideology/empowerment/operating 都不能表达掌握学科知识。",
+    primary_point: "C06",
+    secondary_points: ["D02", "C04"]
+  },
+  "RW90:6": {
+    reason: "后面紧接 or apply that knowledge，use 与 apply 构成同义并列，表示把心理学知识用于实际领域。register/classify/learn 都不能与 apply 形成这一应用关系。",
+    primary_point: "G10",
+    secondary_points: ["D02", "S01"]
+  },
+  "RW99:1": {
+    reason: "结构是 the + 最高级 + 复数名词，句意让读者想象见过的“最奇怪生物”，所以选 weirdest。helot 是名词，codependent/signaled 不是表达奇异程度的最高级。",
+    primary_point: "Q02",
+    secondary_points: ["F02", "S01"]
+  },
+  "RW99:2": {
+    reason: "研究对象包括皮肤、肠道、肚脐里的多种 bacteria, fungi and other organisms，因此研究的是微生物的 diversity。pattern 需要说明何种模式，surface/choice 与多种生物类型无关。",
+    primary_point: "S04",
+    secondary_points: ["D02", "C06"]
+  },
+  "RW99:3": {
+    reason: "整段研究家中的微小生物，fridge microbes 指冰箱里的微生物，并与后文 tiny life、samples 呼应。firestorms/cyclops/tiros 都不是冰箱生态系统中的生物类别。",
+    primary_point: "D02",
+    secondary_points: ["C02", "S04"]
+  },
+  "RW99:4": {
+    reason: "采样位置从门框、沙发垫、冰箱逐步扩展到“甚至你自己”，even 用于添加出乎意料的最后一项。without/against/unless 无法在清单中承担递进强调。",
+    primary_point: "F04",
+    secondary_points: ["D02", "G10"]
+  },
+  "RW99:5": {
+    reason: "样本是被研究团队分析的，will be analyzed 构成将来时被动。exempted 是豁免，clicked 是点击，forgotten 是遗忘，都不符合采样后的科研流程。",
+    primary_point: "G04",
+    secondary_points: ["S05", "C01"]
+  },
+  "RW99:6": {
+    reason: "这些伙伴肉眼看不见、体型极小，因此是 microscopic companions。mechanic 是机械师/机械的，nondemocratic 与政治有关，epidemical 指流行病性的，都不能概括家中微生物。",
+    primary_point: "C02",
+    secondary_points: ["D02", "S01"]
+  },
+  "RW127:1": {
+    reason: "后文出现 Northwest Fisheries Science Center，且语境是 Seattle 附近的鲑鱼，因此是 Northwest rivers。Protect/Meant/Rebuilt 不是地理区域名称，也不能自然修饰 rivers。",
+    primary_point: "D02",
+    secondary_points: ["F02", "S01"]
+  },
+  "RW127:2": {
+    reason: "句子列举 common road pollutants，并与 metals 并列；hydrocarbons 是道路径流中常见的化学污染物类别。carcass/mothers/harness 既不属于污染物类别，也不能与 metals 构成科学并列。",
+    primary_point: "S04",
+    secondary_points: ["C02", "G10"]
+  },
+  "RW127:3": {
+    reason: "前句推测致死因素可能是一种化学物质，或几种化合物的致命组合，因此选 compounds。bloodhounds/knockouts/dropouts 都不是化学类别，且无法与 chemical 形成同一语义场。",
+    primary_point: "S04",
+    secondary_points: ["D02", "F03"]
+  },
+  "RW127:4": {
+    reason: "固定结构 capability/capabilities of doing，语境说目前没有能力测量径流中的全部物质，所以选 measuring。其余分词分别表示挥霍、闪光、宣告，与科研检测无关。",
+    primary_point: "C04",
+    secondary_points: ["G06", "S01"]
+  },
+  "RW127:5": {
+    reason: "后面明确说 runoff through ... soil，并说明经过土壤后雨水变安全，因此动作是 filtering runoff through soil。pressuring/stencilling/pensioning 都不能描述土壤净化径流。",
+    primary_point: "G06",
+    secondary_points: ["C04", "S05"]
+  },
+  "RW127:6": {
+    reason: "情态动词 can 后需要动词原形，且城市要“实施”这种净水技术，所以选 implement。polemicist 是名词，littlest/dissonant 是形容词，词性首先即可排除。",
+    primary_point: "F01",
+    secondary_points: ["G04", "S01"]
+  },
+  "RW396:1": {
+    reason: "后文两次复现 developing the method 和 The algorithms，说明 Monaghan 开创的是一种解释液体行为的方法，所以选 method。conspiracy、phase、deviation 都不能指代可用于特效和科学模拟的技术方法。",
+    primary_point: "D02",
+    secondary_points: ["S04", "C02"]
+  },
+  "RW396:2": {
+    reason: "with election to the Australian Academy of Sciences 表明他因成果获得荣誉，固定结构 be honored with...。nominated 只表示提名且通常接 for/as；informed/voted 与 with election 的受奖关系不合。",
+    primary_point: "C04",
+    secondary_points: ["G04", "S01"]
+  },
+  "RW396:3": {
+    reason: "他试图用计算机建立恒星形成模型，标准术语是 computer simulation。stimulation 是刺激，equation 是方程但不能概括模拟过程，action 太泛。",
+    primary_point: "C02",
+    secondary_points: ["S04"]
+  },
+  "RW396:4": {
+    reason: "固定结构 be incapable of doing，后面已有 of describing，直接锁定 incapable。impossible 通常是 it is impossible to do；fallible 表可能犯错，inapplicable 表不适用，也不能准确接 of describing。",
+    primary_point: "C05",
+    secondary_points: ["C08", "G05"]
+  },
+  "RW396:5": {
+    reason: "模拟粒子的属性要模仿真实流体的属性，因此是 properties that mimicked those of the fluid。those 指代 properties；presented/showed 只表示展示，liked 语义错误。",
+    primary_point: "S01",
+    secondary_points: ["D01", "C01"]
+  },
+  "RW602:1": {
+    reason: "前句说年轻人之间能力有差异，下一句进一步强调“即使在同一个家庭内部”也有明显差异，所以用 Even。Only 会限制为只在家庭内，与前句矛盾；Just/Still 不具备这种意外递进。",
+    primary_point: "F04",
+    secondary_points: ["D02", "D04"]
+  },
+  "RW602:2": {
+    reason: "success 是不可数名词，without much success 表“没有取得多少成功”。many 只能修饰可数复数；little/a little 与 without 叠加后语义和搭配都不如固定表达 without much success。",
+    primary_point: "Q01",
+    secondary_points: ["F03", "C08"]
+  },
+  "RW602:3": {
+    reason: "固定结构 the likelihood of doing，become 要变为动名词 becoming，因此选 of becoming。to become 有时可接 likelihood，但本题给出的完整标准名词结构是 likelihood of becoming；of become 词形错误，in becoming 介词不对。",
+    primary_point: "C04",
+    secondary_points: ["G06", "C08"]
+  },
+  "RW602:4": {
+    reason: "教育者是在一组年轻人中决定“哪些人”接受指导，which 修饰 young people 并表示选择。who 后不能再接 young people；what/where 的指代类型错误。",
+    primary_point: "G08",
+    secondary_points: ["F03", "S01"]
+  },
+  "RW602:5": {
+    reason: "被动结构 be believed to do 要接不定式，所以是 is believed to help explain。help/helping/helped 都不能直接放在 believed 后形成该报告结构。",
+    primary_point: "G05",
+    secondary_points: ["G04", "C08"]
+  },
+  "RW251:1": {
+    reason: "结构为 was named the method of difference，表示这一逻辑“被命名为差异法”。described 后通常需要 as；labeled 也常接 as，pointed 不合语义。这里 named 可直接接名称作宾补。",
+    primary_point: "G04",
+    secondary_points: ["C01", "G10"]
+  },
+  "RW251:2": {
+    reason: "固定表达 what somebody means by this，表示“他这样说是什么意思”，所以选 meant。implied/indicated 强调暗示或表明，不能与 by this 构成解释术语含义的常规问法；misunderstood 方向相反。",
+    primary_point: "C04",
+    secondary_points: ["C08", "D01"]
+  },
+  "RW251:3": {
+    reason: "in every respect 是固定短语，表示两杯水“在各方面都相同”。regard 也可用于 in this regard，但与 every 的固定搭配在这里是 respect；thought/measure 不成立。",
+    primary_point: "C08",
+    secondary_points: ["Q02"]
+  },
+  "RW251:4": {
+    reason: "According to Mill’s method 是固定引证结构，表示“根据密尔的差异法”。Opposing/Referred/Relative to 虽有的能接 to，但分别表示反对、被提及、相对于，均不符合引用依据。",
+    primary_point: "C08",
+    secondary_points: ["C04"]
+  },
+  "RW251:5": {
+    reason: "it is safe to assume that 是常用推断框架，表示根据控制变量实验可以合理假定颜色变化由墨水导致。doubt 与证据结论相反；believe 太主观；conclude 语义也可接近，但 safe to assume 是此处方法论中的常规谨慎表述。",
+    primary_point: "S07",
+    secondary_points: ["C08", "S02"]
+  },
+  "RW251:6": {
+    reason: "给定答案 introduction 对应前文 Introduce a few drops of ink，也与后面的 a new factor 形成词汇复现。不过 addition of a new factor 在语法和语义上同样自然，因此本空不能仅凭题内证据认证绝对唯一；应记住考点是“引入独立变量”，不是背诵 introduction 排斥 addition。",
+    primary_point: "D02",
+    secondary_points: ["S02", "C06"]
+  },
+  "RW535:1": {
+    reason: "For every ton of cloth produced 是过去分词后置修饰，相当于 cloth that is produced，布料是被生产的。produce/producing 表主动，is produced 会在介词短语中加入完整谓语而破坏结构。",
+    primary_point: "G07",
+    secondary_points: ["G04"]
+  },
+  "RW535:2": {
+    reason: "前面已有主句 electricity powers the factories，后面用 leaving behind... 表示生产过程造成的结果。leave/leaves 会形成无连词的第二谓语；leaved 不是 leave 的正确过去式。",
+    primary_point: "G07",
+    secondary_points: ["D03", "G01"]
+  },
+  "RW535:3": {
+    reason: "固定搭配 steer somebody/something toward a direction，表示他带领公司走向环保纺织生产前沿。around/among/through 都不能准确表达战略方向。",
+    primary_point: "C04",
+    secondary_points: ["S01", "P01"]
+  },
+  "RW535:4": {
+    reason: "农场种植棉花的目的，是供应工厂；enough organic farms growing cotton 后用 to supply 表目的。supplying 会变成伴随但不能清楚表达数量不足以满足供应；have supplied/is supplied 均不能接在 farms 后。",
+    primary_point: "G05",
+    secondary_points: ["D06", "G07"]
+  },
+  "RW535:5": {
+    reason: "crops 属于前面的 conventional cotton farmers，先行者是复数，所以用形容词性物主代词 their。its 是单数，mine 指说话者所有，them 不能直接修饰名词。",
+    primary_point: "D01",
+    secondary_points: ["F03", "G03"]
   }
 
 };
