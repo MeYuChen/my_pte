@@ -63,6 +63,8 @@
     $("sourceWordCount").textContent = `参考答案 ${item.word_count} 词`;
     $("logicText").textContent = item.logic;
     $("keywordList").innerHTML = (item.keywords || []).map((x) => `<span>${escapeHtml(x)}</span>`).join("");
+    $("mnemonicImage").src = `./images/sst/${item.id}.webp`;
+    $("mnemonicImage").alt = `${item.title_zh}助记图`;
     $("answerSentences").innerHTML = (item.sentences || [item.answer]).map((x, i) => `<p><b>${i + 1}</b>　${escapeHtml(x)}</p>`).join("");
   }
   function renderDrill(item) {
@@ -70,6 +72,8 @@
     $("drillProgress").textContent = `${item.number} / ${items.length}`;
     $("drillLogic").textContent = item.logic;
     $("drillKeywords").innerHTML = (item.keywords || []).map((x) => `<span>${escapeHtml(x)}</span>`).join("");
+    $("drillMnemonicImage").src = `./images/sst/${item.id}.webp`;
+    $("drillMnemonicImage").alt = `${item.title_zh}助记图`;
     $("drillAnswer").innerHTML = `<p>${escapeHtml(item.answer)}</p>`;
     $("drillAnswer").hidden = true; $("drillActions").hidden = true; $("revealButton").hidden = false;
   }

@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>PTE SST 学习与考核</title>
-    <link rel="stylesheet" href="./styles.css?v=20261008-3">
-    <link rel="stylesheet" href="./sst.css?v=20261008-3">
+    <link rel="stylesheet" href="./styles.css?v=20261008-4">
+    <link rel="stylesheet" href="./sst.css?v=20261008-4">
   </head>
   <body>
     <div class="app-shell" id="appShell">
@@ -74,13 +74,14 @@
             <article class="study-card logic-card"><span>中文逻辑</span><div id="logicText"></div></article>
             <article class="study-card"><span>听到就记</span><div class="keyword-list" id="keywordList"></div></article>
           </div>
+          <article class="study-card mnemonic-card"><span>助记图 · 看图回忆内容</span><img id="mnemonicImage" alt="" loading="eager"></article>
           <article class="study-card answer-card"><span>成品答案</span><div id="answerSentences"></div></article>
         </section>
 
         <section class="sst-drill" id="drillPanel" hidden>
           <div class="drill-topbar"><div><span>逻辑 → 关键词 → 英文</span><h3 id="drillTitle"></h3></div><div class="drill-progress" id="drillProgress"></div></div>
           <div class="drill-card sst-drill-card">
-            <div class="drill-question"><p class="drill-logic" id="drillLogic"></p><div class="keyword-list is-prompt" id="drillKeywords"></div></div>
+            <div class="drill-question"><p class="drill-logic" id="drillLogic"></p><div class="keyword-list is-prompt" id="drillKeywords"></div><img class="drill-mnemonic" id="drillMnemonicImage" alt=""></div>
             <button class="primary-button drill-reveal-button" id="revealButton" type="button">显示成品答案</button>
             <div class="drill-answer" id="drillAnswer" hidden></div>
           </div>
@@ -101,7 +102,7 @@
       </main>
     </div>
     <div class="toast" id="toast" role="status" hidden></div>
-    <script src="./sst-data.js?v=20261008-3"></script>
-    <script src="./sst.js?v=20261008-3"></script>
+    <script src="./sst-data.js?v=20261008-4"></script>
+    <script src="./sst.js?v=20261008-4"></script>
   </body>
 </html>

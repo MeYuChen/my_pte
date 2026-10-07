@@ -1,9 +1,16 @@
 const { test, expect } = require("@playwright/test");
+const { readdirSync } = require("node:fs");
+const { join } = require("node:path");
 
 test.beforeEach(async ({ page }) => {
   await page.goto("./sst.html");
   await page.evaluate(() => localStorage.clear());
   await page.reload();
+});
+
+test("bundles one mnemonic image for every SST item", () => {
+  const images = readdirSync(join(__dirname, "..", "images", "sst")).filter((name) => name.startsWith("S") && name.endsWith(".webp"));
+  expect(images).toHaveLength(54);
 });
 
 test("shows 54 verified SST items and WE-style modes", async ({ page }) => {
@@ -28,7 +35,10 @@ test("learn and drill retain logic keywords and final answer", async ({ page }) 
   await page.getByRole("button", { name: "学习" }).click();
   await expect(page.locator("#logicText")).not.toBeEmpty();
   await expect(page.locator("#keywordList span").first()).toBeVisible();
+  await expect(page.locator("#mnemonicImage")).toBeVisible();
+  expect(await page.locator("#mnemonicImage").evaluate((image) => image.naturalWidth)).toBeGreaterThan(500);
   await page.getByRole("button", { name: "速记" }).click();
+  await expect(page.locator("#drillMnemonicImage")).toBeVisible();
   await page.getByRole("button", { name: "显示成品答案" }).click();
   await expect(page.locator("#drillAnswer")).toContainText("biology");
   await page.getByRole("button", { name: "记住了" }).click();

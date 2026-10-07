@@ -40,6 +40,9 @@
 .logic-card #logicText { white-space: pre-line; line-height: 1.8; }
 .keyword-list { display: flex; flex-wrap: wrap; gap: 8px; }
 .keyword-list span { padding: 7px 10px; border: 1px solid #c7ded8; border-radius: 6px; background: #f0f8f6; color: var(--accent-strong); font-weight: 750; }
+.mnemonic-card { overflow: hidden; text-align: center; }
+.mnemonic-card img { display: block; width: auto; max-width: 100%; max-height: 520px; margin: 0 auto; object-fit: contain; }
+.drill-mnemonic { display: block; width: auto; max-width: min(100%, 880px); max-height: 390px; margin: 24px auto 0; border-radius: 8px; object-fit: contain; }
 .answer-card { line-height: 1.8; }
 .answer-card p { margin: 0; padding: 11px 0; border-bottom: 1px solid var(--line); }
 .answer-card p:last-child { border-bottom: 0; }
