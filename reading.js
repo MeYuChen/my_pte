@@ -68,6 +68,7 @@
     el.submitQuestion.addEventListener("click", submitQuestion);
     el.continuePractice.addEventListener("click", () => { moveQuestion(1); startQuestion(); });
     el.reviewFirstWrong.addEventListener("click", reviewFirstWrong);
+    el.resultPanel.addEventListener("click", handleResultPointClick);
     window.addEventListener("hashchange", () => {
       const pointId = location.hash.replace(/^#/, "");
       if (methodsById.has(pointId) && pointId !== state.pointId) selectPoint(pointId, false);
@@ -394,8 +395,9 @@
           <h4>第 ${detail.index + 1} 空：${escapeHtml(knowledge.primary_point || "未分类")} · ${escapeHtml(knowledge.primary_name || "待复核")}</h4>
           <p>你的答案：<strong>${escapeHtml(detail.response || "（未作答）")}</strong>　正确答案：<strong>${escapeHtml(detail.answer)}</strong></p>
           <div class="answer-reason"><strong>为什么选 ${escapeHtml(detail.answer)}</strong><p>${escapeHtml(learnerExplanation(knowledge))}</p></div>
-          <span class="point-chip">${knowledge.reviewed_explanation ? "决定性考点" : "归类考点"} ${escapeHtml(knowledge.primary_point || "—")}</span>
-          ${secondary.map((point) => `<span class="point-chip">关联 ${escapeHtml(point.id)} · ${escapeHtml(point.name)}</span>`).join("")}
+          <button class="point-chip point-link" type="button" data-review-point="${escapeHtml(knowledge.primary_point || "")}">${knowledge.reviewed_explanation ? "决定性考点" : "归类考点"} ${escapeHtml(knowledge.primary_point || "—")} · ${escapeHtml(knowledge.primary_name || "待复核")}</button>
+          ${secondary.map((point) => `<button class="point-chip point-link" type="button" data-review-point="${escapeHtml(point.id)}">关联 ${escapeHtml(point.id)} · ${escapeHtml(point.name)}</button>`).join("")}
+          <div class="point-preview" hidden></div>
         </article>`;
       }).join("");
     }
@@ -403,11 +405,34 @@
     el.resultPanel.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
+  function handleResultPointClick(event) {
+    const previewButton = event.target.closest("[data-review-point]");
+    if (previewButton) {
+      const point = methodsById.get(previewButton.dataset.reviewPoint);
+      const card = previewButton.closest(".wrong-card");
+      const preview = card && card.querySelector(".point-preview");
+      if (!point || !preview) return;
+      card.querySelectorAll("[data-review-point]").forEach((button) => button.classList.toggle("is-selected", button === previewButton));
+      preview.innerHTML = `<div class="point-preview-heading"><span>${escapeHtml(point.id)} · ${escapeHtml(point.name)}</span><small>${escapeHtml(point.module)}</small></div>
+        <p><strong>核心：</strong>${escapeHtml(point.memory_rule || point.core_method)}</p>
+        <ol>${(point.decision_steps || []).map((step) => `<li>${escapeHtml(step)}</li>`).join("")}</ol>
+        <button class="secondary-button open-point-button" type="button" data-open-point="${escapeHtml(point.id)}">进入完整考点</button>`;
+      preview.hidden = false;
+      return;
+    }
+    const openButton = event.target.closest("[data-open-point]");
+    if (!openButton) return;
+    selectPoint(openButton.dataset.openPoint);
+    setTab("method");
+    el.pointModule.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
   function reviewFirstWrong() {
     const first = state.lastResult && state.lastResult.details.find((detail) => !detail.correct && detail.knowledge);
     if (!first) return;
     selectPoint(first.knowledge.primary_point);
     setTab("method");
+    el.pointModule.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   function moveQuestion(delta) {
