@@ -15,11 +15,12 @@ const explanations = context.window.READING_EXPLANATIONS;
 
 assert.equal(data.methods.length, 44, "should include all audited knowledge points");
 assert.equal(Object.keys(guides).length, 42, "all non-curated points should have learner guides");
-assert.equal(Object.keys(explanations).length, 130, "twenty-one full questions should have reviewed answer reasons");
-["RW539", "RW160", "RW600", "RW49", "RW423", "RW418", "RW289", "RW512", "RW148", "RW461", "RW97", "RW449", "RW91", "RW495", "RW90", "RW99", "RW127", "RW396", "RW602", "RW251", "RW535"].forEach((source) => {
-  const question = data.questions.find((item) => item.source === source);
+assert.equal(Object.keys(explanations).length, 295, "every representative blank should have a reviewed answer reason");
+data.questions.forEach((question) => {
   question.answers.forEach((_, index) => {
-    assert.ok(explanations[`${source}:${index + 1}`]?.reason, `${source}:${index + 1} should have a reviewed answer reason`);
+    const key = `${question.source}:${index + 1}`;
+    assert.ok(explanations[key]?.reason, `${key} should have a reviewed answer reason`);
+    assert.doesNotMatch(explanations[key].reason, /逐项比较|获得有效排他证据|给定词.*语境.*相容|R原材料无干扰词池|原词池缺失/u, `${key} should not expose audit boilerplate`);
   });
 });
 assert.equal(explanations["RW539:2"].primary_point, "D04", "contrast, not tense alone, decides RW539:2 polarity");

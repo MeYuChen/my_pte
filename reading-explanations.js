@@ -648,6 +648,117 @@ window.READING_EXPLANATIONS = {
     reason: "crops 属于前面的 conventional cotton farmers，先行者是复数，所以用形容词性物主代词 their。its 是单数，mine 指说话者所有，them 不能直接修饰名词。",
     primary_point: "D01",
     secondary_points: ["F03", "G03"]
-  }
+  },
+  "RW422:1": {reason:"后面是一整串罗马优势，There was a huge pool... 用存在句引出清单。There is 时态不符历史叙述；But with 会使本句缺少主要谓语；Here has 结构错误。",primary_point:"G01",secondary_points:["G02","S04"]},
+  "RW422:2": {reason:"effective diplomacy through a network of allies 表示外交通过盟友网络实现，through 标渠道。by 勉强可表手段，但与 network 搭配不如 through 准确；about/and 不合结构。",primary_point:"P01",secondary_points:["C04","S01"]},
+  "RW422:3": {reason:"逗号后是补充说明前面整项 inclusive approach 所产生的作用，用非限制性关系从句 which allowed...。that 通常不用在逗号后；who/whom 只能指人。",primary_point:"G08",secondary_points:["D01"]},
+  "RW422:4": {reason:"前文列罗马自身优势，后文继续补充盟友还提供人员和物资，因此用 Further 表递进。Because 缺主从逻辑，So 表结果，Recent 词性和含义均不合。",primary_point:"F04",secondary_points:["D02"]},
+  "RW422:5": {reason:"On top of all this 是“除此之外还……”的递进词块。Instead of 表替代，At the thought of 表一想到；Despite of 本身就是错误搭配，应为 despite。",primary_point:"C08",secondary_points:["F04"]},
+  "RW537:1": {reason:"one of the most popular choices for language learners 表“最受语言学习者欢迎的选择之一”。commodities 是商品，records 是记录，improvements 是改进，都不能指所选语言。",primary_point:"C02",secondary_points:["S01","Q02"]},
+  "RW537:2": {reason:"be designed to meet the needs 是固定表达“旨在满足需求”。record/choose the needs 语义不成立；satisfies 既与 to 后原形要求冲突，也不是 meet varied needs 的标准搭配。",primary_point:"C01",secondary_points:["G05","C08"]},
+  "RW537:3": {reason:"whether learning at home or in a class 是 whether...or... 的省略结构，表示两种学习场景都包括。as/nor/not 都不能与后面的 or 建立选择框架。",primary_point:"G09",secondary_points:["C08"]},
+  "RW537:4": {reason:"provide opportunities to do 是固定搭配，课程“提供练习阅读的机会”。applies opportunities、encroaches opportunities、initiates opportunities 均不自然。",primary_point:"C01",secondary_points:["G10"]},
+  "RW537:5": {reason:"an extensive range of media 表“广泛多样的媒体”，后面的 from...to... 正在列范围。series 更强调同系列，rate/wisdom 与媒体种类无关。",primary_point:"C06",secondary_points:["S04"]},
+  "RW537:6": {reason:"online activities 指在线练习活动，与课程资源并列。actions 太泛，breaches 是违规，binge 是过度沉迷，均不是教学资源类别。",primary_point:"C02",secondary_points:["S04"]},
+  "RW478:1": {reason:"internet revolution 是固定概念，指互联网带来的教育变革；period/time 只表示时期，change 过泛，无法承接过去五年在线材料的大幅变化。",primary_point:"C02",secondary_points:["D02"]},
+  "RW478:2": {reason:"increase the volume and range of course materials 表“增加材料数量与范围”，volume 与 range 平行。price 与 available online 无关；resilience/hyperbole 不能量化材料。",primary_point:"G10",secondary_points:["C01","Q01"]},
+  "RW478:3": {reason:"temptation is to think... 表“容易产生这种念头”，即网上都有就不去上课。interest 不表达诱惑，frustration 是挫败，trigger 后通常不能这样接不定式作表语。",primary_point:"C06",secondary_points:["S02"]},
+  "RW478:4": {reason:"classes are well attended 是固定被动/状态表达“课程出席率高”。participated 需 in，designed/placed 描述设计或位置，均不对应后文 attendance dropping。",primary_point:"G04",secondary_points:["D02","C08"]},
+  "RW478:5": {reason:"fierce competition 是固定搭配“激烈竞争”。intensive 常修饰训练/研究，brutal 语气过强，less 与竞争加剧的逻辑相反。",primary_point:"C02",secondary_points:["S07"]},
+  "RW494:1": {reason:"书之所以 timely and interesting，是因为它把经济争论纳入更广的社会制度背景，as 在此引原因。whereas 表对比，so 表结果且不能这样接原因从句，that 不成立。",primary_point:"D03",secondary_points:["G09"]},
+  "RW494:2": {reason:"书是“面向广泛读者的”，固定被动结构 be intended for，所以选 is intended。其余选项均把书当成主动实施意图的主体。",primary_point:"G04",secondary_points:["C05","C08"]},
+  "RW494:3": {reason:"教授过去建立并延续至今的国际声誉，用现在完成时 has developed；主语 Professor Ross Buckley 为单数。have developed 数不合，developed 只陈述过去，develops 不突出累积结果。",primary_point:"G02",secondary_points:["G03"]},
+  "RW494:4": {reason:"development outcomes from aid 表“由援助带来的发展结果”，from 标来源。to/for/as 不能表达这些结果来自援助。",primary_point:"P01",secondary_points:["D03"]},
+  "RW494:5": {reason:"that 后并列三个谓语：relieve、improve、are...and contribute，因此用原形 contribute，并与 to regional security 搭配。其他词形破坏并列。",primary_point:"G10",secondary_points:["G03","C04"]},
+  "RW432:1": {reason:"passed down from generation to generation 直接定义了 hereditary material“遗传物质”。acquired 是后天获得，nutritional 是营养的，familial 只表示家庭相关，不等于遗传物质术语。",primary_point:"S04",secondary_points:["C02"]},
+  "RW432:2": {reason:"telling our cells... and guiding our development 是两个现在分词并列，说明 DNA 的两种指挥作用。establishing/determining 语气过于结果化，pushing 不符合科学表达。",primary_point:"G10",secondary_points:["G07","S01"]},
+  "RW432:3": {reason:"后文解释优质身体更易生存并把 DNA 传下去，说明“遗传”和“构建身体”两项功能彼此 connected。supplanted 是取代，paralleled 只说平行，required 不能概括因果联系。",primary_point:"D03",secondary_points:["S01"]},
+  "RW432:4": {reason:"身体构造好→更可能存活→因此更可能繁殖，thus 明确标结果。yet/nevertheless 表转折，namely 表解释，均不符合生存到繁殖的因果链。",primary_point:"D03",secondary_points:["F04"]},
+  "RW412:1": {reason:"论文在做的动作是 analyses outbound travel demand；This paper 为单数主语，analyses 是英式拼写的三单动词。increases/decreases 改变需求，encouraged 时态和语义都不合。",primary_point:"G03",secondary_points:["F01","S01"]},
+  "RW412:2": {reason:"统计模型中与 dependent variable 对应的是 independent variables；后面列出收入、价格、汇率多个因素，所以用复数 variables。其余是性质、动词或集合名词。",primary_point:"S04",secondary_points:["G10","F03"]},
+  "RW412:3": {reason:"WTO、ABS、World Bank 等是数据来源，因此是 several sources。websites/journals 不能涵盖这些机构，resources 指资源而非信息出处。",primary_point:"S04",secondary_points:["C02"]},
+  "RW412:4": {reason:"positively influenced 与 negatively influenced 构成正反平行，副词修饰 influenced。negative 是形容词，negated 是另一个分词，其余是名词。",primary_point:"G10",secondary_points:["F02","S03"]},
+  "RW412:5": {reason:"interest in 后接动名词，且语义是体验不同文化生活，所以选 experiencing。experimenting 通常接 with/on；employed/explaining 语义不合。",primary_point:"G06",secondary_points:["C04","S01"]},
+  "RW29:1": {reason:"encourage somebody to do 是固定结构，因此是 encourage drivers to turn off。原形、动名词和过去分词都不能直接作该宾补。",primary_point:"G05",secondary_points:["C08"]},
+  "RW29:2": {reason:"2–3 minutes 是对通常等待时长的统计概括，因此用 On average。For instance 引个例，In addition 仅补充，Of course 不表达平均值。",primary_point:"Q01",secondary_points:["F04"]},
+  "RW29:3": {reason:"研究之所以继续设计干预，是因为标牌未能说服大多数司机，所以给定答案 majority 与研究动机最吻合。但原文未给比例，minority 在纯句法上也可成立，本空依赖作者结论而非数量形式排他。",primary_point:"D03",secondary_points:["S02","Q02"]},
+  "RW29:4": {reason:"虽然有研究说标牌本身能改变行为，但这个标牌只是信息请求、没有行为理论指导，前后让步转折，所以用 Although。Since/Because 会误作原因；Thus 不能引让步从句。",primary_point:"D04",secondary_points:["G09"]},
+  "RW29:5": {reason:"signs alone 表“仅靠标牌”，alone 后置强调。lonely 表孤独；neither/either 需要相应并列或否定结构。",primary_point:"F05",secondary_points:["C08"]},
+  "RW463:1": {reason:"help + 宾语 + 动词原形，所以是 help it blend in；blend in 又是“融入环境”的固定短语。其他动词形式不能放在 help it 后。",primary_point:"G05",secondary_points:["C07"]},
+  "RW463:2": {reason:"make + 宾语 + 名词补语：makes it a camouflage champion。pleads/wins/changes 都不能接 it + 名词形成“使其成为”的结构。",primary_point:"G10",secondary_points:["C08"]},
+  "RW463:3": {reason:"based on 是过去分词词块，表示筑巢地点以自身花纹颜色为依据。basing 需要主动逻辑主语，basis/basic 词性不合。",primary_point:"G07",secondary_points:["C08"]},
+  "RW463:4": {reason:"both within a habitat and at a fine scale 构成 both...and... 并列两个尺度。either 应配 or，whether 应配 or，together 不能与 and 建立该对应结构。",primary_point:"G10",secondary_points:["C08"]},
+  "RW147:1": {reason:"maximise public transport patronage 表“提高公共交通使用率/客流”，patronage 是所需名词。patron 指单个顾客，其他选项是动词或分词。",primary_point:"C02",secondary_points:["F01"]},
+  "RW147:2": {reason:"reduce the consumption of land 中 the 后需要名词 consumption。consume 是动词，consumed/consuming 为分词，consumable 是形容词/名词但含义不对。",primary_point:"F01",secondary_points:["C04"]},
+  "RW147:3": {reason:"areas 前需要形容词，comparable areas 表“可供比较的相似地区”。comparison 作名词定语并非绝对不可能，但此处描述地区具备可比性，comparable 更直接；其余词形不合。",primary_point:"F02",secondary_points:["S02","C02"]},
+  "RW147:4": {reason:"affect 后需名词作宾语，housing affordability 指住房负担能力，因此选 affordability。affordable 是形容词，其余为动词形式。",primary_point:"F01",secondary_points:["C03"]},
+  "RW474:1": {reason:"earliest accounts of the form 指关于这种音乐形式的最早记载。memory/recall 是记忆能力，count 是计数，均不能作为历史文献来源。",primary_point:"C06",secondary_points:["S04"]},
+  "RW474:2": {reason:"其礼仪功能是体现社会结构延续，因此用 exemplify“例证/体现”。simplify 是简化，modify 是修改，specify 是明确说明，都改变原意。",primary_point:"S01",secondary_points:["G05"]},
+  "RW474:3": {reason:"social structure 是固定社会学概念，并与 heraldic、continuity 呼应。infrastructure 偏基础设施，discrimination/frustration 与社会延续无关。",primary_point:"C02",secondary_points:["S04"]},
+  "RW474:4": {reason:"丧葬音乐通常预期富有情感，但早期作品却 unemotional，因此是 surprisingly。regularly/normally 只表常态，expectedly 会消除反差。",primary_point:"S03",secondary_points:["S07"]},
+  "RW497:1": {reason:"the heart and lungs 把人体中已知、特指的器官作为一组来谈，教材通常用定冠词 the。但 our heart and lungs 在语法与语义上也能成立，因此本空不是强唯一题，应记“特指身体器官”的原文用法。",primary_point:"F03",secondary_points:["S02","D01"]},
+  "RW497:2": {reason:"关节定义为两块骨头相接之处，所以是 where two bones meet。one 无法形成连接，that/which 是关系词而不能直接修饰 bones 表数量。",primary_point:"Q03",secondary_points:["S04"]},
+  "RW497:3": {reason:"后面列 hip、shoulder、elbow、knee 等身体主要关节，因此选 main。whole/entire 不能修饰复数 joints 表类别；individual 与随后的总体列举不符。",primary_point:"S04",secondary_points:["C02"]},
+  "RW497:4": {reason:"冒号后恰好列出 Hinge、Pivot、Ball-and-socket 三类，因此用 Three。数量由后文枚举直接反推。",primary_point:"Q03",secondary_points:["S04"]},
+  "RW497:5": {reason:"freedom of movement 是固定名词搭配“活动自由度”。with/to/during 都不能连接 freedom 与 movement。",primary_point:"C04",secondary_points:["C08"]},
+  "RW31:1": {reason:"历史叙述中 humans started 与 established 并列，均用一般过去时。start/have started 参照时间不符，starting 会使从句缺少有限谓语。",primary_point:"G02",secondary_points:["G10"]},
+  "RW31:2": {reason:"人和农牧都需要水，因此定居点靠近可靠水源，so 连接原因后的结果分句。because 反转因果；thus 是连接副词，不能只用逗号连接两独立句；thereby 后不能这样接完整分句。",primary_point:"D03",secondary_points:["G09"]},
+  "RW31:3": {reason:"后文举出约 5000 年前水坝和古代水利遗迹，直接证明水资源管理有 long history。brief existence 相反，其余短语不能概括时间跨度。",primary_point:"D02",secondary_points:["S01"]},
+  "RW31:4": {reason:"逗号后的 which included... 回指 water supply and drainage systems，构成非限制性关系从句。what/whatever 无先行词，as 在此不能自然承担列举谓语。",primary_point:"G08",secondary_points:["D01"]},
+  "RW41:1": {reason:"罗马军队在 43 AD 入侵 Britain，后文 Britain became part of the Roman Empire 验证 invaded。purported/pursued/enlightened 均不能说明征服事件。",primary_point:"S05",secondary_points:["D03"]},
+  "RW41:2": {reason:"communal form of life shifted to a world... 表社会形态转向个人地位上升的世界，shift to 是正确配价。其余动词不表达这种转变。",primary_point:"C04",secondary_points:["D03"]},
+  "RW41:3": {reason:"where 从句已有主语 certain individuals，需要一般过去时有限谓语 became。having become/becoming 是非谓语，become 时态不符公元前历史叙述。",primary_point:"G01",secondary_points:["G02"]},
+  "RW398:1": {reason:"句型直接对照 active process, not a passive one，passive 是 active 的反义词。positive/objective/proactive 都不构成这里的定义性反义。",primary_point:"S03",secondary_points:["G10"]},
+  "RW398:2": {reason:"每次阅读都发生在某个具体情境中，a specific context 与后文具体目的和背景知识呼应。general 方向相反，explicit/implicit 只是情境是否明示的属性。",primary_point:"S01",secondary_points:["C02"]},
+  "RW398:3": {reason:"how we approach a text 表“如何处理/阅读文本”，是学术语境常见搭配。close/preempt/nettle 与 text 的宾语关系不合。",primary_point:"C01",secondary_points:["S01"]},
+  "RW398:4": {reason:"purpose and background knowledge 决定所采用的阅读策略，所以用 determine；并列复数主语接原形。conclude/detect 语义不对，undermined 时态和方向均不合。",primary_point:"S05",secondary_points:["G03"]},
+  "RW126:1": {reason:"recent research has shown that... 用现在完成时表示近期研究所得、结论仍有效；research 为不可数单数。shown 缺助动词，show 数不合，showing 缺谓语。",primary_point:"G02",secondary_points:["G03"]},
+  "RW126:2": {reason:"as important as 是同级比较固定结构，空格填第一个 as。so/very/such 都不能与后一个 as 组成标准比较框架。",primary_point:"Q02",secondary_points:["C08"]},
+  "RW126:3": {reason:"活动的目的在于推广阅读，aim to do 正确，所以是 event aims to promote。differs/defers/disagrees 都需不同介词且不表活动目的。",primary_point:"C04",secondary_points:["G05","D06"]},
+  "RW126:4": {reason:"parents 是可数复数，very few 表“极少”，并与 Unfortunately 和 missing an opportunity 的负面结论一致。a few 表尚有一些、语气较正；little/less 不能直接修饰可数复数。",primary_point:"Q01",secondary_points:["S03","F03"]}
+
 
 };
+
+(function addReviewedRecallExplanations() {
+  const overrides = {
+    "R521:1": { reason: "write a book a year through his late twenties 表示这一习惯贯穿二十多岁后期，through 标出持续覆盖的时期。", primary_point: "P01", secondary_points: ["D05"] },
+    "R521:2": { reason: "at the age of twenty-one 是表达“在21岁时”的固定词块，age 与具体年龄构成完整结构。", primary_point: "C08", secondary_points: ["Q03"] },
+    "R521:3": { reason: "the importance of precocity 表示“早熟的重要性”，后文 iron law 说明早熟在抒情诗领域被高度强调。", primary_point: "C06", secondary_points: ["D02"] },
+    "R521:4": { reason: "creativity researcher 是复合名词，指研究创造力的人；后面的 James Kaufman 是该研究者的同位说明。", primary_point: "C02", secondary_points: ["F02"] },
+    "R521:5": { reason: "a leading authority on creativity 是固定表达，指创造力领域的权威；on 引出其专业领域。", primary_point: "C04", secondary_points: ["C06"] },
+    "R521:6": { reason: "Lyric poetry is a domain where... 把抒情诗定义为一个领域，where 随后说明该领域内人才早显早衰的规律。", primary_point: "S04", secondary_points: ["G08"] },
+    "R521:7": { reason: "talent is discovered early, burns brightly, and then peters out 中 talent 是三个并列谓语的共同主语，概括诗歌创造能力。", primary_point: "G10", secondary_points: ["S04"] },
+    "R547:1": { reason: "a change in the way orchestras recruit musicians 表“乐团招聘方式的变化”，in 标明变化发生的方面。", primary_point: "P01", secondary_points: ["C04"] },
+    "R547:2": { reason: "the way orchestras recruit musicians 中 orchestras 为复数主语，recruit 作一般现在时谓语，说明通常的招聘行为。", primary_point: "G03", secondary_points: ["D02"] },
+    "R547:3": { reason: "in the 1970s and 1980s 给出过去时间，乐团当时修改了试演政策，所以用过去式 revised。", primary_point: "G02", secondary_points: ["S05"] },
+    "R547:4": { reason: "屏幕式盲选的目的，是 conceal identity 隐藏演奏者身份，从而避免性别偏见；动作与研究目的直接对应。", primary_point: "S01", secondary_points: ["C01"] },
+    "R547:5": { reason: "the screen increases the probability 中 screen 为单数主语，increases 为三单谓语；后面的 50% 是增加幅度。", primary_point: "G03", secondary_points: ["Q01"] },
+    "R547:6": { reason: "a woman will be advanced out of preliminary rounds 表“女性被推进/晋级出初轮”，will be + 过去分词构成被动。", primary_point: "G04", secondary_points: ["G02"] },
+    "R488:1": { reason: "earnings vary according to socioeconomic backgrounds 表收入随社会经济背景而变化，according to 在这里标参照因素。", primary_point: "C04", secondary_points: ["P02"] },
+    "R488:2": { reason: "thus far 表“迄今为止”，限定此前对该问题的理解一直受数据可得性限制。", primary_point: "F05", secondary_points: ["G02"] },
+    "R488:3": { reason: "advantages in addressing this question 是名词 advantages 与介词 in + 动名词的搭配，表示数据库在处理该问题方面的优势。", primary_point: "C04", secondary_points: ["G06"] },
+    "R488:4": { reason: "information on variation in graduates’ earnings 指毕业生收入的差异/变动，variation 是 information 的研究对象。", primary_point: "C06", secondary_points: ["C04"] },
+    "R488:5": { reason: "for schools to help advise and guide students 中 to help 表学校利用信息的目的，并与 advise、guide 构成 help + 动词原形结构。", primary_point: "G05", secondary_points: ["D06", "G10"] }
+  };
+
+  const trimAuditNotes = (text) => text
+    .replace(/；原词池缺失[^。]*。?$/u, "")
+    .replace(/；R原材料无干扰词池[^。]*。?$/u, "")
+    .replace(/；不认证R原词池唯一。?$/u, "")
+    .replace(/^同文同空答案：复用[^；]+；/u, "");
+
+  window.READING_DATA.questions
+    .filter((question) => question.type === "R")
+    .forEach((question) => {
+      question.blank_map.forEach((blank, index) => {
+        const key = `${question.source}:${index + 1}`;
+        const reviewed = overrides[key];
+        window.READING_EXPLANATIONS[key] = reviewed || {
+          reason: trimAuditNotes(blank.evidence),
+          primary_point: blank.primary_point,
+          secondary_points: blank.secondary_points
+        };
+      });
+    });
+})();
