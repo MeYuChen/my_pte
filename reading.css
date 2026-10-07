@@ -58,7 +58,9 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px v
   padding: 11px 10px; border: 0; border-radius: 9px; background: transparent; color: inherit; text-align: left;
 }
 .point-item:hover { background: var(--surface-soft); }
+.point-item.is-related { background: #fff4d6; box-shadow: inset 4px 0 0 #d79a21; }
 .point-item.is-active { background: var(--accent-soft); color: var(--accent-dark); }
+.point-item.is-active.is-related { box-shadow: inset 4px 0 0 #d79a21, 0 0 0 2px rgba(23, 107, 97, .18); }
 .point-id { font-weight: 900; font-size: 12px; }
 .point-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; font-weight: 750; }
 .point-count { color: var(--muted); font-size: 11px; }
@@ -69,6 +71,7 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px v
 .reading-header h2 { margin: 0; font-size: clamp(28px, 3vw, 42px); line-height: 1.1; }
 .header-stats { display: flex; gap: 8px; }
 .header-stats span { padding: 8px 11px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--muted); font-size: 12px; font-weight: 800; }
+.return-review-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 20px; padding: 12px 14px; border: 1px solid #e4c268; border-radius: 10px; background: #fff7dc; color: #64470a; font-size: 13px; font-weight: 800; }
 .content-tabs { display: grid; grid-template-columns: repeat(4, minmax(100px, 150px)); gap: 8px; margin: 28px 0 18px; }
 .content-tabs button { height: 44px; }
 .tab-panel { min-height: 390px; padding: 28px; border: 1px solid var(--line); border-radius: 15px; background: var(--surface); box-shadow: var(--shadow); }

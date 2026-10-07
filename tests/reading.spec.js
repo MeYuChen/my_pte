@@ -80,6 +80,7 @@ test.describe("Reading module", () => {
     await expect(review).toContainText("决定性考点 D04");
     await expect(review).toContainText("决定性考点 S01");
     await expect(review).toContainText("决定性考点 S03");
+    expect(await page.locator(".point-item.is-related").count()).toBeGreaterThan(2);
 
     const firstPoint = page.locator("[data-review-point]").first();
     await firstPoint.click();
@@ -88,6 +89,14 @@ test.describe("Reading module", () => {
     await page.locator(".wrong-card").first().getByRole("button", { name: "进入完整考点" }).click();
     await expect(page.locator("#methodPanel")).toBeVisible();
     await expect(page).toHaveURL(/#D04$/);
+    await expect(page.locator("#returnReviewBar")).toBeVisible();
+    expect(await page.locator(".point-item.is-related").count()).toBeGreaterThan(2);
+
+    await page.getByRole("button", { name: "← 返回本题解析" }).click();
+    await expect(page.locator("#practicePanel")).toBeVisible();
+    await expect(page.locator("#resultPanel")).toBeVisible();
+    await expect(page.locator(".wrong-card")).toHaveCount(3);
+    await expect(page).toHaveURL(/#S02$/);
   });
 
   test("R questions use an answer pool instead of text entry", async ({ page }) => {

@@ -25,13 +25,15 @@
     timerHandle: null,
     elapsedSeconds: 0,
     lastResult: null,
+    reviewReturn: null,
+    reviewPointIds: new Set(),
     progress: loadProgress()
   };
 
   const el = {};
   [
     "dataSummary", "pointSearch", "pointList", "pointModule", "pointTitle", "pointFrequency",
-    "pointProgress", "contentTabs", "pointPanel", "methodPanel", "tipsPanel", "practicePanel",
+    "pointProgress", "returnReviewBar", "returnReviewText", "returnToReview", "contentTabs", "pointPanel", "methodPanel", "tipsPanel", "practicePanel",
     "questionSource", "questionTitle", "questionMeta", "questionTimer", "previousQuestion",
     "nextQuestion", "startQuestion", "submitQuestion", "practiceStatus", "passageCard",
     "resultPanel", "resultTitle", "scoreStrip", "wrongPoints",
@@ -69,6 +71,7 @@
     el.continuePractice.addEventListener("click", () => { moveQuestion(1); startQuestion(); });
     el.reviewFirstWrong.addEventListener("click", reviewFirstWrong);
     el.resultPanel.addEventListener("click", handleResultPointClick);
+    el.returnToReview.addEventListener("click", returnToReview);
     window.addEventListener("hashchange", () => {
       const pointId = location.hash.replace(/^#/, "");
       if (methodsById.has(pointId) && pointId !== state.pointId) selectPoint(pointId, false);
@@ -109,7 +112,10 @@
     el.pointList.replaceChildren(...visibleMethods().map((method) => {
       const button = document.createElement("button");
       button.type = "button";
-      button.className = `point-item${method.id === state.pointId ? " is-active" : ""}`;
+      const isActive = method.id === state.pointId;
+      const isRelated = state.reviewPointIds.has(method.id);
+      button.className = `point-item${isActive ? " is-active" : ""}${isRelated ? " is-related" : ""}`;
+      if (isRelated) button.setAttribute("aria-label", `${method.id} ${method.name} · 当前错题涉及`);
       button.innerHTML = `<span class="point-id">${escapeHtml(method.id)}</span><span class="point-name">${escapeHtml(method.name)}</span><span class="point-count">${method.primary_count}</span>`;
       button.addEventListener("click", () => selectPoint(method.id));
       return button;
@@ -309,7 +315,11 @@
     state.elapsedSeconds = 0;
     state.startedAt = Date.now();
     state.lastResult = null;
+    state.reviewReturn = null;
+    state.reviewPointIds.clear();
+    el.returnReviewBar.hidden = true;
     el.resultPanel.hidden = true;
+    renderPointList();
     renderPassage(question, false);
     el.questionTimer.textContent = "00:00";
     el.submitQuestion.disabled = false;
@@ -384,6 +394,11 @@
       [result.total, "总空数"], [result.correct, "答对"], [result.wrong, "答错"], [core.formatDuration(result.seconds), "用时"]
     ].map(([value, label]) => `<div class="score-cell"><strong>${value}</strong><span>${label}</span></div>`).join("");
     const wrong = result.details.filter((detail) => !detail.correct);
+    state.reviewPointIds = new Set(wrong.flatMap((detail) => {
+      const knowledge = detail.knowledge || {};
+      return [knowledge.primary_point, ...(knowledge.secondary_points || [])].filter(Boolean);
+    }));
+    renderPointList();
     el.reviewFirstWrong.hidden = !wrong.length;
     if (!wrong.length) {
       el.wrongPoints.innerHTML = '<div class="perfect-result">这题没有错误考点，可以直接进入下一题。</div>';
@@ -422,21 +437,75 @@
     }
     const openButton = event.target.closest("[data-open-point]");
     if (!openButton) return;
-    selectPoint(openButton.dataset.openPoint);
+    openFullPoint(openButton.dataset.openPoint);
+  }
+
+  function captureReviewReturn() {
+    const question = currentQuestion();
+    if (!question || !state.lastResult) return null;
+    return {
+      pointId: state.pointId,
+      questionSource: question.source,
+      result: state.lastResult,
+      passageHtml: el.passageCard.innerHTML,
+      passageClassName: el.passageCard.className,
+      resultHtml: el.resultPanel.innerHTML,
+      practiceStatusText: el.practiceStatus.textContent,
+      practiceStatusClassName: el.practiceStatus.className,
+      timerText: el.questionTimer.textContent,
+      startText: el.startQuestion.textContent
+    };
+  }
+
+  function openFullPoint(pointId) {
+    if (!methodsById.has(pointId)) return;
+    if (!state.reviewReturn) state.reviewReturn = captureReviewReturn();
+    selectPoint(pointId);
+    el.returnReviewBar.hidden = !state.reviewReturn;
+    if (state.reviewReturn) {
+      el.returnReviewText.textContent = `来自 ${state.reviewReturn.questionSource} 的错题解析 · 相关考点已高亮`;
+    }
     setTab("method");
+    renderPointList();
     el.pointModule.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function returnToReview() {
+    const snapshot = state.reviewReturn;
+    if (!snapshot) return;
+    selectPoint(snapshot.pointId);
+    const restoredIndex = state.practiceQuestions.findIndex((question) => question.source === snapshot.questionSource);
+    if (restoredIndex >= 0) state.questionIndex = restoredIndex;
+    renderQuestion();
+    state.lastResult = snapshot.result;
+    el.passageCard.innerHTML = snapshot.passageHtml;
+    el.passageCard.className = snapshot.passageClassName;
+    el.resultPanel.innerHTML = snapshot.resultHtml;
+    el.resultPanel.hidden = false;
+    el.practiceStatus.textContent = snapshot.practiceStatusText;
+    el.practiceStatus.className = snapshot.practiceStatusClassName;
+    el.questionTimer.textContent = snapshot.timerText;
+    el.startQuestion.textContent = snapshot.startText;
+    el.submitQuestion.disabled = true;
+    state.reviewReturn = null;
+    el.returnReviewBar.hidden = true;
+    setTab("practice");
+    renderPointList();
+    el.resultPanel.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   function reviewFirstWrong() {
     const first = state.lastResult && state.lastResult.details.find((detail) => !detail.correct && detail.knowledge);
     if (!first) return;
-    selectPoint(first.knowledge.primary_point);
-    setTab("method");
-    el.pointModule.scrollIntoView({ behavior: "smooth", block: "start" });
+    openFullPoint(first.knowledge.primary_point);
   }
 
   function moveQuestion(delta) {
     if (!state.practiceQuestions.length) return;
+    state.reviewReturn = null;
+    state.reviewPointIds.clear();
+    el.returnReviewBar.hidden = true;
+    renderPointList();
     state.questionIndex = (state.questionIndex + delta + state.practiceQuestions.length) % state.practiceQuestions.length;
     renderQuestion();
   }
