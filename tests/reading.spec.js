@@ -47,4 +47,26 @@ test.describe("Reading module", () => {
     expect(sessions).toHaveLength(1);
     expect(sessions[0].correct).toBe(sessions[0].total);
   });
+
+  test("R questions use an answer pool instead of text entry", async ({ page }) => {
+    await page.goto("./reading.html");
+    const target = await page.evaluate(() => {
+      for (const method of window.READING_DATA.methods) {
+        const first = window.READING_DATA.questions.find((question) =>
+          window.ReadingCore.questionMatchesPoint(question, method.id)
+        );
+        if (first && first.type === "R") return { pointId: method.id, answers: first.answers };
+      }
+      return null;
+    });
+    expect(target).not.toBeNull();
+
+    await page.goto(`./reading.html#${target.pointId}`);
+    await page.getByRole("button", { name: "练习", exact: true }).click();
+    await page.getByRole("button", { name: "开始本题" }).click();
+
+    await expect(page.locator("#questionMeta")).toContainText("本题答案池选择");
+    await expect(page.locator("#passageCard input")).toHaveCount(0);
+    await expect(page.locator("#passageCard select")).toHaveCount(target.answers.length);
+  });
 });

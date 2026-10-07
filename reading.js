@@ -7,6 +7,8 @@
 
   const STORAGE_KEY = "pte-reading-progress-v1";
   const methodsById = new Map(data.methods.map((method) => [method.id, method]));
+  applyLearnerFacingMethodFixes();
+
   const state = {
     pointId: resolveInitialPoint(),
     tab: "point",
@@ -112,6 +114,33 @@
     }));
   }
 
+  function applyLearnerFacingMethodFixes() {
+    const fixedChunks = methodsById.get("C08");
+    if (!fixedChunks) return;
+    Object.assign(fixedChunks, {
+      core_method: "先把空格与前后 2—4 个词连起来读，判断它是否组成固定搭配、短语动词或学术术语；搭配无法排除时，再比较整句意思。",
+      decision_steps: [
+        "先判断空格需要什么词性，例如名词、动词或介词。",
+        "把空格和前后词连读：turn ___、fade ___、self-fulfilling ___，看哪个选项能组成常用完整表达。",
+        "如果两个选项都能搭配，就比较它们在整句中的准确含义，不能只凭‘看起来熟悉’作答。"
+      ],
+      traps: [
+        "短语动词换一个小词，意思可能完全不同：turn up 是‘出现’，turn down 是‘拒绝/调低’。",
+        "固定术语要选完整名称：self-fulfilling prophecy 是‘自我实现的预言’。",
+        "at stake、in danger 等近义表达都可能通顺，此时必须依靠上下文，而不是硬背唯一搭配。"
+      ],
+      normal_examples: [
+        { bid: "RW596:3", answer: "turn up", evidence: "turn up 在这里表示‘出现’：a rare bird may turn up（稀有鸟类可能出现）。" },
+        { bid: "RW577:4", answer: "fade away", evidence: "fade away 表示‘逐渐消失’：far from fading away（远未消失）。" },
+        { bid: "RW95:5", answer: "self-fulfilling prophecy", evidence: "这是完整固定术语，意思是‘自我实现的预言’。" }
+      ],
+      contrast_examples: [
+        { bid: "RW534:2", answer: "in some way", evidence: "in some way（在某种程度上）、in no way（绝不）、by the way（顺便说）结构都成立，必须根据句意选择。" },
+        { bid: "RW620:8", answer: "at stake", evidence: "at stake 与 in danger 都能表示‘处于危险中’，单靠搭配无法排除，必须查看前后逻辑。" }
+      ]
+    });
+  }
+
   function renderPointContent() {
     const method = methodsById.get(state.pointId);
     const progress = state.progress.points[state.pointId] || { attempts: 0, correct: 0, total: 0 };
@@ -129,17 +158,17 @@
       <div class="info-grid">
         <div class="info-box"><span>题库主考频次</span><strong>${method.primary_count} 空</strong></div>
         <div class="info-box"><span>含关联考点</span><strong>${method.all_link_count} 空</strong></div>
-        <div class="info-box"><span>现有讲解覆盖</span><strong>${escapeHtml(method.teacher_coverage)}</strong></div>
+        <div class="info-box"><span>专项练习</span><strong>${state.practiceQuestions.length} 题</strong></div>
       </div>`;
     el.methodPanel.innerHTML = `
       <h3 class="section-heading">固定解题顺序</h3>
       <ol class="step-list">${method.decision_steps.map((step) => `<li>${escapeHtml(step)}</li>`).join("")}</ol>`;
+    const boundaryTitle = method.id === "C08" ? "不能只靠固定搭配的情况" : "容易混淆的情况";
     el.tipsPanel.innerHTML = `
       <div class="tip-grid">
-        <section class="tip-card"><h4>易错提醒</h4><ul>${method.traps.map((tip) => `<li>${escapeHtml(tip)}</li>`).join("")}</ul></section>
-        <section class="tip-card"><h4>讲解补充</h4><p>${escapeHtml(method.teacher_gap || "该考点已有完整讲解。")}</p></section>
-        <section class="tip-card"><h4>正常例题</h4><div class="example-list">${renderExamples(method.normal_examples)}</div></section>
-        <section class="tip-card"><h4>边界 / 近义对比例</h4><div class="example-list">${renderExamples(method.contrast_examples)}</div></section>
+        <section class="tip-card"><h4>最容易错在哪里</h4><ul>${method.traps.map((tip) => `<li>${escapeHtml(tip)}</li>`).join("")}</ul></section>
+        <section class="tip-card"><h4>怎么判断</h4><div class="example-list">${renderExamples(method.normal_examples)}</div></section>
+        <section class="tip-card tip-card-wide"><h4>${boundaryTitle}</h4><div class="example-list">${renderExamples(method.contrast_examples)}</div></section>
       </div>`;
   }
 
@@ -174,8 +203,9 @@
     }
     el.questionSource.textContent = `${question.type} · ${question.source}`;
     el.questionTitle.textContent = question.title || question.source;
-    el.questionMeta.textContent = `专项第 ${state.questionIndex + 1} / ${state.practiceQuestions.length} 题 · ${question.answers.length} 空 · ${question.mode}`;
-    el.practiceStatus.textContent = "点击“开始本题”后开始计时；提交即停止计时并判分。";
+    const practiceMode = question.type === "R" ? "本题答案池选择" : "原始选项选择";
+    el.questionMeta.textContent = `专项第 ${state.questionIndex + 1} / ${state.practiceQuestions.length} 题 · ${question.answers.length} 空 · ${practiceMode}`;
+    el.practiceStatus.textContent = "点击“开始本题”后开始计时；所有空均使用选择，不需要手打单词。";
     renderPassage(question, true);
   }
 
@@ -191,22 +221,15 @@
       const wrapper = document.createElement("span");
       wrapper.className = "blank-field";
       wrapper.dataset.blankIndex = String(blankIndex);
-      if (question.type === "RW") {
-        const select = document.createElement("select");
-        select.disabled = locked;
-        select.setAttribute("aria-label", `第 ${blankIndex + 1} 空`);
-        select.append(new Option(`第 ${blankIndex + 1} 空`, ""));
-        parseOptions(question.options[blankIndex] || part).forEach((option) => select.append(new Option(option, option)));
-        wrapper.append(select);
-      } else {
-        const input = document.createElement("input");
-        input.type = "text";
-        input.disabled = locked;
-        input.autocomplete = "off";
-        input.placeholder = `第 ${blankIndex + 1} 空`;
-        input.setAttribute("aria-label", `第 ${blankIndex + 1} 空`);
-        wrapper.append(input);
-      }
+      const select = document.createElement("select");
+      select.disabled = locked;
+      select.setAttribute("aria-label", `第 ${blankIndex + 1} 空`);
+      select.append(new Option(`第 ${blankIndex + 1} 空`, ""));
+      const choices = question.type === "RW"
+        ? parseOptions(question.options[blankIndex] || part)
+        : [...new Set(question.answers)];
+      choices.forEach((option) => select.append(new Option(option, option)));
+      wrapper.append(select);
       fragment.append(wrapper);
       blankIndex += 1;
     });
