@@ -69,25 +69,23 @@
           </div>
           <div class="practice-status" id="practiceStatus">点击“开始本题”后开始计时。</div>
           <article class="passage-card is-locked" id="passageCard"></article>
+          <section class="inline-result" id="resultPanel" aria-live="polite" hidden>
+            <div class="result-heading">
+              <div>
+                <p class="eyebrow">本题解析</p>
+                <h2 id="resultTitle">判分完成</h2>
+              </div>
+            </div>
+            <div class="score-strip" id="scoreStrip"></div>
+            <div class="wrong-points" id="wrongPoints"></div>
+            <div class="result-actions">
+              <button class="secondary-button" id="reviewFirstWrong" type="button">学习第一个错误考点</button>
+              <button class="primary-button" id="continuePractice" type="button">继续下一题</button>
+            </div>
+          </section>
         </section>
       </main>
     </div>
-
-    <dialog class="result-dialog" id="resultDialog">
-      <div class="dialog-heading">
-        <div>
-          <p class="eyebrow">本题结果</p>
-          <h2 id="resultTitle">判分完成</h2>
-        </div>
-        <button class="icon-button" id="closeResult" type="button" aria-label="关闭">×</button>
-      </div>
-      <div class="score-strip" id="scoreStrip"></div>
-      <div class="wrong-points" id="wrongPoints"></div>
-      <div class="dialog-actions">
-        <button class="secondary-button" id="reviewFirstWrong" type="button">复习错误考点</button>
-        <button class="primary-button" id="continuePractice" type="button">继续下一题</button>
-      </div>
-    </dialog>
 
     <script src="./reading-data.js"></script>
     <script src="./reading-method-guides.js"></script>

@@ -130,17 +130,16 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px v
 .blank-field.is-wrong select, .blank-field.is-wrong input { border-color: var(--bad); background: var(--bad-soft); }
 .answer-note { display: inline; margin-left: 3px; color: var(--bad); font-family: Inter, sans-serif; font-size: 12px; font-weight: 800; }
 
-.result-dialog { width: min(780px, calc(100vw - 40px)); max-height: 84vh; padding: 0; border: 0; border-radius: 16px; color: var(--ink); box-shadow: 0 24px 80px rgba(20, 34, 27, .25); }
-.result-dialog::backdrop { background: rgba(15, 28, 21, .48); backdrop-filter: blur(3px); }
-.dialog-heading { display: flex; justify-content: space-between; padding: 24px 26px 16px; border-bottom: 1px solid var(--line); }
-.dialog-heading h2 { margin: 0; }
-.icon-button { width: 36px; height: 36px; border: 1px solid var(--line); background: #fff; font-size: 24px; }
-.score-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 16px 26px; }
+.inline-result { scroll-margin-top: 18px; margin: 0 26px 30px; border: 1px solid var(--line); border-radius: 14px; background: #fff; color: var(--ink); box-shadow: 0 10px 30px rgba(20, 34, 27, .08); }
+.inline-result[hidden] { display: none; }
+.result-heading { padding: 22px 24px 14px; border-bottom: 1px solid var(--line); }
+.result-heading h2 { margin: 0; }
+.score-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 16px 24px; }
 .score-cell { padding: 13px; border-radius: 9px; background: var(--surface-soft); text-align: center; }
 .score-cell strong { display: block; font-size: 21px; }
 .score-cell span { color: var(--muted); font-size: 11px; }
-.wrong-points { max-height: 46vh; overflow: auto; display: grid; gap: 10px; padding: 2px 26px 20px; }
-.wrong-card { padding: 15px; border: 1px solid #f1c2bd; border-radius: 10px; background: var(--bad-soft); }
+.wrong-points { display: grid; gap: 12px; padding: 2px 24px 20px; }
+.wrong-card { padding: 16px; border: 1px solid #f1c2bd; border-radius: 10px; background: var(--bad-soft); }
 .wrong-card h4 { margin: 0 0 8px; }
 .wrong-card p { margin: 5px 0; color: #4e3936; font-size: 13px; line-height: 1.55; }
 .answer-reason { margin: 12px 0 8px; padding: 12px 14px; border-radius: 8px; background: #fff; }
@@ -148,11 +147,14 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px v
 .answer-reason p { margin: 6px 0 0; color: #35453c; }
 .point-chip { display: inline-block; margin: 4px 5px 0 0; padding: 5px 8px; border-radius: 999px; background: #fff; color: var(--accent-dark); font-size: 11px; font-weight: 850; }
 .perfect-result { padding: 28px; border-radius: 10px; background: var(--good-soft); color: var(--good); text-align: center; font-weight: 850; }
-.dialog-actions { display: flex; justify-content: flex-end; gap: 8px; padding: 16px 26px 24px; border-top: 1px solid var(--line); }
+.result-actions { display: flex; justify-content: flex-end; gap: 8px; padding: 16px 24px 22px; border-top: 1px solid var(--line); }
 
 @media (max-width: 1100px) {
   .reading-shell { grid-template-columns: 280px minmax(0, 1fr); }
   .reading-main { padding-left: 28px; padding-right: 28px; }
   .practice-toolbar { display: block; }
   .practice-actions { margin-top: 16px; justify-content: flex-start; }
+  .inline-result { margin: 0 12px 24px; }
+  .score-strip { grid-template-columns: repeat(2, 1fr); }
+  .result-actions { align-items: stretch; flex-direction: column; }
 }

@@ -34,7 +34,7 @@
     "pointProgress", "contentTabs", "pointPanel", "methodPanel", "tipsPanel", "practicePanel",
     "questionSource", "questionTitle", "questionMeta", "questionTimer", "previousQuestion",
     "nextQuestion", "startQuestion", "submitQuestion", "practiceStatus", "passageCard",
-    "resultDialog", "resultTitle", "scoreStrip", "wrongPoints", "closeResult",
+    "resultPanel", "resultTitle", "scoreStrip", "wrongPoints",
     "reviewFirstWrong", "continuePractice"
   ].forEach((id) => { el[id] = document.getElementById(id); });
 
@@ -66,12 +66,8 @@
     el.nextQuestion.addEventListener("click", () => moveQuestion(1));
     el.startQuestion.addEventListener("click", startQuestion);
     el.submitQuestion.addEventListener("click", submitQuestion);
-    el.closeResult.addEventListener("click", closeResult);
-    el.continuePractice.addEventListener("click", () => { closeResult(); moveQuestion(1); startQuestion(); });
+    el.continuePractice.addEventListener("click", () => { moveQuestion(1); startQuestion(); });
     el.reviewFirstWrong.addEventListener("click", reviewFirstWrong);
-    el.resultDialog.addEventListener("click", (event) => {
-      if (event.target === el.resultDialog) closeResult();
-    });
     window.addEventListener("hashchange", () => {
       const pointId = location.hash.replace(/^#/, "");
       if (methodsById.has(pointId) && pointId !== state.pointId) selectPoint(pointId, false);
@@ -253,6 +249,7 @@
     state.elapsedSeconds = 0;
     el.questionTimer.textContent = "00:00";
     el.submitQuestion.disabled = true;
+    el.resultPanel.hidden = true;
     el.startQuestion.disabled = !currentQuestion();
     el.startQuestion.textContent = "开始本题";
     el.practiceStatus.className = "practice-status";
@@ -311,6 +308,7 @@
     state.elapsedSeconds = 0;
     state.startedAt = Date.now();
     state.lastResult = null;
+    el.resultPanel.hidden = true;
     renderPassage(question, false);
     el.questionTimer.textContent = "00:00";
     el.submitQuestion.disabled = false;
@@ -401,21 +399,15 @@
         </article>`;
       }).join("");
     }
-    if (typeof el.resultDialog.showModal === "function") el.resultDialog.showModal();
-    else el.resultDialog.setAttribute("open", "");
+    el.resultPanel.hidden = false;
+    el.resultPanel.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   function reviewFirstWrong() {
     const first = state.lastResult && state.lastResult.details.find((detail) => !detail.correct && detail.knowledge);
     if (!first) return;
-    closeResult();
     selectPoint(first.knowledge.primary_point);
     setTab("method");
-  }
-
-  function closeResult() {
-    if (typeof el.resultDialog.close === "function") el.resultDialog.close();
-    else el.resultDialog.removeAttribute("open");
   }
 
   function moveQuestion(delta) {

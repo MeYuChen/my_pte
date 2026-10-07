@@ -25,9 +25,11 @@ test.describe("Reading module", () => {
     await expect(page.locator("#submitQuestion")).toBeEnabled();
     await page.locator("#submitQuestion").click();
 
-    await expect(page.locator("#resultDialog")).toBeVisible();
+    await expect(page.locator("#resultPanel")).toBeVisible();
     await expect(page.locator(".wrong-card").first()).toContainText("决定性考点");
     await expect(page.locator("#scoreStrip")).toContainText("答错");
+    await page.locator("#questionTitle").click();
+    await expect(page.locator("#resultPanel")).toBeVisible();
   });
 
   test("grades a complete RW question and stores its session", async ({ page }) => {

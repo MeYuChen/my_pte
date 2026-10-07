@@ -73,6 +73,7 @@ assert.match(html, /data-tab="method">解法/);
 assert.match(html, /data-tab="tips">技巧/);
 assert.match(html, /data-tab="practice">练习/);
 assert.match(html, /id="questionTimer"/);
-assert.match(html, /id="resultDialog"/);
+assert.match(html, /id="resultPanel"/);
+assert.doesNotMatch(html, /<dialog/);
 
 console.log("Reading module tests passed");
