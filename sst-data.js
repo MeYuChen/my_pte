@@ -1,7 +1,119 @@
 window.SST_DATA = {
-  "version": "2026-10-07-54",
-  "source": "PTE_SST_54篇_图解背诵册(1).pdf",
+  "version": "2026-10-08-categorized-54",
+  "source": "PTE_SST_54篇_图解背诵册(2).pdf",
   "count": 54,
+  "categories": [
+    {
+      "id": "C01",
+      "name": "生命科学 · 医学 · 健康",
+      "count": 8,
+      "item_numbers": [
+        1,
+        2,
+        8,
+        11,
+        12,
+        14,
+        30,
+        50
+      ]
+    },
+    {
+      "id": "C02",
+      "name": "心理 · 行为 · 儿童成长",
+      "count": 7,
+      "item_numbers": [
+        15,
+        20,
+        21,
+        36,
+        39,
+        45,
+        47
+      ]
+    },
+    {
+      "id": "C03",
+      "name": "自然科学 · 环境 · 资源",
+      "count": 7,
+      "item_numbers": [
+        4,
+        6,
+        7,
+        9,
+        33,
+        37,
+        52
+      ]
+    },
+    {
+      "id": "C04",
+      "name": "商业 · 经济 · 管理",
+      "count": 10,
+      "item_numbers": [
+        5,
+        10,
+        13,
+        25,
+        26,
+        41,
+        43,
+        44,
+        46,
+        51
+      ]
+    },
+    {
+      "id": "C05",
+      "name": "全球化 · 社会 · 政治 · 移民",
+      "count": 7,
+      "item_numbers": [
+        3,
+        18,
+        19,
+        22,
+        24,
+        38,
+        42
+      ]
+    },
+    {
+      "id": "C06",
+      "name": "科技 · 媒体 · 研究",
+      "count": 7,
+      "item_numbers": [
+        16,
+        17,
+        23,
+        27,
+        31,
+        34,
+        49
+      ]
+    },
+    {
+      "id": "C07",
+      "name": "语言 · 写作 · 文学 · 教育",
+      "count": 4,
+      "item_numbers": [
+        32,
+        48,
+        53,
+        54
+      ]
+    },
+    {
+      "id": "C08",
+      "name": "历史 · 城市 · 建筑 · 工业",
+      "count": 4,
+      "item_numbers": [
+        28,
+        29,
+        35,
+        40
+      ]
+    }
+  ],
   "items": [
     {
       "id": "S001",
@@ -31,7 +143,11 @@ window.SST_DATA = {
         "In addition, he mentions that all life forms use DNA and RNA to store and transmit genetic and inherited information.",
         "Lastly, we know that cells are the fundamental building blocks of all organisms.",
         "In summary, the lecture indicates that organisms conduct metabolism and have similar basic chemistry."
-      ]
+      ],
+      "category_id": "C01",
+      "category_name": "生命科学 · 医学 · 健康",
+      "category_order": 1,
+      "category_position": 1
     },
     {
       "id": "S002",
@@ -61,7 +177,11 @@ window.SST_DATA = {
         "In addition, he mentions that people in tropical climates had no dietary need for vitamin D with sufficient skin exposure to sunlight.",
         "Lastly, we know that migration away from equatorial regions created a dietary need, especially in winter.",
         "In summary, the lecture indicates that vitamin D is actually a prohormone."
-      ]
+      ],
+      "category_id": "C01",
+      "category_name": "生命科学 · 医学 · 健康",
+      "category_order": 1,
+      "category_position": 2
     },
     {
       "id": "S003",
@@ -91,7 +211,11 @@ window.SST_DATA = {
         "In addition, he mentions that globalization creates an integrated economic system.",
         "Lastly, we know that this system splits the world into consuming and producing countries.",
         "In summary, the lecture indicates that national economies depend on each other, making the post-industrial economy global."
-      ]
+      ],
+      "category_id": "C05",
+      "category_name": "全球化 · 社会 · 政治 · 移民",
+      "category_order": 5,
+      "category_position": 1
     },
     {
       "id": "S004",
@@ -121,7 +245,11 @@ window.SST_DATA = {
         "In addition, he mentions that Einstein suggested continuous dynamic change in space in the twentieth century.",
         "Lastly, we know that this was only a prediction.",
         "In summary, the lecture indicates that Edwin Hubble discovered that the universe undergoes such changes."
-      ]
+      ],
+      "category_id": "C03",
+      "category_name": "自然科学 · 环境 · 资源",
+      "category_order": 3,
+      "category_position": 1
     },
     {
       "id": "S005",
@@ -151,7 +279,11 @@ window.SST_DATA = {
         "In addition, he mentions that risk can mean the possibility of loss or injury.",
         "Lastly, we know that it can also mean the consequences of danger.",
         "In summary, the lecture indicates that being safe means being free from harm."
-      ]
+      ],
+      "category_id": "C04",
+      "category_name": "商业 · 经济 · 管理",
+      "category_order": 4,
+      "category_position": 1
     },
     {
       "id": "S006",
@@ -181,7 +313,11 @@ window.SST_DATA = {
         "In addition, he mentions that fish is a primary source of animal protein for billions of poor people.",
         "Lastly, we know that wildlife tourism generates major income.",
         "In summary, the lecture indicates that fish resource management is crucial for livelihoods and health."
-      ]
+      ],
+      "category_id": "C03",
+      "category_name": "自然科学 · 环境 · 资源",
+      "category_order": 3,
+      "category_position": 2
     },
     {
       "id": "S007",
@@ -211,7 +347,11 @@ window.SST_DATA = {
         "In addition, he mentions that the universe began over 13.8 billion years ago.",
         "Lastly, we know that physical laws explain stars, and the universe is older than its oldest star.",
         "In summary, the lecture indicates that we know its beginning but not its future."
-      ]
+      ],
+      "category_id": "C03",
+      "category_name": "自然科学 · 环境 · 资源",
+      "category_order": 3,
+      "category_position": 3
     },
     {
       "id": "S008",
@@ -241,7 +381,11 @@ window.SST_DATA = {
         "In addition, he mentions that they followed strict daily dietary requirements and exercise instructions.",
         "Lastly, we know that after six months, some lost weight while others stayed the same or gained weight.",
         "In summary, the lecture indicates that dietary cheating or less exercise for psychological reasons may explain these differences."
-      ]
+      ],
+      "category_id": "C01",
+      "category_name": "生命科学 · 医学 · 健康",
+      "category_order": 1,
+      "category_position": 3
     },
     {
       "id": "S009",
@@ -271,7 +415,11 @@ window.SST_DATA = {
         "In addition, he mentions that the drivers of decline vary depending on species.",
         "Lastly, we know that pollinator loss is not catastrophic yet but could have huge effects.",
         "In summary, the lecture indicates that awareness is being raised and people are taking action."
-      ]
+      ],
+      "category_id": "C03",
+      "category_name": "自然科学 · 环境 · 资源",
+      "category_order": 3,
+      "category_position": 4
     },
     {
       "id": "S010",
@@ -301,7 +449,11 @@ window.SST_DATA = {
         "In addition, he mentions that the Second Moment of Truth means products must have great quality after purchase.",
         "Lastly, we know that consumers want both strong and soft or light and strong products.",
         "In summary, the lecture indicates that these demands create fundamental engineering contradictions."
-      ]
+      ],
+      "category_id": "C04",
+      "category_name": "商业 · 经济 · 管理",
+      "category_order": 4,
+      "category_position": 2
     },
     {
       "id": "S011",
@@ -331,7 +483,11 @@ window.SST_DATA = {
         "In addition, he mentions that drugs may cause allergies or be taken for wrong indications.",
         "Lastly, we know that physicians should give appropriate prescriptions.",
         "In summary, the lecture indicates that patients must take the full course of treatment to prevent misuse."
-      ]
+      ],
+      "category_id": "C01",
+      "category_name": "生命科学 · 医学 · 健康",
+      "category_order": 1,
+      "category_position": 4
     },
     {
       "id": "S012",
@@ -361,7 +517,11 @@ window.SST_DATA = {
         "In addition, he mentions that gene mapping in 2001 revealed genetic influences on physical and psychological behaviors.",
         "Lastly, we know that this changed our understanding of human behavior.",
         "In summary, the lecture indicates that research provides integrated information and can benefit biology, psychology and neuroscience."
-      ]
+      ],
+      "category_id": "C01",
+      "category_name": "生命科学 · 医学 · 健康",
+      "category_order": 1,
+      "category_position": 5
     },
     {
       "id": "S013",
@@ -391,7 +551,11 @@ window.SST_DATA = {
         "In addition, he mentions that the Industrial Revolution had negative effects on working classes' living standards.",
         "Lastly, we know that legislation improved working and environmental conditions, circumscribing the worst behaviors and reversing damage.",
         "In summary, the lecture indicates that market benefits are shared more widely than 100 years ago."
-      ]
+      ],
+      "category_id": "C04",
+      "category_name": "商业 · 经济 · 管理",
+      "category_order": 4,
+      "category_position": 3
     },
     {
       "id": "S014",
@@ -421,7 +585,11 @@ window.SST_DATA = {
         "In addition, he mentions that viewing hospital yards helps patients rest and sleep.",
         "Lastly, we know that these views relieve stress and pain.",
         "In summary, the lecture indicates that 90 percent of nurses agreed that the designed hospital environment is linked to recovery."
-      ]
+      ],
+      "category_id": "C01",
+      "category_name": "生命科学 · 医学 · 健康",
+      "category_order": 1,
+      "category_position": 6
     },
     {
       "id": "S015",
@@ -451,7 +619,11 @@ window.SST_DATA = {
         "In addition, he mentions that researchers determined that babies' smiles are strategic but not spontaneous.",
         "Lastly, we know that babies smile in hopes that others will smile at them, using sophisticated timing.",
         "In summary, the lecture indicates that researchers found that mothers seek interactions, whereas babies simply want to be smiled at."
-      ]
+      ],
+      "category_id": "C02",
+      "category_name": "心理 · 行为 · 儿童成长",
+      "category_order": 2,
+      "category_position": 1
     },
     {
       "id": "S016",
@@ -481,7 +653,11 @@ window.SST_DATA = {
         "In addition, he mentions that cash flow was in the red or at breakeven as advertising and readership declined.",
         "Lastly, we know that newspapers stopped daily publication or became online only.",
         "In summary, the lecture indicates that staff decreased by 30 to 40 percent."
-      ]
+      ],
+      "category_id": "C06",
+      "category_name": "科技 · 媒体 · 研究",
+      "category_order": 6,
+      "category_position": 1
     },
     {
       "id": "S017",
@@ -511,7 +687,11 @@ window.SST_DATA = {
         "In addition, he mentions that level four gives the vehicle complete control.",
         "Lastly, we know that level three is conditional automation, requiring drivers to intervene under some circumstances.",
         "In summary, the lecture indicates that this is more acceptable to most of the public."
-      ]
+      ],
+      "category_id": "C06",
+      "category_name": "科技 · 媒体 · 研究",
+      "category_order": 6,
+      "category_position": 2
     },
     {
       "id": "S018",
@@ -541,7 +721,11 @@ window.SST_DATA = {
         "In addition, he mentions that Tommy, caged for research, was chosen as plaintiff in New York.",
         "Lastly, we know that the court was shown evidence of chimpanzees' cognitive capabilities.",
         "In summary, the lecture indicates that the court rejected the release appeal because chimpanzees are not human."
-      ]
+      ],
+      "category_id": "C05",
+      "category_name": "全球化 · 社会 · 政治 · 移民",
+      "category_order": 5,
+      "category_position": 2
     },
     {
       "id": "S019",
@@ -571,7 +755,11 @@ window.SST_DATA = {
         "In addition, he mentions that the legislative branch makes laws and the executive carries them out.",
         "Lastly, we know that judicial authorities interpret laws.",
         "In summary, the lecture indicates that the boundary between legislative and executive roles has become blurred over the past century."
-      ]
+      ],
+      "category_id": "C05",
+      "category_name": "全球化 · 社会 · 政治 · 移民",
+      "category_order": 5,
+      "category_position": 3
     },
     {
       "id": "S020",
@@ -601,7 +789,11 @@ window.SST_DATA = {
         "In addition, he mentions that primitive, reactive brain regions control instinctive responses without much thinking.",
         "Lastly, we know that they communicate with the body to create powerful emotions and symptoms.",
         "In summary, the lecture indicates that fear or anxiety triggers normal physiological responses to fight or flee."
-      ]
+      ],
+      "category_id": "C02",
+      "category_name": "心理 · 行为 · 儿童成长",
+      "category_order": 2,
+      "category_position": 2
     },
     {
       "id": "S021",
@@ -631,7 +823,11 @@ window.SST_DATA = {
         "In addition, he mentions that needing a holiday expresses a strong desire rather than a basic need.",
         "Lastly, we know that plants need sunlight and water because these are essential.",
         "In summary, the lecture indicates that the psychological use of need refers to lacking something."
-      ]
+      ],
+      "category_id": "C02",
+      "category_name": "心理 · 行为 · 儿童成长",
+      "category_order": 2,
+      "category_position": 3
     },
     {
       "id": "S022",
@@ -661,7 +857,11 @@ window.SST_DATA = {
         "In addition, he mentions that globalization causes the erosion of traditional culture and conventional practices.",
         "Lastly, we know that young people reject their local culture and imitate Hollywood models.",
         "In summary, the lecture indicates that changes in distance and communication speed contribute to the loss of traditions."
-      ]
+      ],
+      "category_id": "C05",
+      "category_name": "全球化 · 社会 · 政治 · 移民",
+      "category_order": 5,
+      "category_position": 4
     },
     {
       "id": "S023",
@@ -691,7 +891,11 @@ window.SST_DATA = {
         "In addition, he mentions that people gradually felt the change in journalism.",
         "Lastly, we know that the Internet improved the speed of news spreading and helped people gain information in various ways.",
         "In summary, the lecture indicates that a small piece of ordinary video can become a new type of journalism."
-      ]
+      ],
+      "category_id": "C06",
+      "category_name": "科技 · 媒体 · 研究",
+      "category_order": 6,
+      "category_position": 3
     },
     {
       "id": "S024",
@@ -721,7 +925,11 @@ window.SST_DATA = {
         "In addition, he mentions that cultural diversity is a significant feature of Australian society.",
         "Lastly, we know that diversity benefits productivity, economic performance and the labour force.",
         "In summary, the lecture indicates that nearly half of Australians were born overseas or have a foreign-born parent."
-      ]
+      ],
+      "category_id": "C05",
+      "category_name": "全球化 · 社会 · 政治 · 移民",
+      "category_order": 5,
+      "category_position": 5
     },
     {
       "id": "S025",
@@ -751,7 +959,11 @@ window.SST_DATA = {
         "In addition, he mentions that the best manager is a professor of management with broad perspectives.",
         "Lastly, we know that knowing an organization better is insufficient.",
         "In summary, the lecture indicates that experience is not necessary, but management knowledge and learning are more important."
-      ]
+      ],
+      "category_id": "C04",
+      "category_name": "商业 · 经济 · 管理",
+      "category_order": 4,
+      "category_position": 4
     },
     {
       "id": "S026",
@@ -781,7 +993,11 @@ window.SST_DATA = {
         "In addition, he mentions that one group was offered benefits for using the card.",
         "Lastly, we know that the other was warned of penalties for not using it.",
         "In summary, the lecture indicates that customers were more motivated by potential loss than potential gain."
-      ]
+      ],
+      "category_id": "C04",
+      "category_name": "商业 · 经济 · 管理",
+      "category_order": 4,
+      "category_position": 5
     },
     {
       "id": "S027",
@@ -811,7 +1027,11 @@ window.SST_DATA = {
         "In addition, he mentions that computing expanded rapidly while computing and storage costs fell.",
         "Lastly, we know that information technology spread into all areas of life.",
         "In summary, the lecture indicates that Moore's Law continues to guide future development."
-      ]
+      ],
+      "category_id": "C06",
+      "category_name": "科技 · 媒体 · 研究",
+      "category_order": 6,
+      "category_position": 4
     },
     {
       "id": "S028",
@@ -841,7 +1061,11 @@ window.SST_DATA = {
         "In addition, he mentions that the Rural Electrification Administration helped farmers purchase appliances.",
         "Lastly, we know that frozen foods and supermarket freezer cases became more widespread.",
         "In summary, the lecture indicates that these developments marked the beginning of modern food technology."
-      ]
+      ],
+      "category_id": "C08",
+      "category_name": "历史 · 城市 · 建筑 · 工业",
+      "category_order": 8,
+      "category_position": 1
     },
     {
       "id": "S029",
@@ -871,7 +1095,11 @@ window.SST_DATA = {
         "In addition, he mentions that the Romans structured their cities methodically based on military strategy and planning.",
         "Lastly, we know that camps were laid out in geometric plans, usually square or rectangular.",
         "In summary, the lecture indicates that ideal Roman cities followed military camp designs."
-      ]
+      ],
+      "category_id": "C08",
+      "category_name": "历史 · 城市 · 建筑 · 工业",
+      "category_order": 8,
+      "category_position": 2
     },
     {
       "id": "S030",
@@ -901,7 +1129,11 @@ window.SST_DATA = {
         "In addition, he mentions that scientists could cut and paste DNA between organisms forty years ago.",
         "Lastly, we know that they can now synthesize DNA to create new organisms.",
         "In summary, the lecture indicates that a cellular factory can produce billions of bacteria from one bacterium."
-      ]
+      ],
+      "category_id": "C01",
+      "category_name": "生命科学 · 医学 · 健康",
+      "category_order": 1,
+      "category_position": 7
     },
     {
       "id": "S031",
@@ -931,7 +1163,11 @@ window.SST_DATA = {
         "In addition, he mentions that online research is quick, less expensive and reaches hard-to-reach groups.",
         "Lastly, we know that it lacks face-to-face communication and body language.",
         "In summary, the lecture indicates that researchers do not know participants' real identities."
-      ]
+      ],
+      "category_id": "C06",
+      "category_name": "科技 · 媒体 · 研究",
+      "category_order": 6,
+      "category_position": 5
     },
     {
       "id": "S032",
@@ -961,7 +1197,11 @@ window.SST_DATA = {
         "In addition, he mentions that English borrowed words from 350 languages over time.",
         "Lastly, we know that English language history is connected to English people's history.",
         "In summary, the lecture indicates that different periods brought different views, and people in Shakespeare's period hated borrowed words."
-      ]
+      ],
+      "category_id": "C07",
+      "category_name": "语言 · 写作 · 文学 · 教育",
+      "category_order": 7,
+      "category_position": 1
     },
     {
       "id": "S033",
@@ -991,7 +1231,11 @@ window.SST_DATA = {
         "In addition, he mentions that food production must double to feed a growing global population.",
         "Lastly, we know that scientists predict production increases of 30 to 50 percent in developing countries within three years.",
         "In summary, the lecture indicates that increasing food production now is urgent."
-      ]
+      ],
+      "category_id": "C03",
+      "category_name": "自然科学 · 环境 · 资源",
+      "category_order": 3,
+      "category_position": 5
     },
     {
       "id": "S034",
@@ -1021,7 +1265,11 @@ window.SST_DATA = {
         "In addition, he mentions that the definition of a good idea varies depending on whom you ask.",
         "Lastly, we know that great ideas should be novel and unique, meaning no one has thought of them before.",
         "In summary, the lecture indicates that great ideas should also be productive and transformative."
-      ]
+      ],
+      "category_id": "C06",
+      "category_name": "科技 · 媒体 · 研究",
+      "category_order": 6,
+      "category_position": 6
     },
     {
       "id": "S035",
@@ -1051,7 +1299,11 @@ window.SST_DATA = {
         "In addition, he mentions that old buildings with design flaws were demolished or modified in the 20th century.",
         "Lastly, we know that Darwin's natural selection theory means buildings must adapt to the new world to survive.",
         "In summary, the lecture indicates that people criticize demolition because honoring cultural nuances is important."
-      ]
+      ],
+      "category_id": "C08",
+      "category_name": "历史 · 城市 · 建筑 · 工业",
+      "category_order": 8,
+      "category_position": 3
     },
     {
       "id": "S036",
@@ -1081,7 +1333,11 @@ window.SST_DATA = {
         "In addition, he mentions that positive emotions are frequent but lighter and harder to recall.",
         "Lastly, we know that negative emotions occur less frequently but are strong and intense.",
         "In summary, the lecture indicates that negativity bias helps people evaluate their environment and survive life-threatening situations."
-      ]
+      ],
+      "category_id": "C02",
+      "category_name": "心理 · 行为 · 儿童成长",
+      "category_order": 2,
+      "category_position": 4
     },
     {
       "id": "S037",
@@ -1111,7 +1367,11 @@ window.SST_DATA = {
         "In addition, he mentions that industrial water recycling relies on many different technologies.",
         "Lastly, we know that homes have very little water-recycling technology.",
         "In summary, the lecture indicates that people rarely think about recycling water when using it at home."
-      ]
+      ],
+      "category_id": "C03",
+      "category_name": "自然科学 · 环境 · 资源",
+      "category_order": 3,
+      "category_position": 6
     },
     {
       "id": "S038",
@@ -1141,7 +1401,11 @@ window.SST_DATA = {
         "In addition, he mentions that globalization concerns industries and markets rather than countries.",
         "Lastly, we know that it involves the integration of economic activities across borders.",
         "In summary, the lecture indicates that it facilitates rising interconnectedness between countries and markets worldwide."
-      ]
+      ],
+      "category_id": "C05",
+      "category_name": "全球化 · 社会 · 政治 · 移民",
+      "category_order": 5,
+      "category_position": 6
     },
     {
       "id": "S039",
@@ -1171,7 +1435,11 @@ window.SST_DATA = {
         "In addition, he mentions that children have had sufficient educational capacity and support since birth.",
         "Lastly, we know that a child's life chances are determined by age five, a compelling and disturbing fact.",
         "In summary, the lecture indicates that the professor cannot find obvious ways to address deep-rooted inequality."
-      ]
+      ],
+      "category_id": "C02",
+      "category_name": "心理 · 行为 · 儿童成长",
+      "category_order": 2,
+      "category_position": 5
     },
     {
       "id": "S040",
@@ -1201,7 +1469,11 @@ window.SST_DATA = {
         "In addition, he mentions that past analyses viewed industrialization in terms of winners and losers.",
         "Lastly, we know that this interpretation has been rejected.",
         "In summary, the lecture indicates that industrialization intensified existing forms of production, with its rapid rise tied to traditional production."
-      ]
+      ],
+      "category_id": "C08",
+      "category_name": "历史 · 城市 · 建筑 · 工业",
+      "category_order": 8,
+      "category_position": 4
     },
     {
       "id": "S041",
@@ -1231,7 +1503,11 @@ window.SST_DATA = {
         "In addition, he mentions that their breadth brings pleasure but can sacrifice depth.",
         "Lastly, we know that studying organizations reveals artificial academic subdivisions.",
         "In summary, the lecture indicates that combining techniques, theories and concepts across disciplines frees our thinking about society."
-      ]
+      ],
+      "category_id": "C04",
+      "category_name": "商业 · 经济 · 管理",
+      "category_order": 4,
+      "category_position": 6
     },
     {
       "id": "S042",
@@ -1261,7 +1537,11 @@ window.SST_DATA = {
         "In addition, he mentions that Aboriginal communities emerged, developed, diversified and settled.",
         "Lastly, we know that refugees migrated in the 1970s and 1980s as Australia adopted a multiculturalism policy.",
         "In summary, the lecture indicates that settlers increased the immigrant population in 2004-2005, mostly coming from Asia and moving to Sydney."
-      ]
+      ],
+      "category_id": "C05",
+      "category_name": "全球化 · 社会 · 政治 · 移民",
+      "category_order": 5,
+      "category_position": 7
     },
     {
       "id": "S043",
@@ -1291,7 +1571,11 @@ window.SST_DATA = {
         "In addition, he mentions that traditional companies used stocks to raise money.",
         "Lastly, we know that modern companies use stocks to move money out of companies.",
         "In summary, the lecture indicates that stocks can move money into or out of companies."
-      ]
+      ],
+      "category_id": "C04",
+      "category_name": "商业 · 经济 · 管理",
+      "category_order": 4,
+      "category_position": 7
     },
     {
       "id": "S044",
@@ -1321,7 +1605,11 @@ window.SST_DATA = {
         "In addition, he mentions that the standard business response describes them as exclusive and expensive, but reality differs.",
         "Lastly, we know that two televisions were considered a luxury in Australia, while Starbucks is seen as one in China.",
         "In summary, the lecture indicates that the answer depends on whom you talk to."
-      ]
+      ],
+      "category_id": "C04",
+      "category_name": "商业 · 经济 · 管理",
+      "category_order": 4,
+      "category_position": 8
     },
     {
       "id": "S045",
@@ -1351,7 +1639,11 @@ window.SST_DATA = {
         "In addition, he mentions that some people get intense, with moods like riding a roller coaster, while others remain relaxed.",
         "Lastly, we know that according to research, the secret of happiness is mild contentment.",
         "In summary, the lecture indicates that we should find a balance between intense and relaxed emotions."
-      ]
+      ],
+      "category_id": "C02",
+      "category_name": "心理 · 行为 · 儿童成长",
+      "category_order": 2,
+      "category_position": 6
     },
     {
       "id": "S046",
@@ -1381,7 +1673,11 @@ window.SST_DATA = {
         "In addition, he mentions that men traditionally led out in front while women worked behind the scenes.",
         "Lastly, we know that women are increasingly coming out in front.",
         "In summary, the lecture indicates that leadership includes both forms."
-      ]
+      ],
+      "category_id": "C04",
+      "category_name": "商业 · 经济 · 管理",
+      "category_order": 4,
+      "category_position": 9
     },
     {
       "id": "S047",
@@ -1411,7 +1707,11 @@ window.SST_DATA = {
         "In addition, he mentions that students became movie directors and chose their story structures.",
         "Lastly, we know that working together involved many different skills.",
         "In summary, the lecture indicates that researchers found that the intervention improved self-regulation and critical thinking skills."
-      ]
+      ],
+      "category_id": "C02",
+      "category_name": "心理 · 行为 · 儿童成长",
+      "category_order": 2,
+      "category_position": 7
     },
     {
       "id": "S048",
@@ -1441,7 +1741,11 @@ window.SST_DATA = {
         "In addition, he mentions that readers feel frustrated when they cannot understand poems.",
         "Lastly, we know that this frustration makes poetry harder to enjoy.",
         "In summary, the lecture indicates that readers should learn to simply enjoy poetry and gain more knowledge of literature."
-      ]
+      ],
+      "category_id": "C07",
+      "category_name": "语言 · 写作 · 文学 · 教育",
+      "category_order": 7,
+      "category_position": 2
     },
     {
       "id": "S049",
@@ -1471,7 +1775,11 @@ window.SST_DATA = {
         "In addition, he mentions that the chance of getting a paper published is becoming smaller and smaller.",
         "Lastly, we know that rejections can lead to a better result and be good for the career path.",
         "In summary, the lecture indicates that the speaker discusses how to attract and engage young researchers."
-      ]
+      ],
+      "category_id": "C06",
+      "category_name": "科技 · 媒体 · 研究",
+      "category_order": 6,
+      "category_position": 7
     },
     {
       "id": "S050",
@@ -1501,7 +1809,11 @@ window.SST_DATA = {
         "In addition, he mentions that workers attack intruders and sacrifice their lives.",
         "Lastly, we know that Darwin connected this behaviour with queen reproduction.",
         "In summary, the lecture indicates that improving queens' reproductive success helps preserve bee genes."
-      ]
+      ],
+      "category_id": "C01",
+      "category_name": "生命科学 · 医学 · 健康",
+      "category_order": 1,
+      "category_position": 8
     },
     {
       "id": "S051",
@@ -1531,7 +1843,11 @@ window.SST_DATA = {
         "In addition, he mentions that advanced machines use face recognition and language processing techniques.",
         "Lastly, we know that people depend on machines and make a profit, but unemployment and redundancies rise as machines improve.",
         "In summary, the lecture indicates that we must create jobs to prevent job losses and rising unemployment."
-      ]
+      ],
+      "category_id": "C04",
+      "category_name": "商业 · 经济 · 管理",
+      "category_order": 4,
+      "category_position": 10
     },
     {
       "id": "S052",
@@ -1561,7 +1877,11 @@ window.SST_DATA = {
         "In addition, he mentions that 5000-year-old stones from Scotland show humans' first exploration of symmetry.",
         "Lastly, we know that he spends his life studying symmetry in nature, but the stones' purpose remains unknown.",
         "In summary, the lecture indicates that early mathematicians may have made mathematical objects for joy and beauty."
-      ]
+      ],
+      "category_id": "C03",
+      "category_name": "自然科学 · 环境 · 资源",
+      "category_order": 3,
+      "category_position": 7
     },
     {
       "id": "S053",
@@ -1591,7 +1911,11 @@ window.SST_DATA = {
         "In addition, he mentions that hooks grab attention and provoke emotional interest.",
         "Lastly, we know that statistics, facts and hypothetical or worst-case scenarios engage readers.",
         "In summary, the lecture indicates that strong wording conveys the urgency of the topic."
-      ]
+      ],
+      "category_id": "C07",
+      "category_name": "语言 · 写作 · 文学 · 教育",
+      "category_order": 7,
+      "category_position": 3
     },
     {
       "id": "S054",
@@ -1621,7 +1945,11 @@ window.SST_DATA = {
         "In addition, he mentions that studying several poets requires close reading of their work.",
         "Lastly, we know that students develop a sense of modernism, one of the richest fields of English language writing.",
         "In summary, the lecture indicates that students should enjoy poems, be puzzled by them and learn from them."
-      ]
+      ],
+      "category_id": "C07",
+      "category_name": "语言 · 写作 · 文学 · 教育",
+      "category_order": 7,
+      "category_position": 4
     }
   ]
 };

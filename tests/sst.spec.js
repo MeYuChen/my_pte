@@ -9,10 +9,19 @@ test.beforeEach(async ({ page }) => {
 test("shows 54 verified SST items and WE-style modes", async ({ page }) => {
   await expect(page.locator("#progressSummary")).toContainText("0 / 54");
   await expect(page.locator("#levelList .level-item")).toHaveCount(54);
-  await expect(page.locator("#levelList .level-item").nth(50)).toContainText("Machines Increase Unemployment");
-  await expect(page.locator("#levelList .level-item").last()).toContainText("Modern Poetry Course");
+  await expect(page.locator("#levelList [data-id=\"S051\"]")).toContainText("Machines Increase Unemployment");
+  await expect(page.locator("#levelList [data-id=\"S054\"]")).toContainText("Modern Poetry Course");
   await expect(page.getByRole("button", { name: "模板" })).toHaveClass(/is-active/);
   await expect(page.getByText("听主题 → 抓名词关系 → 拼成 50–70 词")).toBeVisible();
+  await expect(page.locator("#categoryOverview .category-card")).toHaveCount(8);
+});
+
+test("filters the approved eight-category workbook structure", async ({ page }) => {
+  await page.locator("#categoryOverview [data-category=\"C04\"]").click();
+  await expect(page.locator("#levelList .level-item")).toHaveCount(10);
+  await expect(page.locator("#levelList .category-heading")).toContainText("商业 · 经济 · 管理");
+  await expect(page.locator("#levelList .level-item").first()).toContainText("Definition of Risk");
+  await expect(page.locator("#levelList .level-item").last()).toContainText("Machines Increase Unemployment");
 });
 
 test("learn and drill retain logic keywords and final answer", async ({ page }) => {

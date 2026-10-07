@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>PTE SST 学习与考核</title>
-    <link rel="stylesheet" href="./styles.css?v=20261007-2">
-    <link rel="stylesheet" href="./sst.css?v=20261007-2">
+    <link rel="stylesheet" href="./styles.css?v=20261008-3">
+    <link rel="stylesheet" href="./sst.css?v=20261008-3">
   </head>
   <body>
     <div class="app-shell" id="appShell">
@@ -20,6 +20,7 @@
           </div>
           <div class="module-links"><a href="./index.html">← WE</a><a href="./reading.html">Reading →</a></div>
           <label class="field"><span>搜索题目</span><input id="searchInput" type="search" placeholder="编号 / 标题 / 关键词"></label>
+          <label class="field category-field"><span>主题分类</span><select id="categoryFilter"><option value="all">全部 8 类</option></select></label>
           <div class="segmented" role="group" aria-label="状态筛选">
             <button class="segment is-active" data-filter="all" type="button">全部</button>
             <button class="segment" data-filter="todo" type="button">未过</button>
@@ -47,6 +48,7 @@
             <h3>听主题 → 抓名词关系 → 拼成 50–70 词</h3>
             <p>先保住内容词，再处理句子。不要边听边追求漂亮表达。</p>
           </div>
+          <div class="category-overview" id="categoryOverview"></div>
           <div class="method-grid">
             <article><b>1 · 定主题</b><p>重点听开头 1–2 句和反复出现的名词，先写下“这段在讲什么”。</p></article>
             <article><b>2 · 记关系</b><p>优先记 V+N、ADJ+N、N+N；用箭头标因果，用 VS 标对比，用数字标顺序。</p></article>
@@ -99,7 +101,7 @@
       </main>
     </div>
     <div class="toast" id="toast" role="status" hidden></div>
-    <script src="./sst-data.js?v=20261007-2"></script>
-    <script src="./sst.js?v=20261007-2"></script>
+    <script src="./sst-data.js?v=20261008-3"></script>
+    <script src="./sst.js?v=20261008-3"></script>
   </body>
 </html>

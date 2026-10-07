@@ -6,6 +6,23 @@ import argparse
 import tempfile
 from pathlib import Path
 
+CATEGORIES = [
+    ('C01', '生命科学 · 医学 · 健康', [1, 2, 8, 11, 12, 14, 30, 50]),
+    ('C02', '心理 · 行为 · 儿童成长', [15, 20, 21, 36, 39, 45, 47]),
+    ('C03', '自然科学 · 环境 · 资源', [4, 6, 7, 9, 33, 37, 52]),
+    ('C04', '商业 · 经济 · 管理', [5, 10, 13, 25, 26, 41, 43, 44, 46, 51]),
+    ('C05', '全球化 · 社会 · 政治 · 移民', [3, 18, 19, 22, 24, 38, 42]),
+    ('C06', '科技 · 媒体 · 研究', [16, 17, 23, 27, 31, 34, 49]),
+    ('C07', '语言 · 写作 · 文学 · 教育', [32, 48, 53, 54]),
+    ('C08', '历史 · 城市 · 建筑 · 工业', [28, 29, 35, 40]),
+]
+
+CATEGORY_BY_NUMBER = {
+    number: {'category_id': category_id, 'category_name': name, 'category_order': order, 'category_position': position}
+    for order, (category_id, name, numbers) in enumerate(CATEGORIES, start=1)
+    for position, number in enumerate(numbers, start=1)
+}
+
 
 def compact(lines):
     return re.sub(r'\s+', ' ', ' '.join(x.strip() for x in lines if x.strip())).strip()
@@ -104,11 +121,23 @@ def main():
         subprocess.run(['pdftotext', '-layout', str(args.pdf), str(text_path)], check=True)
         pages = text_path.read_text(encoding='utf-8').split('\f')
     items = [item for page in pages if (item := parse_page(page))]
+    items.sort(key=lambda item: item['number'])
     assert len(items) == 54, len(items)
     assert [x['number'] for x in items] == list(range(1, 55))
     assert all(len(x['keywords']) == 5 and all(x['keywords']) for x in items)
     assert all(x['answer'] and x['logic'] for x in items)
-    payload = {'version': '2026-10-07-54', 'source': args.pdf.name, 'count': 54, 'items': items}
+    for item in items:
+        item.update(CATEGORY_BY_NUMBER[item['number']])
+    payload = {
+        'version': '2026-10-08-categorized-54',
+        'source': args.pdf.name,
+        'count': 54,
+        'categories': [
+            {'id': category_id, 'name': name, 'count': len(numbers), 'item_numbers': numbers}
+            for category_id, name, numbers in CATEGORIES
+        ],
+        'items': items,
+    }
     args.output.write_text('window.SST_DATA = ' + json.dumps(payload, ensure_ascii=False, indent=2) + ';\n', encoding='utf-8')
     print(f'Wrote {len(items)} items: {items[0]["title_en"]} -> {items[-1]["title_en"]}')
     for item in items:
