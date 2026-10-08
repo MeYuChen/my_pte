@@ -46,7 +46,7 @@ button { cursor: pointer; }
 input, select { border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink); outline: none; }
 .sidebar-controls input { width: 100%; height: 40px; padding: 0 11px; }
 input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
-.point-filters { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 10px; }
+.point-filters { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 10px; }
 .point-filters button, .content-tabs button {
   border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--muted); font-weight: 800;
 }
@@ -77,7 +77,7 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px v
 .tab-panel { min-height: 390px; padding: 28px; border: 1px solid var(--line); border-radius: 15px; background: var(--surface); box-shadow: var(--shadow); }
 .lead-card h3, .practice-toolbar h3 { margin: 0; font-size: 22px; }
 .lead-card > p { max-width: 860px; margin: 12px 0 0; color: #34433a; font-size: 16px; line-height: 1.8; }
-.info-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 24px; }
+.info-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 24px; }
 .info-box { padding: 18px; border-radius: 11px; background: var(--surface-soft); }
 .info-box span { color: var(--muted); font-size: 11px; font-weight: 850; }
 .info-box strong { display: block; margin-top: 7px; font-size: 17px; }
@@ -131,13 +131,15 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px v
 .blank-field input { width: 150px; }
 .blank-field.is-correct select, .blank-field.is-correct input { border-color: var(--good); background: var(--good-soft); }
 .blank-field.is-wrong select, .blank-field.is-wrong input { border-color: var(--bad); background: var(--bad-soft); }
+.blank-field.is-target select, .blank-field.is-target input { box-shadow: 0 0 0 2px rgba(23, 107, 97, .18); }
+.blank-field.is-target::before { content: "当前考点"; display: block; margin: 0 0 3px; color: var(--accent-dark); font-family: Inter, sans-serif; font-size: 10px; font-weight: 850; line-height: 1; }
 .answer-note { display: inline; margin-left: 3px; color: var(--bad); font-family: Inter, sans-serif; font-size: 12px; font-weight: 800; }
 
 .inline-result { scroll-margin-top: 18px; margin: 0 26px 30px; border: 1px solid var(--line); border-radius: 14px; background: #fff; color: var(--ink); box-shadow: 0 10px 30px rgba(20, 34, 27, .08); }
 .inline-result[hidden] { display: none; }
 .result-heading { padding: 22px 24px 14px; border-bottom: 1px solid var(--line); }
 .result-heading h2 { margin: 0; }
-.score-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 16px 24px; }
+.score-strip { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; padding: 16px 24px; }
 .score-cell { padding: 13px; border-radius: 9px; background: var(--surface-soft); text-align: center; }
 .score-cell strong { display: block; font-size: 21px; }
 .score-cell span { color: var(--muted); font-size: 11px; }
@@ -165,6 +167,7 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px v
 @media (max-width: 1100px) {
   .reading-shell { grid-template-columns: 280px minmax(0, 1fr); }
   .reading-main { padding-left: 28px; padding-right: 28px; }
+  .info-grid { grid-template-columns: repeat(2, 1fr); }
   .practice-toolbar { display: block; }
   .practice-actions { margin-top: 16px; justify-content: flex-start; }
   .inline-result { margin: 0 12px 24px; }
@@ -550,6 +553,16 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px v
 .recognition-feedback.is-wrong { border-color: #efbbb5; background: var(--bad-soft); }
 .recognition-feedback h3 { margin: 0 0 12px; }
 .recognition-feedback p { line-height: 1.65; }
+.recognition-point-check { display: grid; gap: 7px; margin: 16px 0; padding: 14px; border: 1px solid var(--line); border-radius: 9px; background: #fff; }
+.recognition-point-check > strong { color: var(--accent-dark); }
+.recognition-point-check > span { color: var(--muted); font-size: 12px; }
+.recognition-point-options { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 4px; }
+.recognition-point-options button { padding: 7px 9px; border: 1px solid var(--line); border-radius: 999px; background: #fff; color: var(--ink); font-size: 12px; font-weight: 750; }
+.recognition-point-options button.is-correct { border-color: var(--good); background: var(--good-soft); color: var(--good); }
+.recognition-point-options button.is-wrong { border-color: var(--bad); background: var(--bad-soft); color: var(--bad); }
+.recognition-point-result { margin: 0; color: var(--muted); font-size: 12px; }
+.recognition-point-result.is-correct { color: var(--good); font-weight: 800; }
+.recognition-point-result.is-wrong { color: var(--bad); font-weight: 800; }
 .recognition-next-row { display: flex; justify-content: flex-end; padding: 0 40px 32px; }
 
 @media (max-width: 1100px) {

@@ -23,6 +23,7 @@
     query: "",
     practiceQuestions: [],
     questionIndex: 0,
+    targetBlankIndices: [],
     startedAt: null,
     timerHandle: null,
     elapsedSeconds: 0,
@@ -92,6 +93,7 @@
     state.pointId = pointId;
     state.practiceQuestions = data.questions.filter((question) => core.questionMatchesPoint(question, pointId));
     state.questionIndex = 0;
+    state.targetBlankIndices = [];
     state.lastResult = null;
     if (updateHash || location.hash.replace(/^#/, "") !== pointId) {
       history.replaceState(null, "", `#${pointId}`);
@@ -108,9 +110,15 @@
       const matchesQuery = !state.query || searchText.includes(state.query);
       const matchesFilter = state.pointFilter === "all"
         || (state.pointFilter === "form" && chapter?.stage === "形")
-        || (state.pointFilter === "later" && chapter?.stage !== "形");
+        || (state.pointFilter === "later" && chapter?.stage !== "形")
+        || (state.pointFilter === "weak" && isWeakPoint(state.progress.points[method.id]));
       return matchesQuery && matchesFilter;
     });
+  }
+
+  function isWeakPoint(progress) {
+    if (!progress?.attempts || !progress.total) return true;
+    return progress.correct / progress.total < 0.85 || progress.attempts < 2;
   }
 
   function renderPointList() {
@@ -225,9 +233,10 @@
     const chapter = chaptersById.get(curriculum.pointToChapter[method.id]);
     const progress = state.progress.points[state.pointId] || { attempts: 0, correct: 0, total: 0 };
     const accuracy = progress.total ? `${Math.round(progress.correct / progress.total * 100)}% 正确` : "尚未练习";
+    const representativePrimaryCount = data.questions.reduce((count, question) => count + (question.blank_map || []).filter((blank) => blank.primary_point === method.id).length, 0);
     el.pointModule.textContent = `${chapter.id} · ${chapter.stage} · ${chapter.name}`;
     el.pointTitle.textContent = `${method.id} · ${method.name}`;
-    el.pointFrequency.textContent = `主考 ${method.primary_count} · 关联 ${method.all_link_count}`;
+    el.pointFrequency.textContent = `全库主考 ${method.primary_count} · 代表题 ${representativePrimaryCount} · 关联 ${method.all_link_count}`;
     el.pointProgress.textContent = progress.attempts ? `${progress.attempts} 次练习 · ${accuracy}` : accuracy;
     el.pointPanel.innerHTML = `
       <div class="signal-grid">
@@ -241,7 +250,8 @@
       <details class="point-metadata">
         <summary>查看频次和题库覆盖</summary>
         <div class="info-grid">
-          <div class="info-box"><span>题库主考频次</span><strong>${method.primary_count} 空</strong></div>
+          <div class="info-box"><span>全库主考频次</span><strong>${method.primary_count} 空</strong></div>
+          <div class="info-box"><span>当前代表题主考</span><strong>${representativePrimaryCount} 空</strong></div>
           <div class="info-box"><span>含关联考点</span><strong>${method.all_link_count} 空</strong></div>
           <div class="info-box"><span>专项练习</span><strong>${state.practiceQuestions.length} 题</strong></div>
         </div>
@@ -254,16 +264,36 @@
     const judgmentContent = quickChecks.length
       ? `<ul>${quickChecks.map((tip) => `<li>${escapeHtml(tip)}</li>`).join("")}</ul>`
       : `<div class="example-list">${renderExamples((method.normal_examples || []).slice(0, 1))}</div>`;
+    const examplesContent = `<section class="tip-card tip-card-wide"><h4>跟着做一遍</h4><div class="example-list">${renderExamples((method.normal_examples || []).slice(0, 2), "normal")}</div></section>`;
+    const boundaryContent = (method.contrast_examples || []).length
+      ? `<section class="tip-card tip-card-wide"><h4>边界与易混</h4><div class="example-list">${renderExamples((method.contrast_examples || []).slice(0, 2), "contrast")}</div></section>`
+      : "";
     el.tipsPanel.innerHTML = `
       <div class="tip-grid">
         <section class="tip-card"><h4>最容易错在哪里</h4><ul>${method.traps.map((tip) => `<li>${escapeHtml(tip)}</li>`).join("")}</ul></section>
         <section class="tip-card"><h4>${quickChecks.length ? "一眼识别" : "典型例子"}</h4>${judgmentContent}</section>
+        ${examplesContent}
+        ${boundaryContent}
       </div>`;
   }
 
-  function renderExamples(examples) {
+  function renderExamples(examples, kind = "normal") {
     if (!examples || !examples.length) return "<p>暂无代表例。</p>";
-    return examples.map((item) => `<div class="example"><strong>${escapeHtml(item.bid)} · ${escapeHtml(item.answer)}</strong><br>${escapeHtml(item.evidence)}</div>`).join("");
+    return examples.map((item) => `<div class="example"><strong>${escapeHtml(item.bid)} · ${escapeHtml(item.answer)}</strong><br>${escapeHtml(learnerExampleEvidence(item, kind))}</div>`).join("");
+  }
+
+  function learnerExampleEvidence(item, kind) {
+    const evidence = String(item.evidence || "")
+      .replace(/^本题全文与原选项已重新核对；\s*/u, "")
+      .replace(/^逐项比较[^，]*后，/u, "线索：")
+      .replace(/由句法形式、搭配或全文逻辑获得有效排他证据。?$/u, "")
+      .trim();
+    if (/给定答案|原选项|题内证据不足以认证唯一/u.test(evidence)) {
+      return kind === "contrast"
+        ? `边界：${item.answer}可以成立，但其他近义选项也可能通顺；继续检查整句的范围、强弱和事实。`
+        : `线索：${evidence.replace(/给定答案[^，。]*[，。]?/u, "").trim()}`;
+    }
+    return evidence;
   }
 
   function setTab(tab) {
@@ -291,17 +321,19 @@
       el.passageCard.textContent = "此处会在后续全题库训练扩展中继续补题。";
       return;
     }
+    state.targetBlankIndices = core.pointBlankIndices(question, state.pointId);
     el.questionSource.textContent = `${question.type} · ${question.source}`;
     el.questionTitle.textContent = question.title || question.source;
     const practiceMode = question.type === "R" ? "本题答案池选择" : "原始选项选择";
     el.questionMeta.textContent = `专项第 ${state.questionIndex + 1} / ${state.practiceQuestions.length} 题 · ${question.answers.length} 空 · ${practiceMode}`;
     el.practiceStatus.textContent = "点击“开始本题”后开始计时；所有空均使用选择，不需要手打单词。";
-    renderPassage(question, true);
+    renderPassage(question, true, state.targetBlankIndices);
   }
 
-  function renderPassage(question, locked) {
+  function renderPassage(question, locked, targetIndices = []) {
     const parts = question.passage.split(/【([^】]*)】/g);
     const fragment = document.createDocumentFragment();
+    const targetSet = new Set(targetIndices);
     let blankIndex = 0;
     parts.forEach((part, index) => {
       if (index % 2 === 0) {
@@ -309,11 +341,11 @@
         return;
       }
       const wrapper = document.createElement("span");
-      wrapper.className = "blank-field";
+      wrapper.className = `blank-field${targetSet.has(blankIndex) ? " is-target" : ""}`;
       wrapper.dataset.blankIndex = String(blankIndex);
       const select = document.createElement("select");
       select.disabled = locked;
-      select.setAttribute("aria-label", `第 ${blankIndex + 1} 空`);
+      select.setAttribute("aria-label", `第 ${blankIndex + 1} 空${targetSet.has(blankIndex) ? " · 当前考点" : ""}`);
       select.append(new Option(`第 ${blankIndex + 1} 空`, ""));
       const choices = question.type === "RW"
         ? parseOptions(question.options[blankIndex] || part)
@@ -343,7 +375,7 @@
     el.returnReviewBar.hidden = true;
     el.resultPanel.hidden = true;
     renderPointList();
-    renderPassage(question, false);
+    renderPassage(question, false, state.targetBlankIndices);
     el.questionTimer.textContent = "00:00";
     el.submitQuestion.disabled = false;
     el.startQuestion.textContent = "重新开始";
@@ -373,7 +405,7 @@
     stopTimer();
     const controls = [...el.passageCard.querySelectorAll("select, input")];
     const responses = controls.map((control) => control.value);
-    const result = core.gradeQuestion(question, responses);
+    const result = core.gradeQuestion(question, responses, state.targetBlankIndices);
     result.seconds = state.elapsedSeconds;
     state.lastResult = result;
     controls.forEach((control, index) => {
@@ -381,6 +413,7 @@
       const detail = result.details[index];
       const wrapper = control.closest(".blank-field");
       wrapper.classList.add(detail.correct ? "is-correct" : "is-wrong");
+      wrapper.classList.toggle("is-target", result.targetIndices.includes(index));
       if (!detail.correct) {
         const note = document.createElement("span");
         note.className = "answer-note";
@@ -390,7 +423,10 @@
     });
     el.submitQuestion.disabled = true;
     el.practiceStatus.className = `practice-status${result.wrong === 0 ? " is-good" : ""}`;
-    el.practiceStatus.textContent = `已提交：答对 ${result.correct}，答错 ${result.wrong}，用时 ${core.formatDuration(result.seconds)}。`;
+    const targetSummary = result.targetTotal < result.total
+      ? `当前考点 ${result.targetCorrect} / ${result.targetTotal}`
+      : `本题 ${result.correct} / ${result.total}`;
+    el.practiceStatus.textContent = `已提交：${targetSummary}；整题答对 ${result.correct}，答错 ${result.wrong}，用时 ${core.formatDuration(result.seconds)}。`;
     recordProgress(result);
     renderPointContent();
     showResult(result);
@@ -399,13 +435,14 @@
   function recordProgress(result) {
     const current = state.progress.points[state.pointId] || { attempts: 0, correct: 0, total: 0, seconds: 0 };
     current.attempts += 1;
-    current.correct += result.correct;
-    current.total += result.total;
+    current.correct += result.targetCorrect;
+    current.total += result.targetTotal;
     current.seconds += result.seconds;
     state.progress.points[state.pointId] = current;
     state.progress.sessions.push({
       at: new Date().toISOString(), pointId: state.pointId, source: currentQuestion().source,
-      correct: result.correct, total: result.total, seconds: result.seconds
+      correct: result.targetCorrect, total: result.targetTotal, seconds: result.seconds,
+      questionCorrect: result.correct, questionTotal: result.total
     });
     state.progress.sessions = state.progress.sessions.slice(-200);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state.progress));
@@ -414,7 +451,7 @@
   function showResult(result) {
     el.resultTitle.textContent = result.wrong ? `有 ${result.wrong} 个空需要复盘` : "全部答对";
     el.scoreStrip.innerHTML = [
-      [result.total, "总空数"], [result.correct, "答对"], [result.wrong, "答错"], [core.formatDuration(result.seconds), "用时"]
+      [result.targetTotal, "当前考点空数"], [result.targetCorrect, "考点答对"], [result.targetWrong, "考点答错"], [result.total, "整题空数"], [core.formatDuration(result.seconds), "用时"]
     ].map(([value, label]) => `<div class="score-cell"><strong>${value}</strong><span>${label}</span></div>`).join("");
     const wrong = result.details.filter((detail) => !detail.correct);
     state.reviewPointIds = new Set(wrong.flatMap((detail) => {

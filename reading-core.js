@@ -13,8 +13,21 @@
       .toLowerCase();
   }
 
-  function gradeQuestion(question, responses) {
+  function pointBlankIndices(question, pointId, { includeSecondary = true } = {}) {
+    if (!pointId) return (question.answers || []).map((_, index) => index);
+    return (question.blank_map || []).reduce((indices, blank, index) => {
+      const matchesPrimary = blank.primary_point === pointId;
+      const matchesSecondary = includeSecondary && (blank.secondary_points || []).includes(pointId);
+      if (matchesPrimary || matchesSecondary) indices.push(index);
+      return indices;
+    }, []);
+  }
+
+  function gradeQuestion(question, responses, targetIndices) {
     const answers = question.answers || [];
+    const targetSet = new Set(Array.isArray(targetIndices)
+      ? targetIndices
+      : answers.map((_, index) => index));
     const details = answers.map((answer, index) => {
       const response = responses[index] ?? "";
       return {
@@ -25,8 +38,19 @@
         knowledge: (question.blank_map || [])[index] || null
       };
     });
+    const targetDetails = details.filter((item) => targetSet.has(item.index));
     const correct = details.filter((item) => item.correct).length;
-    return { total: answers.length, correct, wrong: answers.length - correct, details };
+    const targetCorrect = targetDetails.filter((item) => item.correct).length;
+    return {
+      total: answers.length,
+      correct,
+      wrong: answers.length - correct,
+      targetIndices: [...targetSet],
+      targetTotal: targetDetails.length,
+      targetCorrect,
+      targetWrong: targetDetails.length - targetCorrect,
+      details
+    };
   }
 
   function formatDuration(totalSeconds) {
@@ -42,5 +66,5 @@
     );
   }
 
-  return { normalizeAnswer, gradeQuestion, formatDuration, questionMatchesPoint };
+  return { normalizeAnswer, gradeQuestion, formatDuration, pointBlankIndices, questionMatchesPoint };
 });

@@ -96,6 +96,11 @@ data.methods.forEach((method) => assert.ok(linkedPoints.has(method.id), `${metho
 const sample = data.questions[0];
 const perfect = core.gradeQuestion(sample, [...sample.answers]);
 assert.deepEqual({ correct: perfect.correct, wrong: perfect.wrong }, { correct: sample.answers.length, wrong: 0 });
+const scoped = core.gradeQuestion(sample, [...sample.answers], [0]);
+assert.equal(scoped.targetTotal, 1, "scoped grading should isolate the target blank");
+assert.equal(scoped.targetCorrect, 1, "scoped grading should score the target blank");
+assert.equal(scoped.total, sample.answers.length, "scoped grading should retain whole-question diagnostics");
+assert.deepEqual(core.pointBlankIndices(sample, sample.blank_map[0].primary_point), [0]);
 
 const caseInsensitive = core.gradeQuestion({ answers: ["Has Been"], blank_map: [{}] }, ["  has   been  "]);
 assert.equal(caseInsensitive.correct, 1, "grading should ignore case and repeated whitespace");
@@ -117,6 +122,7 @@ assert.match(html, /id="recognitionRoutes"/);
 assert.match(html, /id="questionTimer"/);
 assert.match(html, /id="resultPanel"/);
 assert.match(html, /id="returnToReview"/);
+assert.match(html, /data-point-filter="weak"/);
 assert.doesNotMatch(html, /<dialog/);
 assert.doesNotMatch(recognitionJs, /先走“/, "recognition feedback should distinguish scan order from decisive evidence");
 assert.match(recognitionJs, /决定证据在/, "recognition feedback should name the decisive evidence layer");

@@ -25,6 +25,11 @@
   el.recognitionNext.addEventListener("click", nextItem);
   el.recognitionRoutes.addEventListener("click", answerRoute);
   el.recognitionFeedback.addEventListener("click", (event) => {
+    const pointButton = event.target.closest("[data-recognition-point]");
+    if (pointButton) {
+      answerPoint(pointButton);
+      return;
+    }
     const button = event.target.closest("[data-open-recognition-point]");
     if (!button) return;
     document.querySelector('[data-reading-mode="points"]').click();
@@ -63,6 +68,8 @@
       index: 0,
       answered: 0,
       correct: 0,
+      pointAnswered: 0,
+      pointCorrect: 0,
       locked: false
     };
     renderItem();
@@ -93,7 +100,7 @@
     el.recognitionNext.hidden = true;
     el.recognitionProgress.textContent = `第 ${session.index + 1} / ${session.items.length} 空`;
     el.recognitionAccuracy.textContent = session.answered
-      ? `证据定位 ${session.correct} / ${session.answered}`
+      ? `路线 ${session.correct} / ${session.answered} · 细点 ${session.pointCorrect} / ${session.pointAnswered}`
       : "目标：定位决定证据";
     el.recognitionSource.textContent = `${item.question.type} · ${item.bid}`;
     el.recognitionSnippet.textContent = buildSnippet(item.question, item.index);
@@ -145,6 +152,7 @@
     const chapter = chapters.get(item.chapterId);
     const method = methods.get(item.pointId);
     el.recognitionFeedback.className = `recognition-feedback ${correct ? "is-correct" : "is-wrong"}`;
+    const pointOptions = pointButtons(item);
     el.recognitionFeedback.innerHTML = `
       <p class="eyebrow">${correct ? "决定证据定位正确" : "决定证据需要重判"}</p>
       <h3>决定证据在“${escapeHtml(route.label)}” · ${escapeHtml(chapter.name)}</h3>
@@ -153,10 +161,45 @@
       ${item.reason ? `<p><strong>为什么：</strong>${escapeHtml(item.reason)}</p>` : ""}
       <p><strong>下次看到：</strong>${escapeHtml(chapter.trigger)}</p>
       <p><strong>立即做：</strong>${escapeHtml(chapter.action)}</p>
+      <div class="recognition-point-check">
+        <strong>再识别细分考点</strong>
+        <span>选择最贴近这个空的细分考点，巩固课程定位。</span>
+        <div class="recognition-point-options">${pointOptions.map((point) => `<button type="button" data-recognition-point="${escapeHtml(point.id)}">${escapeHtml(point.id)} · ${escapeHtml(point.name)}</button>`).join("")}</div>
+        <p class="recognition-point-result" data-recognition-point-result>尚未选择</p>
+      </div>
       <button class="secondary-button" type="button" data-open-recognition-point="${escapeHtml(item.pointId)}">查看 ${escapeHtml(item.pointId)} · ${escapeHtml(method?.name || "细分考点")}</button>`;
     el.recognitionFeedback.hidden = false;
+    el.recognitionNext.hidden = true;
+    el.recognitionAccuracy.textContent = `路线 ${session.correct} / ${session.answered} · 细点 ${session.pointCorrect} / ${session.pointAnswered}`;
+  }
+
+  function pointButtons(item) {
+    const ids = [...new Set([item.pointId, ...(item.question.blank_map[item.index]?.secondary_points || [])])];
+    const chapterPoints = curriculum.chapters.find((chapter) => chapter.id === item.chapterId)?.pointIds || [];
+    shuffle(chapterPoints.filter((id) => !ids.includes(id))).slice(0, Math.max(0, 4 - ids.length)).forEach((id) => ids.push(id));
+    if (ids.length < 4) shuffle(data.methods.map((method) => method.id).filter((id) => !ids.includes(id))).slice(0, 4 - ids.length).forEach((id) => ids.push(id));
+    return shuffle(ids.slice(0, 4)).map((id) => methods.get(id)).filter(Boolean);
+  }
+
+  function answerPoint(button) {
+    if (!session || !session.locked || button.disabled) return;
+    const item = session.items[session.index];
+    const result = el.recognitionFeedback.querySelector("[data-recognition-point-result]");
+    const options = el.recognitionFeedback.querySelectorAll("[data-recognition-point]");
+    const correct = button.dataset.recognitionPoint === item.pointId;
+    session.pointAnswered += 1;
+    if (correct) session.pointCorrect += 1;
+    options.forEach((option) => {
+      option.disabled = true;
+      if (option.dataset.recognitionPoint === item.pointId) option.classList.add("is-correct");
+      if (option === button && !correct) option.classList.add("is-wrong");
+    });
+    result.textContent = correct
+      ? `细分考点正确：${item.pointId} · ${methods.get(item.pointId)?.name || ""}`
+      : `细分考点应为：${item.pointId} · ${methods.get(item.pointId)?.name || ""}`;
+    result.classList.add(correct ? "is-correct" : "is-wrong");
     el.recognitionNext.hidden = false;
-    el.recognitionAccuracy.textContent = `证据定位 ${session.correct} / ${session.answered}`;
+    el.recognitionAccuracy.textContent = `路线 ${session.correct} / ${session.answered} · 细点 ${session.pointCorrect} / ${session.pointAnswered}`;
   }
 
   function nextItem() {
@@ -168,7 +211,8 @@
   function renderComplete() {
     const accuracy = session.answered ? Math.round(session.correct / session.answered * 100) : 0;
     el.recognitionProgress.textContent = "本轮完成";
-    el.recognitionAccuracy.textContent = `${session.correct} / ${session.answered} · ${accuracy}%`;
+    const pointAccuracy = session.pointAnswered ? Math.round(session.pointCorrect / session.pointAnswered * 100) : 0;
+    el.recognitionAccuracy.textContent = `路线 ${session.correct}/${session.answered} · 细点 ${session.pointCorrect}/${session.pointAnswered} · ${accuracy}% / ${pointAccuracy}%`;
     el.recognitionSource.textContent = "混合识别结果";
     el.recognitionSnippet.textContent = accuracy >= 90
       ? "决定证据定位已经形成基础反应，可以进入完整文章混合训练。"

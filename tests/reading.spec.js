@@ -20,6 +20,7 @@ test.describe("Reading module", () => {
     await page.getByRole("button", { name: "解法", exact: true }).click();
     await expect(page.locator(".memory-rule-card")).toContainText("空格位置先定词性");
     await page.getByRole("button", { name: "避坑", exact: true }).click();
+    await expect(page.locator("#tipsPanel")).toContainText("跟着做一遍");
     await expect(page.locator("#tipsPanel")).not.toContainText("给定答案不自动等于唯一答案");
 
     await page.getByRole("button", { name: "练习", exact: true }).click();
@@ -123,6 +124,48 @@ test.describe("Reading module", () => {
     await expect(page.locator("#passageCard select")).toHaveCount(target.answers.length);
   });
 
+  test("weak filter follows learner progress", async ({ page }) => {
+    await page.addInitScript(() => {
+      localStorage.setItem("pte-reading-progress-v1", JSON.stringify({
+        points: { S02: { attempts: 3, correct: 3, total: 3, seconds: 10 } },
+        sessions: []
+      }));
+    });
+    await page.goto("./reading.html");
+    await page.locator('[data-point-filter="weak"]').click();
+    await expect(page.locator(".point-item")).toHaveCount(43);
+    await expect(page.locator(".point-item").filter({ hasText: "S02" })).toHaveCount(0);
+  });
+
+  test("point practice records only the selected point's blanks", async ({ page }) => {
+    await page.goto("./reading.html#G01");
+    await page.getByRole("button", { name: "练习", exact: true }).click();
+    await page.getByRole("button", { name: "开始本题" }).click();
+    const target = await page.evaluate(() => {
+      const question = window.READING_DATA.questions.find((item) =>
+        window.ReadingCore.questionMatchesPoint(item, "G01")
+      );
+      return {
+        answers: question.answers,
+        targetIndices: window.ReadingCore.pointBlankIndices(question, "G01"),
+        options: question.type === "RW" ? question.options : question.answers.map(() => question.answers.join(","))
+      };
+    });
+    const selects = page.locator("#passageCard select");
+    for (let index = 0; index < target.answers.length; index += 1) {
+      const options = (target.options[index] || "").split(",").map((option) => option.trim()).filter(Boolean);
+      const value = target.targetIndices.includes(index)
+        ? options.find((option) => option !== target.answers[index]) || target.answers[index]
+        : target.answers[index];
+      await selects.nth(index).selectOption({ label: value });
+    }
+    await page.locator("#submitQuestion").click();
+    await expect(page.locator("#scoreStrip")).toContainText("当前考点空数");
+    const progress = await page.evaluate(() => JSON.parse(localStorage.getItem("pte-reading-progress-v1")).points.G01);
+    expect(progress.total).toBe(target.targetIndices.length);
+    expect(progress.correct).toBe(0);
+  });
+
   test("exam guide reduces the point catalogue to four live decision routes", async ({ page }) => {
     await page.goto("./reading.html");
     await page.getByRole("button", { name: "考场总纲" }).click();
@@ -154,10 +197,15 @@ test.describe("Reading module", () => {
     });
     await page.locator(`#recognitionRoutes [data-route-id="${correctRoute}"]`).click();
     await expect(page.locator("#recognitionFeedback")).toBeVisible();
+    await expect(page.locator("#recognitionNext")).toBeHidden();
     await expect(page.locator("#recognitionFeedback")).toContainText("固定扫描");
     await expect(page.locator("#recognitionFeedback")).toContainText("决定证据在");
     await expect(page.locator("#recognitionFeedback")).toContainText("下次看到");
     await expect(page.locator("#recognitionFeedback")).toContainText("立即做");
+    await expect(page.locator("[data-recognition-point]")).toHaveCount(4);
+    const pointId = await page.locator("[data-open-recognition-point]").getAttribute("data-open-recognition-point");
+    await page.locator(`[data-recognition-point="${pointId}"]`).click();
+    await expect(page.locator("[data-recognition-point-result]")).toContainText("细分考点正确");
     await expect(page.locator("#recognitionNext")).toBeVisible();
   });
 
