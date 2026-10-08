@@ -4,7 +4,7 @@
   const catalogue = (window.READING_COLLOCATIONS && window.READING_COLLOCATIONS.items) || [];
   const tierRules = window.READING_COLLOCATION_TIERS;
   const catalogueById = new Map(catalogue.map((item) => [item.id, item]));
-  const SESSION_KEY = "pte-reading-collocation-session-v2";
+  const SESSION_KEY = "pte-reading-collocation-session-v3";
 
   const el = {};
   [
@@ -33,9 +33,10 @@
     el.usefulTierCount.textContent = `${tierCounts.useful}条`;
     el.referenceTierCount.textContent = `${tierCounts.reference}条`;
     el.allTierCount.textContent = `${tierCounts.all}条`;
-    el.rangeStart.max = String(catalogue.length);
-    el.rangeEnd.max = String(catalogue.length);
-    el.rangeEnd.value = String(Math.min(100, catalogue.length));
+    const activeCount = tierCounts[selectedTier];
+    el.rangeStart.max = String(activeCount);
+    el.rangeEnd.max = String(activeCount);
+    el.rangeEnd.value = String(Math.min(100, activeCount));
     bindEvents();
     renderTierPicker();
     if (!session) showRangeSummary();
@@ -85,28 +86,28 @@
   }
 
   function applyRangeSize(size) {
-    const start = clampNumber(el.rangeStart.value, 1, catalogue.length) || 1;
+    const activeCount = tierItems().length;
+    const start = clampNumber(el.rangeStart.value, 1, activeCount) || 1;
     el.rangeStart.value = String(start);
-    el.rangeEnd.value = String(Math.min(catalogue.length, start + size - 1));
+    el.rangeEnd.value = String(Math.min(activeCount, start + size - 1));
     showRangeSummary();
   }
 
   function applyExactRange(start, end, label) {
-    el.rangeStart.value = String(clampNumber(start, 1, catalogue.length));
-    el.rangeEnd.value = String(clampNumber(end, 1, catalogue.length));
+    const activeCount = tierItems().length;
+    el.rangeStart.value = String(clampNumber(start, 1, activeCount));
+    el.rangeEnd.value = String(clampNumber(end, 1, activeCount));
     showRangeSummary(label);
   }
 
   function selectTier(tier) {
     if (!tierRules.LABELS[tier] || session) return;
     selectedTier = tier;
-    if (tier === "reference") {
-      el.rangeStart.value = "516";
-      el.rangeEnd.value = String(Math.min(565, catalogue.length));
-    } else {
-      el.rangeStart.value = "1";
-      el.rangeEnd.value = String(Math.min(100, catalogue.length));
-    }
+    const activeCount = tierCounts[tier];
+    el.rangeStart.max = String(activeCount);
+    el.rangeEnd.max = String(activeCount);
+    el.rangeStart.value = "1";
+    el.rangeEnd.value = String(Math.min(100, activeCount));
     renderTierPicker();
     showRangeSummary();
   }
@@ -117,36 +118,40 @@
     });
   }
 
+  function tierItems(tier = selectedTier) {
+    return tier === "all" ? catalogue : catalogue.filter((item) => tierRules.classify(item) === tier);
+  }
+
   function itemsInRange(start, end, tier = selectedTier) {
-    return catalogue.filter((item) => {
-      const number = Number(item.id.slice(1));
-      return number >= start && number <= end && (tier === "all" || tierRules.classify(item) === tier);
-    });
+    return tierItems(tier).slice(start - 1, end);
   }
 
   function showRangeSummary(prefix) {
-    const start = clampNumber(el.rangeStart.value, 1, catalogue.length) || 1;
-    const end = clampNumber(el.rangeEnd.value, 1, catalogue.length) || catalogue.length;
-    const count = start <= end ? itemsInRange(start, end).length : 0;
+    const activeCount = tierItems().length;
+    const start = clampNumber(el.rangeStart.value, 1, activeCount) || 1;
+    const end = clampNumber(el.rangeEnd.value, 1, activeCount) || activeCount;
+    const selected = start <= end ? itemsInRange(start, end) : [];
     const lead = prefix ? `${prefix}：` : "";
-    showRangeMessage(`${lead}${formatId(start)}—${formatId(end)} 中有 ${count} 条“${tierRules.LABELS[selectedTier]}”卡片。`, count === 0);
+    const originalIds = selected.length ? `；原编号 ${selected[0].id}—${selected[selected.length - 1].id}` : "";
+    showRangeMessage(`${lead}“${tierRules.LABELS[selectedTier]}”第 ${start}—${end} 条，共 ${selected.length} 张${originalIds}。`, selected.length === 0);
   }
 
   function startSession() {
     const start = Number(el.rangeStart.value);
     const end = Number(el.rangeEnd.value);
-    if (!Number.isInteger(start) || !Number.isInteger(end) || start < 1 || end > catalogue.length || start > end) {
-      showRangeMessage(`请输入 1—${catalogue.length} 内的有效范围，且起始编号不能大于结束编号。`, true);
+    const activeCount = tierItems().length;
+    if (!Number.isInteger(start) || !Number.isInteger(end) || start < 1 || end > activeCount || start > end) {
+      showRangeMessage(`请输入 1—${activeCount} 内的有效范围，且起始位置不能大于结束位置。`, true);
       return;
     }
 
     const selectedIds = itemsInRange(start, end).map((item) => item.id);
     if (!selectedIds.length) {
-      showRangeMessage(`这个编号范围内没有“${tierRules.LABELS[selectedTier]}”卡片，请扩大范围或更换层级。`, true);
+      showRangeMessage(`当前层的这个范围没有卡片，请调整起止位置。`, true);
       return;
     }
     session = {
-      version: 2,
+      version: 3,
       tier: selectedTier,
       start,
       end,
@@ -216,8 +221,11 @@
   function resetSession() {
     session = null;
     sessionStorage.removeItem(SESSION_KEY);
-    el.rangeStart.value = selectedTier === "reference" ? "516" : "1";
-    el.rangeEnd.value = selectedTier === "reference" ? String(Math.min(565, catalogue.length)) : String(Math.min(100, catalogue.length));
+    const activeCount = tierItems().length;
+    el.rangeStart.max = String(activeCount);
+    el.rangeEnd.max = String(activeCount);
+    el.rangeStart.value = "1";
+    el.rangeEnd.value = String(Math.min(100, activeCount));
     renderTierPicker();
     showRangeSummary();
     renderSession();
@@ -315,7 +323,7 @@
   }
 
   function rangeLabel() {
-    return `${tierRules.LABELS[session.tier]} · ${formatId(session.start)}—${formatId(session.end)} · ${session.selectedIds.length} 条`;
+    return `${tierRules.LABELS[session.tier]} · 第${session.start}—${session.end}条 · ${session.selectedIds.length} 张`;
   }
 
   function formatId(number) {
@@ -352,7 +360,7 @@
   function loadSession() {
     try {
       const parsed = JSON.parse(sessionStorage.getItem(SESSION_KEY));
-      if (!parsed || parsed.version !== 2 || !tierRules.LABELS[parsed.tier] || !Array.isArray(parsed.selectedIds)) return null;
+      if (!parsed || parsed.version !== 3 || !tierRules.LABELS[parsed.tier] || !Array.isArray(parsed.selectedIds)) return null;
       if (!parsed.selectedIds.every((id) => catalogueById.has(id))) return null;
       return parsed;
     } catch (_) {

@@ -270,7 +270,7 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px v
 .range-fields { display: flex; align-items: end; gap: 12px; flex-wrap: wrap; }
 .range-fields label { position: relative; display: grid; gap: 7px; color: var(--muted); font-size: 12px; font-weight: 850; }
 .range-fields label span { position: absolute; left: 12px; bottom: 11px; color: var(--accent-dark); font-weight: 900; }
-.range-fields input { width: 150px; height: 40px; padding: 0 12px 0 30px; }
+.range-fields input { width: 150px; height: 40px; padding: 0 12px; }
 .range-fields .primary-button { height: 40px; }
 .range-presets { display: flex; gap: 8px; margin-top: 16px; }
 .range-presets button {

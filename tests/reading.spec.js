@@ -169,12 +169,13 @@ test.describe("Reading module", () => {
     await expect(page.locator("#usefulTierCount")).toHaveText("306条");
     await expect(page.locator("#referenceTierCount")).toHaveText("168条");
     await expect(page.locator('[data-collocation-tier="must"]')).toHaveClass(/is-active/);
+    await expect(page.locator("#rangeMessage")).toContainText("第 1—100 条，共 100 张");
 
     await page.locator('[data-collocation-tier="useful"]').click();
     await page.locator("#rangeStart").fill("10");
     await page.locator("#rangeEnd").fill("11");
     await page.getByRole("button", { name: "生成学习卡片" }).click();
-    await expect(page.locator("#studyRange")).toContainText("结构扩展 · K010—K011 · 2 条");
+    await expect(page.locator("#studyRange")).toContainText("结构扩展 · 第10—11条 · 2 张");
   });
 
   test("collocation range studies each card once remembered and then tests the whole range", async ({ page }) => {

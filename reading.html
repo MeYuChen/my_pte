@@ -110,17 +110,17 @@
               <button type="button" data-collocation-tier="all"><strong>全部</strong><span id="allTierCount">—</span><small>仅用于完整检索，不建议直接背完</small></button>
             </div>
             <div class="range-fields">
-              <label>起始编号 <span>K</span><input id="rangeStart" type="number" min="1" value="1" inputmode="numeric"></label>
-              <label>结束编号 <span>K</span><input id="rangeEnd" type="number" min="1" value="100" inputmode="numeric"></label>
+              <label>当前层起始 <input id="rangeStart" type="number" min="1" value="1" inputmode="numeric"></label>
+              <label>当前层结束 <input id="rangeEnd" type="number" min="1" value="100" inputmode="numeric"></label>
               <button class="primary-button" id="startCollocationSession" type="button">生成学习卡片</button>
             </div>
             <div class="range-presets" aria-label="推荐范围">
-              <button type="button" data-range-size="20">编号向后20</button>
-              <button type="button" data-range-start="1" data-range-end="100">K001—K100</button>
-              <button type="button" data-range-start="471" data-range-end="515">短语动词K471—K515</button>
+              <button type="button" data-range-size="20">从当前起20条</button>
+              <button type="button" data-range-start="1" data-range-end="50">本层前50条</button>
+              <button type="button" data-range-start="1" data-range-end="100">本层前100条</button>
               <button type="button" data-range-start="1" data-range-end="683">当前层全部</button>
             </div>
-            <p class="range-message" id="rangeMessage">默认“必背”。先选编号范围，系统只抽取该范围内属于当前层的卡片。</p>
+            <p class="range-message" id="rangeMessage">范围按当前层计数：选择1—100就是100张；卡片上的原K编号仅用于错题反查。</p>
           </section>
 
           <section class="deck-panel" id="collocationStudy" hidden>
