@@ -70,9 +70,9 @@
 
   function renderIdle() {
     el.recognitionProgress.textContent = "尚未开始";
-    el.recognitionAccuracy.textContent = "目标：先判断路线";
+    el.recognitionAccuracy.textContent = "目标：定位决定证据";
     el.recognitionSource.textContent = "随机抽取代表题中的空";
-    el.recognitionSnippet.textContent = "点击“开始20空”，只判断这个空首先应该走形、搭、逻还是义。";
+    el.recognitionSnippet.textContent = "点击“开始20空”。按形→搭→逻→义扫描，判断答案在哪一层被真正锁定。";
     el.recognitionOptions.replaceChildren();
     el.recognitionRoutes.replaceChildren(...routeButtons());
     el.recognitionRoutes.querySelectorAll("button").forEach((button) => { button.disabled = true; });
@@ -93,8 +93,8 @@
     el.recognitionNext.hidden = true;
     el.recognitionProgress.textContent = `第 ${session.index + 1} / ${session.items.length} 空`;
     el.recognitionAccuracy.textContent = session.answered
-      ? `路线判断 ${session.correct} / ${session.answered}`
-      : "目标：先判断路线";
+      ? `证据定位 ${session.correct} / ${session.answered}`
+      : "目标：定位决定证据";
     el.recognitionSource.textContent = `${item.question.type} · ${item.bid}`;
     el.recognitionSnippet.textContent = buildSnippet(item.question, item.index);
     renderOptions(item);
@@ -146,16 +146,17 @@
     const method = methods.get(item.pointId);
     el.recognitionFeedback.className = `recognition-feedback ${correct ? "is-correct" : "is-wrong"}`;
     el.recognitionFeedback.innerHTML = `
-      <p class="eyebrow">${correct ? "路线判断正确" : "先后顺序需要调整"}</p>
-      <h3>先走“${escapeHtml(route.label)}” · ${escapeHtml(chapter.name)}</h3>
-      <p><strong>识别信号：</strong>${escapeHtml(chapter.trigger)}</p>
-      <p><strong>立即动作：</strong>${escapeHtml(chapter.action)}</p>
+      <p class="eyebrow">${correct ? "决定证据定位正确" : "决定证据需要重判"}</p>
+      <h3>决定证据在“${escapeHtml(route.label)}” · ${escapeHtml(chapter.name)}</h3>
+      <p><strong>固定扫描：</strong>形 → 搭 → 逻 → 义；本题在“${escapeHtml(route.label)}”首次出现足以锁定答案的证据。</p>
       <p><strong>本空答案：</strong>${escapeHtml(item.answer)}</p>
-      ${item.reason ? `<p><strong>决定证据：</strong>${escapeHtml(item.reason)}</p>` : ""}
+      ${item.reason ? `<p><strong>为什么：</strong>${escapeHtml(item.reason)}</p>` : ""}
+      <p><strong>下次看到：</strong>${escapeHtml(chapter.trigger)}</p>
+      <p><strong>立即做：</strong>${escapeHtml(chapter.action)}</p>
       <button class="secondary-button" type="button" data-open-recognition-point="${escapeHtml(item.pointId)}">查看 ${escapeHtml(item.pointId)} · ${escapeHtml(method?.name || "细分考点")}</button>`;
     el.recognitionFeedback.hidden = false;
     el.recognitionNext.hidden = false;
-    el.recognitionAccuracy.textContent = `路线判断 ${session.correct} / ${session.answered}`;
+    el.recognitionAccuracy.textContent = `证据定位 ${session.correct} / ${session.answered}`;
   }
 
   function nextItem() {
@@ -170,8 +171,8 @@
     el.recognitionAccuracy.textContent = `${session.correct} / ${session.answered} · ${accuracy}%`;
     el.recognitionSource.textContent = "混合识别结果";
     el.recognitionSnippet.textContent = accuracy >= 90
-      ? "路线识别已经形成基础反应，可以进入完整文章混合训练。"
-      : "先复习判断错误的课程，再开始下一轮20空。";
+      ? "决定证据定位已经形成基础反应，可以进入完整文章混合训练。"
+      : "先复习定位错误的课程，再开始下一轮20空。";
     el.recognitionOptions.replaceChildren();
     el.recognitionRoutes.replaceChildren();
     el.recognitionFeedback.hidden = true;

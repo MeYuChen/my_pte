@@ -49,6 +49,9 @@ data.questions.forEach((question) => {
 assert.equal(explanations["RW539:2"].primary_point, "D04", "contrast, not tense alone, decides RW539:2 polarity");
 assert.equal(explanations["RW539:6"].primary_point, "S01", "semantic role decides RW539:6");
 assert.equal(explanations["RW539:7"].primary_point, "S03", "negative direction decides RW539:7");
+assert.match(explanations["RW160:1"].reason, /四个候选.*形式不能区分/, "RW160:1 should record the form scan before the decisive collocation");
+assert.doesNotMatch(explanations["RW160:1"].reason, /appears to.*动词原形/, "RW160:1 should not invent an absolute appears-to rule");
+assert.ok(explanations["RW160:1"].secondary_points.includes("G03"), "RW160:1 should link the singular subject scan");
 const methodIds = new Set(data.methods.map((method) => method.id));
 assert.equal(curriculum.chapters.length, 12, "learner view should merge the catalogue into twelve courses");
 const curriculumPointIds = curriculum.chapters.flatMap((chapter) => chapter.pointIds);
@@ -100,6 +103,7 @@ assert.equal(core.formatDuration(65), "01:05");
 assert.ok(core.questionMatchesPoint(sample, sample.blank_map[0].primary_point));
 
 const html = fs.readFileSync(path.join(root, "reading.html"), "utf8");
+const recognitionJs = fs.readFileSync(path.join(root, "reading-recognition.js"), "utf8");
 assert.match(html, /data-tab="point">识别/);
 assert.match(html, /data-tab="method">解法/);
 assert.match(html, /data-tab="tips">避坑/);
@@ -114,5 +118,7 @@ assert.match(html, /id="questionTimer"/);
 assert.match(html, /id="resultPanel"/);
 assert.match(html, /id="returnToReview"/);
 assert.doesNotMatch(html, /<dialog/);
+assert.doesNotMatch(recognitionJs, /先走“/, "recognition feedback should distinguish scan order from decisive evidence");
+assert.match(recognitionJs, /决定证据在/, "recognition feedback should name the decisive evidence layer");
 
 console.log("Reading module tests passed");

@@ -40,9 +40,9 @@ window.READING_EXPLANATIONS = {
     secondary_points: ["P02"]
   },
   "RW160:1": {
-    reason: "固定看 opens to the public，意思是“向公众开放”。closes 与开放方向相反；appears to 表“似乎”，后面应接动词原形；equals to 既不合语义，也不是这里的自然搭配。",
+    reason: "先看形：Bridge是单数主语，四个候选也都是三单动词，形式不能区分。再看搭配和情境：open to the public表示“向公众开放”，与after five years of construction的建成开放场景吻合。closes方向相反；appears to the public在其他语境可成立，但不表示正式开放；equal通常直接接宾语，不用equals to。",
     primary_point: "C04",
-    secondary_points: ["G02", "S01"]
+    secondary_points: ["G03", "S01"]
   },
   "RW160:2": {
     reason: "opening day 是一个具体日期，表达“在开幕日”用 On。During 后面要接一段时期；Since 表“自从”并要求延续关系；When 不能直接充当介词接 opening day。",

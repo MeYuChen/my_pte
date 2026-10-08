@@ -1,4 +1,4 @@
-const CACHE_NAME = "pte-we-static-v44-collocation-translations";
+const CACHE_NAME = "pte-we-static-v45-recognition-evidence";
 const IMAGE_CACHE_NAME = "pte-we-images-v8";
 const SST_IMAGE_ASSETS = Array.from({ length: 54 }, (_, index) => `./images/sst/S${String(index + 1).padStart(3, "0")}.webp`);
 const STATIC_ASSETS = [

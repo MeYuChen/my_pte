@@ -71,8 +71,8 @@
           <header class="module-heading recognition-heading">
             <div>
               <p class="eyebrow">混合考点 · 不提前提示章节</p>
-              <h2>先认路线，再做答案</h2>
-              <p>每轮随机20空。先判断这个空应该优先走“形、搭、逻、义”哪条路线，再看决定证据和细分考点。</p>
+              <h2>定位决定性证据</h2>
+              <p>每轮随机20空。扫描顺序始终是“形→搭→逻→义”；你要判断的是哪一层最先出现足以锁定答案的证据。</p>
             </div>
             <div class="recognition-actions">
               <button class="primary-button" id="recognitionStart" type="button">开始20空</button>
@@ -82,10 +82,10 @@
           <section class="recognition-card">
             <div class="session-bar recognition-status">
               <div><span>进度</span><strong id="recognitionProgress">尚未开始</strong></div>
-              <div><span>正确率</span><strong id="recognitionAccuracy">目标：先判断路线</strong></div>
+              <div><span>正确率</span><strong id="recognitionAccuracy">目标：定位决定证据</strong></div>
               <div><span>来源</span><strong id="recognitionSource">随机抽取代表题中的空</strong></div>
             </div>
-            <p class="recognition-snippet" id="recognitionSnippet">点击“开始20空”，只判断这个空首先应该走形、搭、逻还是义。</p>
+            <p class="recognition-snippet" id="recognitionSnippet">点击“开始20空”。按形→搭→逻→义扫描，判断答案在哪一层被真正锁定。</p>
             <div class="recognition-options" id="recognitionOptions"></div>
             <div class="recognition-routes" id="recognitionRoutes"></div>
             <div class="recognition-feedback" id="recognitionFeedback" hidden></div>

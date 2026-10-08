@@ -154,8 +154,10 @@ test.describe("Reading module", () => {
     });
     await page.locator(`#recognitionRoutes [data-route-id="${correctRoute}"]`).click();
     await expect(page.locator("#recognitionFeedback")).toBeVisible();
-    await expect(page.locator("#recognitionFeedback")).toContainText("识别信号");
-    await expect(page.locator("#recognitionFeedback")).toContainText("立即动作");
+    await expect(page.locator("#recognitionFeedback")).toContainText("固定扫描");
+    await expect(page.locator("#recognitionFeedback")).toContainText("决定证据在");
+    await expect(page.locator("#recognitionFeedback")).toContainText("下次看到");
+    await expect(page.locator("#recognitionFeedback")).toContainText("立即做");
     await expect(page.locator("#recognitionNext")).toBeVisible();
   });
 
