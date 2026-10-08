@@ -1,4 +1,4 @@
-const CACHE_NAME = "pte-we-static-v45-recognition-evidence";
+const CACHE_NAME = "pte-we-static-v46-reading-variants";
 const IMAGE_CACHE_NAME = "pte-we-images-v8";
 const SST_IMAGE_ASSETS = Array.from({ length: 54 }, (_, index) => `./images/sst/S${String(index + 1).padStart(3, "0")}.webp`);
 const STATIC_ASSETS = [
@@ -14,6 +14,7 @@ const STATIC_ASSETS = [
   "./reading.css",
   "./reading-core.js",
   "./reading-data.js",
+  "./reading-variants.js",
   "./reading-method-guides.js",
   "./reading-explanations.js",
   "./reading-collocations.js",

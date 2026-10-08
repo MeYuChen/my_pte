@@ -21,6 +21,7 @@ test.describe("Reading module", () => {
     await expect(page.locator(".memory-rule-card")).toContainText("空格位置先定词性");
     await page.getByRole("button", { name: "避坑", exact: true }).click();
     await expect(page.locator("#tipsPanel")).toContainText("跟着做一遍");
+    await expect(page.locator("#tipsPanel .example-context").first()).toContainText("原句");
     await expect(page.locator("#tipsPanel")).not.toContainText("给定答案不自动等于唯一答案");
 
     await page.getByRole("button", { name: "练习", exact: true }).click();
@@ -164,6 +165,23 @@ test.describe("Reading module", () => {
     const progress = await page.evaluate(() => JSON.parse(localStorage.getItem("pte-reading-progress-v1")).points.G01);
     expect(progress.total).toBe(target.targetIndices.length);
     expect(progress.correct).toBe(0);
+  });
+
+  test("low-frequency point practice includes labeled transfer variants", async ({ page }) => {
+    await page.goto("./reading.html#G01");
+    await page.getByRole("button", { name: "练习", exact: true }).click();
+    await expect(page.locator("#questionMeta")).toContainText("专项第 1 /");
+    await expect(page.locator("#questionMeta")).toContainText("题");
+    const variantCount = await page.evaluate(() => window.READING_VARIANTS.questions.filter((question) =>
+      question.blank_map.some((blank) => blank.primary_point === "G01")
+    ).length);
+    const practiceCount = await page.evaluate(() => {
+      const pointId = location.hash.slice(1);
+      return [...window.READING_DATA.questions, ...window.READING_VARIANTS.questions]
+        .filter((question) => window.ReadingCore.questionMatchesPoint(question, pointId)).length;
+    });
+    expect(variantCount).toBe(2);
+    expect(practiceCount).toBeGreaterThanOrEqual(variantCount);
   });
 
   test("exam guide reduces the point catalogue to four live decision routes", async ({ page }) => {

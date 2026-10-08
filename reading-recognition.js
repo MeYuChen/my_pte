@@ -2,6 +2,7 @@
   "use strict";
 
   const data = window.READING_DATA;
+  const allQuestions = [...(data?.questions || []), ...(window.READING_VARIANTS?.questions || [])];
   const curriculum = window.READING_CURRICULUM;
   const explanations = window.READING_EXPLANATIONS || {};
   if (!data || !curriculum) return;
@@ -38,7 +39,7 @@
 
   function buildPool() {
     const items = [];
-    data.questions.forEach((question) => {
+    allQuestions.forEach((question) => {
       question.answers.forEach((answer, index) => {
         const original = question.blank_map[index] || {};
         const override = explanations[original.bid] || {};

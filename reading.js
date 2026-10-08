@@ -5,6 +5,8 @@
   const core = window.ReadingCore;
   const curriculum = window.READING_CURRICULUM;
   if (!data || !core || !curriculum) throw new Error("Reading data failed to load");
+  const variantQuestions = window.READING_VARIANTS?.questions || [];
+  const practiceCatalogue = [...data.questions, ...variantQuestions];
 
   const STORAGE_KEY = "pte-reading-progress-v1";
   const methodsById = new Map(data.methods.map((method) => [method.id, method]));
@@ -46,7 +48,7 @@
   init();
 
   function init() {
-    el.dataSummary.textContent = `${curriculum.chapters.length} 门课 · ${data.stats.pointCount} 个细分考点 · ${data.stats.questionCount} 题 · ${data.stats.blankCount} 空`;
+    el.dataSummary.textContent = `${curriculum.chapters.length} 门课 · ${data.stats.pointCount} 个细分考点 · ${data.stats.questionCount} 题 · ${data.stats.blankCount} 空 · ${variantQuestions.length} 道变式题`;
     bindEvents();
     selectPoint(state.pointId, false);
   }
@@ -91,7 +93,7 @@
     if (!methodsById.has(pointId)) return;
     stopTimer();
     state.pointId = pointId;
-    state.practiceQuestions = data.questions.filter((question) => core.questionMatchesPoint(question, pointId));
+    state.practiceQuestions = practiceCatalogue.filter((question) => core.questionMatchesPoint(question, pointId));
     state.questionIndex = 0;
     state.targetBlankIndices = [];
     state.lastResult = null;
@@ -234,9 +236,10 @@
     const progress = state.progress.points[state.pointId] || { attempts: 0, correct: 0, total: 0 };
     const accuracy = progress.total ? `${Math.round(progress.correct / progress.total * 100)}% 正确` : "尚未练习";
     const representativePrimaryCount = data.questions.reduce((count, question) => count + (question.blank_map || []).filter((blank) => blank.primary_point === method.id).length, 0);
+    const variantPrimaryCount = variantQuestions.reduce((count, question) => count + (question.blank_map || []).filter((blank) => blank.primary_point === method.id).length, 0);
     el.pointModule.textContent = `${chapter.id} · ${chapter.stage} · ${chapter.name}`;
     el.pointTitle.textContent = `${method.id} · ${method.name}`;
-    el.pointFrequency.textContent = `全库主考 ${method.primary_count} · 代表题 ${representativePrimaryCount} · 关联 ${method.all_link_count}`;
+    el.pointFrequency.textContent = `全库主考 ${method.primary_count} · 代表题 ${representativePrimaryCount} · 变式题 ${variantPrimaryCount} · 关联 ${method.all_link_count}`;
     el.pointProgress.textContent = progress.attempts ? `${progress.attempts} 次练习 · ${accuracy}` : accuracy;
     el.pointPanel.innerHTML = `
       <div class="signal-grid">
@@ -252,6 +255,7 @@
         <div class="info-grid">
           <div class="info-box"><span>全库主考频次</span><strong>${method.primary_count} 空</strong></div>
           <div class="info-box"><span>当前代表题主考</span><strong>${representativePrimaryCount} 空</strong></div>
+          <div class="info-box"><span>当前变式题主考</span><strong>${variantPrimaryCount} 空</strong></div>
           <div class="info-box"><span>含关联考点</span><strong>${method.all_link_count} 空</strong></div>
           <div class="info-box"><span>专项练习</span><strong>${state.practiceQuestions.length} 题</strong></div>
         </div>
@@ -279,7 +283,30 @@
 
   function renderExamples(examples, kind = "normal") {
     if (!examples || !examples.length) return "<p>暂无代表例。</p>";
-    return examples.map((item) => `<div class="example"><strong>${escapeHtml(item.bid)} · ${escapeHtml(item.answer)}</strong><br>${escapeHtml(learnerExampleEvidence(item, kind))}</div>`).join("");
+    return examples.map((item) => `<div class="example"><strong>${escapeHtml(item.bid)} · ${escapeHtml(item.answer)}</strong>${renderExampleContext(item)}<br>${escapeHtml(learnerExampleEvidence(item, kind))}</div>`).join("");
+  }
+
+  function renderExampleContext(item) {
+    const [source, rawIndex] = String(item.bid || "").split(":");
+    const targetIndex = Number(rawIndex) - 1;
+    const question = practiceCatalogue.find((candidate) => candidate.source === source);
+    if (!question || !Number.isInteger(targetIndex) || targetIndex < 0) return "";
+    const marker = "\uE000";
+    let blankIndex = 0;
+    const filled = question.passage.replace(/【[^】]*】/g, () => {
+      const value = blankIndex === targetIndex ? marker : (question.answers[blankIndex] || "___");
+      blankIndex += 1;
+      return value;
+    });
+    const markerIndex = filled.indexOf(marker);
+    if (markerIndex < 0) return "";
+    const sentenceStart = Math.max(filled.lastIndexOf(".", markerIndex - 1), filled.lastIndexOf("?", markerIndex - 1), filled.lastIndexOf("!", markerIndex - 1)) + 1;
+    const endings = [filled.indexOf(".", markerIndex), filled.indexOf("?", markerIndex), filled.indexOf("!", markerIndex)].filter((index) => index >= 0);
+    const sentenceEnd = endings.length ? Math.min(...endings) + 1 : filled.length;
+    const sentence = filled.slice(sentenceStart, sentenceEnd).trim();
+    const [before, after] = sentence.split(marker);
+    const options = question.type === "RW" ? question.options?.[targetIndex] : "答案池回忆训练（R题没有原始干扰项）";
+    return `<div class="example-context"><span>原句</span><p>${escapeHtml(before)}<mark>${escapeHtml(item.answer)}</mark>${escapeHtml(after || "")}</p><small>${escapeHtml(options || "")}</small></div>`;
   }
 
   function learnerExampleEvidence(item, kind) {
@@ -322,7 +349,7 @@
       return;
     }
     state.targetBlankIndices = core.pointBlankIndices(question, state.pointId);
-    el.questionSource.textContent = `${question.type} · ${question.source}`;
+    el.questionSource.textContent = `${question.type} · ${question.source}${question.source.startsWith("V-") ? " · 变式训练" : ""}`;
     el.questionTitle.textContent = question.title || question.source;
     const practiceMode = question.type === "R" ? "本题答案池选择" : "原始选项选择";
     el.questionMeta.textContent = `专项第 ${state.questionIndex + 1} / ${state.practiceQuestions.length} 题 · ${question.answers.length} 空 · ${practiceMode}`;

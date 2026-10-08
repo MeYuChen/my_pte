@@ -7,6 +7,7 @@ const root = path.resolve(__dirname, "..");
 const core = require(path.join(root, "reading-core.js"));
 const context = { window: {} };
 vm.runInNewContext(fs.readFileSync(path.join(root, "reading-data.js"), "utf8"), context);
+vm.runInNewContext(fs.readFileSync(path.join(root, "reading-variants.js"), "utf8"), context);
 vm.runInNewContext(fs.readFileSync(path.join(root, "reading-method-guides.js"), "utf8"), context);
 vm.runInNewContext(fs.readFileSync(path.join(root, "reading-explanations.js"), "utf8"), context);
 vm.runInNewContext(fs.readFileSync(path.join(root, "reading-curriculum.js"), "utf8"), context);
@@ -15,6 +16,7 @@ vm.runInNewContext(fs.readFileSync(path.join(root, "reading-collocation-examples
 vm.runInNewContext(fs.readFileSync(path.join(root, "reading-collocation-example-translations.js"), "utf8"), context);
 vm.runInNewContext(fs.readFileSync(path.join(root, "reading-collocation-tiers.js"), "utf8"), context);
 const data = context.window.READING_DATA;
+const variants = context.window.READING_VARIANTS.questions;
 const guides = context.window.READING_METHOD_GUIDES;
 const explanations = context.window.READING_EXPLANATIONS;
 const curriculum = context.window.READING_CURRICULUM;
@@ -72,6 +74,13 @@ data.methods.filter((method) => !["S02", "C08"].includes(method.id)).forEach((me
 });
 assert.equal(data.questions.length, 54, "should include all representative questions");
 assert.equal(data.questions.reduce((sum, question) => sum + question.answers.length, 0), 295, "blank total should match audit");
+assert.equal(variants.length, 22, "low-frequency points should have 22 transfer variants");
+assert.ok(variants.every((question) => question.source.startsWith("V-")), "variants should be visibly labeled");
+assert.equal(new Set(variants.flatMap((question) => question.blank_map.map((blank) => blank.primary_point))).size, 11, "variants should cover the low-frequency point set");
+variants.forEach((question) => {
+  assert.equal(question.answers.length, question.blank_map.length, `${question.source} map should cover every variant blank`);
+  question.answers.forEach((answer, index) => assert.equal(question.blank_map[index].answer, answer, `${question.source}:${index + 1} answer/map`));
+});
 assert.ok(data.questions.some((question) => question.type === "RW"), "should contain RW option questions");
 assert.ok(data.questions.some((question) => question.type === "R"), "should contain R recall questions");
 
@@ -123,6 +132,7 @@ assert.match(html, /id="questionTimer"/);
 assert.match(html, /id="resultPanel"/);
 assert.match(html, /id="returnToReview"/);
 assert.match(html, /data-point-filter="weak"/);
+assert.match(html, /reading-variants\.js/);
 assert.doesNotMatch(html, /<dialog/);
 assert.doesNotMatch(recognitionJs, /先走“/, "recognition feedback should distinguish scan order from decisive evidence");
 assert.match(recognitionJs, /决定证据在/, "recognition feedback should name the decisive evidence layer");

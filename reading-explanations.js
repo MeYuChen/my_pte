@@ -722,6 +722,20 @@ window.READING_EXPLANATIONS = {
 
 (function addReviewedRecallExplanations() {
   const overrides = {
+    "R285:1": { reason: "accelerate cash flow 表示“加快现金回流”，accelerate 后直接接 cash flow 作宾语；上下文目标是更快收回欠款。", primary_point: "S02", secondary_points: ["S01", "C01"] },
+    "R285:2": { reason: "by reducing debtor days 用 by + 动名词说明实现方法：通过缩短应收账款拖欠天数来加快回款。by 后的动作形式是 reducing。", primary_point: "G06", secondary_points: ["C04", "S05"] },
+    "R285:5": { reason: "This is OK 回指前面“先联系债务人、了解争议或财务问题”的做法，表示承认这一步合理；but 随后转向更强调回收金额的观点。", primary_point: "D01", secondary_points: ["D04", "D05"] },
+    "R397:6": { reason: "food for thought 是固定词块，表示“值得思考的事情”；前文列出昆虫清理垃圾、压低鼠群，最后邀请读者思考这些作用。", primary_point: "C08", secondary_points: ["S06", "D05"] },
+    "R425:1": { reason: "After all 引出“按常理应该知道答案”的补充理由：我们已经探索地球、旅行并拥有全球组织；它不是时间或因果词。", primary_point: "D05", secondary_points: ["C08", "D03"] },
+    "R425:2": { reason: "so we should really know how many countries there are 中 should 表示按已有条件推断出的合理预期；后文 However 说明现实并不简单。", primary_point: "S07", secondary_points: ["D04", "G04"] },
+    "R374:5": { reason: "during this period 回指儿子生病并在家休息的这段时间，during 后接名词短语 period，说明课程传递发生的时间范围。", primary_point: "P01", secondary_points: ["D02", "Q03"] },
+    "R408:4": { reason: "stick out from the backbone 表示刺从脊柱“突出”；out 是短语动词 stick out 的小词，from 标出突出的起点。", primary_point: "C07", secondary_points: ["P01", "S01"] },
+    "R408:5": { reason: "crack the egg open 是 make/crack + 宾语 + 结果补语结构，open 说明蛋被敲裂后达到打开的结果。", primary_point: "G11", secondary_points: ["S05", "C07"] },
+    "R380:4": { reason: "This camouflage mechanism 是单数主语，所以用 works；when 从句说明机制在昆虫保持静止这一条件下才有效。", primary_point: "G03", secondary_points: ["D06", "S05"] },
+    "R215:3": { reason: "however 插在 does not tell us 与 why 从句之间，两侧逗号标出插入性的转折副词；它说明旧理论无法解释性别差异。", primary_point: "D04", secondary_points: ["D05"] },
+    "R215:4": { reason: "What’s more 表递进，补充第二个反证：即使假设飞蛾需要导航，多数时候也并没有迁徙。", primary_point: "D05", secondary_points: ["D04", "Q02"] },
+    "R215:5": { reason: "Yet 把“需要迁徙才能导航”的推论与“多数时候并未迁徙”的事实对照起来，属于转折而不是原因或举例。", primary_point: "D04", secondary_points: ["S03", "Q02"] },
+    "R356:3": { reason: "such as control charts 中 such as 引出 control charts 这一具体例项，说明统计控制工具包括哪些东西。", primary_point: "D06", secondary_points: ["C08", "S04"] },
     "R521:1": { reason: "write a book a year through his late twenties 表示这一习惯贯穿二十多岁后期，through 标出持续覆盖的时期。", primary_point: "P01", secondary_points: ["D05"] },
     "R521:2": { reason: "at the age of twenty-one 是表达“在21岁时”的固定词块，age 与具体年龄构成完整结构。", primary_point: "C08", secondary_points: ["Q03"] },
     "R521:3": { reason: "the importance of precocity 表示“早熟的重要性”，后文 iron law 说明早熟在抒情诗领域被高度强调。", primary_point: "C06", secondary_points: ["D02"] },
