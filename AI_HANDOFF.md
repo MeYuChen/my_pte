@@ -24,7 +24,7 @@
 
 ## Reading 模块（feature/reading-module）
 
-Reading 是与 WE 平行的独立页面：`reading.html`。数据位于 `reading-data.js`，包含 44 个审定考点和 54 道代表题（295 空）；`reading-core.js` 提供可独立测试的判分、计时格式和考点匹配函数。每个考点有“考点 / 解法 / 技巧 / 练习”四页，提交后按空显示主考点、关联考点及题内证据。进度保存在 `pte-reading-progress-v1`。
+Reading 是与 WE 平行的独立页面：`reading.html`。学习界面用 `reading-curriculum.js` 把 44 个审定细分考点组织成 12 门课程，按“形 → 搭 → 逻 → 义”学习；`reading-data.js` 包含 54 道代表题（295 空），`reading-variants.js` 补充 22 道低频细点变式题。`reading-core.js` 提供可独立测试的判分、计时格式和考点匹配函数。页面包含课程学习、识别训练、固定搭配和逐题练习，提交后按空显示主考点、关联考点及题内证据。进度保存在 `pte-reading-progress-v1`。
 
 R 原始材料没有机构干扰词池，因此把本题全部正确答案组成下拉答案池，不虚构额外选项，也不要求学生手打；RW 保留原始选项。审计字段 `teacher_coverage`、`teacher_gap` 不应作为学生学习内容展示。
 

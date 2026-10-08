@@ -9,6 +9,7 @@ All notable changes to this project are recorded here.
 
 ## Unreleased
 
+- Publish Reading learning flow: organize 44 fine-grained points into 12 learner courses, add route and point recognition practice, scope point-specific scoring, show full sentence examples and boundary cases, and add 22 labeled transfer variants for low-frequency points.
 - Add a standalone Reading module with 44 audited knowledge points and four linked views: concept, method, tips and practice.
 - Replace audit-style Reading notes across all 44 knowledge points with memorable learner rules; add two quick-recognition cues to each of the 42 standard guides and retain hand-curated clue-driven examples for S02/C08.
 - Add 54 representative Reading questions (295 blanks), per-question timing, blank-level grading and wrong-answer knowledge-point tracing; keep submitted explanations persistently below the passage instead of in a dismissible modal, and make every primary/related point chip expandable with a link to the full method page, preserve a return path to the original graded question, and highlight every point involved in the current wrong-answer set.
