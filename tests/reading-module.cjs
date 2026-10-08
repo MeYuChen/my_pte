@@ -11,6 +11,7 @@ vm.runInNewContext(fs.readFileSync(path.join(root, "reading-method-guides.js"), 
 vm.runInNewContext(fs.readFileSync(path.join(root, "reading-explanations.js"), "utf8"), context);
 vm.runInNewContext(fs.readFileSync(path.join(root, "reading-curriculum.js"), "utf8"), context);
 vm.runInNewContext(fs.readFileSync(path.join(root, "reading-collocations.js"), "utf8"), context);
+vm.runInNewContext(fs.readFileSync(path.join(root, "reading-collocation-examples.js"), "utf8"), context);
 vm.runInNewContext(fs.readFileSync(path.join(root, "reading-collocation-tiers.js"), "utf8"), context);
 const data = context.window.READING_DATA;
 const guides = context.window.READING_METHOD_GUIDES;
@@ -18,12 +19,19 @@ const explanations = context.window.READING_EXPLANATIONS;
 const curriculum = context.window.READING_CURRICULUM;
 const collocations = context.window.READING_COLLOCATIONS.items;
 const collocationTiers = context.window.READING_COLLOCATION_TIERS;
+const collocationExamples = context.window.READING_COLLOCATION_EXAMPLES;
 
 assert.equal(collocations.length, 683, "collocation IDs should remain stable");
 const tierCounts = collocationTiers.summarize(collocations);
 assert.deepEqual({ ...tierCounts }, { must: 209, useful: 306, reference: 168, all: 683 }, "collocations should be split into focused learning tiers");
 assert.equal(collocationTiers.classify(collocations.find((item) => item.id === "K047")), "must", "slot frames belong in the must-learn deck");
 assert.equal(collocationTiers.classify(collocations.find((item) => item.id === "K516")), "reference", "ordinary academic chunks stay out of the default deck");
+const mustCollocations = collocations.filter((item) => collocationTiers.classify(item) === "must");
+assert.equal(Object.keys(collocationExamples).length, mustCollocations.length, "every must-learn collocation should have one reviewed example");
+mustCollocations.forEach((item) => {
+  assert.ok(collocationExamples[item.id], `${item.id} should have an example`);
+  assert.ok(collocationExamples[item.id].length <= 100, `${item.id} example should stay short`);
+});
 
 assert.equal(data.methods.length, 44, "should include all audited knowledge points");
 assert.equal(Object.keys(guides).length, 42, "all non-curated points should have learner guides");
@@ -95,6 +103,7 @@ assert.match(html, /data-tab="tips">避坑/);
 assert.match(html, /data-tab="practice">练习/);
 assert.match(html, /data-reading-mode="recognition">识别训练/);
 assert.match(html, /data-collocation-tier="must"/);
+assert.match(html, /reading-collocation-examples\.js/);
 assert.match(html, /reading-collocation-tiers\.js/);
 assert.match(html, /id="recognitionRoutes"/);
 assert.match(html, /id="questionTimer"/);

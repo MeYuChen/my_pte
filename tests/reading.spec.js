@@ -189,6 +189,8 @@ test.describe("Reading module", () => {
     await page.locator("#rangeEnd").fill("3");
     await page.getByRole("button", { name: "生成学习卡片" }).click();
     await expect(page.locator("#collocationStudy")).toBeVisible();
+    await expect(page.locator("#memoryExample")).toBeVisible();
+    await expect(page.locator("#cardExample")).not.toHaveText("—");
 
     const learnedIds = [];
     for (let index = 0; index < 3; index += 1) {

@@ -312,6 +312,31 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px v
 .memory-pair strong { font-family: Georgia, "Times New Roman", serif; font-size: clamp(28px, 4vw, 48px); line-height: 1.2; }
 .memory-pair > span { color: var(--line); font-size: 28px; text-align: center; }
 .memory-pair p { margin: 0; color: #34433a; font-size: 20px; line-height: 1.65; }
+.memory-example {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  align-items: start;
+  gap: 12px;
+  padding: 16px 18px;
+  border-radius: 11px;
+  background: var(--accent-soft);
+}
+.memory-example[hidden] { display: none; }
+.memory-example span {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 900;
+}
+.memory-example p {
+  margin: 1px 0 0;
+  font: 18px/1.55 Georgia, "Times New Roman", serif;
+}
 .memory-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 36px 30px; }
 .memory-actions button { height: 50px; }
 .not-yet-button { border-color: #ddb1ac; color: var(--bad); }
