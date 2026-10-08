@@ -159,6 +159,24 @@ test.describe("Reading module", () => {
     await expect(page.locator("#recognitionNext")).toBeVisible();
   });
 
+  test("collocation tiers keep the default deck focused without breaking K IDs", async ({ page }) => {
+    await page.goto("./reading.html");
+    await page.evaluate(() => sessionStorage.clear());
+    await page.reload();
+    await page.getByRole("button", { name: "固定搭配" }).click();
+
+    await expect(page.locator("#mustTierCount")).toHaveText("209条");
+    await expect(page.locator("#usefulTierCount")).toHaveText("306条");
+    await expect(page.locator("#referenceTierCount")).toHaveText("168条");
+    await expect(page.locator('[data-collocation-tier="must"]')).toHaveClass(/is-active/);
+
+    await page.locator('[data-collocation-tier="useful"]').click();
+    await page.locator("#rangeStart").fill("10");
+    await page.locator("#rangeEnd").fill("11");
+    await page.getByRole("button", { name: "生成学习卡片" }).click();
+    await expect(page.locator("#studyRange")).toContainText("结构扩展 · K010—K011 · 2 条");
+  });
+
   test("collocation range studies each card once remembered and then tests the whole range", async ({ page }) => {
     await page.goto("./reading.html");
     await page.evaluate(() => sessionStorage.clear());

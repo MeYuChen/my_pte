@@ -2,13 +2,15 @@
   "use strict";
 
   const catalogue = (window.READING_COLLOCATIONS && window.READING_COLLOCATIONS.items) || [];
+  const tierRules = window.READING_COLLOCATION_TIERS;
   const catalogueById = new Map(catalogue.map((item) => [item.id, item]));
-  const SESSION_KEY = "pte-reading-collocation-session-v1";
+  const SESSION_KEY = "pte-reading-collocation-session-v2";
 
   const el = {};
   [
     "readingShell", "readingModeSwitcher", "examGuide", "recognitionModule", "collocationModule", "collocationCount",
-    "collocationSetup", "rangeStart", "rangeEnd", "startCollocationSession", "rangeMessage",
+    "collocationSetup", "collocationTierPicker", "mustTierCount", "usefulTierCount", "referenceTierCount", "allTierCount",
+    "rangeStart", "rangeEnd", "startCollocationSession", "rangeMessage",
     "collocationStudy", "studyRange", "rememberedCount", "studySeenCount", "cardId",
     "cardCategory", "cardPhrase", "cardMeaning", "notYetCollocation", "rememberCollocation",
     "collocationTest", "testRange", "testProgress", "testAnswered", "testCardId",
@@ -16,17 +18,27 @@
     "collocationScore", "collocationWrongList", "retryWrongCollocations"
   ].forEach((id) => { el[id] = document.getElementById(id); });
 
-  if (!el.readingShell || !catalogue.length) return;
+  if (!el.readingShell || !catalogue.length || !tierRules) return;
 
+  const tierCounts = tierRules.summarize(catalogue);
+  let selectedTier = "must";
   let session = loadSession();
+  if (session) selectedTier = session.tier;
+
   init();
 
   function init() {
     el.collocationCount.textContent = catalogue.length;
+    el.mustTierCount.textContent = `${tierCounts.must}条`;
+    el.usefulTierCount.textContent = `${tierCounts.useful}条`;
+    el.referenceTierCount.textContent = `${tierCounts.reference}条`;
+    el.allTierCount.textContent = `${tierCounts.all}条`;
     el.rangeStart.max = String(catalogue.length);
     el.rangeEnd.max = String(catalogue.length);
-    el.rangeEnd.value = String(Math.min(30, catalogue.length));
+    el.rangeEnd.value = String(Math.min(100, catalogue.length));
     bindEvents();
+    renderTierPicker();
+    if (!session) showRangeSummary();
     renderSession();
   }
 
@@ -36,6 +48,11 @@
       if (button) setMode(button.dataset.readingMode);
     });
     el.startCollocationSession.addEventListener("click", startSession);
+    [el.rangeStart, el.rangeEnd].forEach((input) => input.addEventListener("change", () => showRangeSummary()));
+    el.collocationTierPicker.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-collocation-tier]");
+      if (button) selectTier(button.dataset.collocationTier);
+    });
     document.querySelectorAll("[data-range-size]").forEach((button) => {
       button.addEventListener("click", () => applyRangeSize(Number(button.dataset.rangeSize)));
     });
@@ -71,13 +88,48 @@
     const start = clampNumber(el.rangeStart.value, 1, catalogue.length) || 1;
     el.rangeStart.value = String(start);
     el.rangeEnd.value = String(Math.min(catalogue.length, start + size - 1));
-    showRangeMessage(`已选择 ${formatId(start)}—${formatId(Number(el.rangeEnd.value))}，共 ${Number(el.rangeEnd.value) - start + 1} 条。`, false);
+    showRangeSummary();
   }
 
   function applyExactRange(start, end, label) {
     el.rangeStart.value = String(clampNumber(start, 1, catalogue.length));
     el.rangeEnd.value = String(clampNumber(end, 1, catalogue.length));
-    showRangeMessage(`${label}：${formatId(start)}—${formatId(end)}，建议再缩小为20—50条开始学习。`, false);
+    showRangeSummary(label);
+  }
+
+  function selectTier(tier) {
+    if (!tierRules.LABELS[tier] || session) return;
+    selectedTier = tier;
+    if (tier === "reference") {
+      el.rangeStart.value = "516";
+      el.rangeEnd.value = String(Math.min(565, catalogue.length));
+    } else {
+      el.rangeStart.value = "1";
+      el.rangeEnd.value = String(Math.min(100, catalogue.length));
+    }
+    renderTierPicker();
+    showRangeSummary();
+  }
+
+  function renderTierPicker() {
+    el.collocationTierPicker.querySelectorAll("[data-collocation-tier]").forEach((button) => {
+      button.classList.toggle("is-active", button.dataset.collocationTier === selectedTier);
+    });
+  }
+
+  function itemsInRange(start, end, tier = selectedTier) {
+    return catalogue.filter((item) => {
+      const number = Number(item.id.slice(1));
+      return number >= start && number <= end && (tier === "all" || tierRules.classify(item) === tier);
+    });
+  }
+
+  function showRangeSummary(prefix) {
+    const start = clampNumber(el.rangeStart.value, 1, catalogue.length) || 1;
+    const end = clampNumber(el.rangeEnd.value, 1, catalogue.length) || catalogue.length;
+    const count = start <= end ? itemsInRange(start, end).length : 0;
+    const lead = prefix ? `${prefix}：` : "";
+    showRangeMessage(`${lead}${formatId(start)}—${formatId(end)} 中有 ${count} 条“${tierRules.LABELS[selectedTier]}”卡片。`, count === 0);
   }
 
   function startSession() {
@@ -88,9 +140,14 @@
       return;
     }
 
-    const selectedIds = catalogue.slice(start - 1, end).map((item) => item.id);
+    const selectedIds = itemsInRange(start, end).map((item) => item.id);
+    if (!selectedIds.length) {
+      showRangeMessage(`这个编号范围内没有“${tierRules.LABELS[selectedTier]}”卡片，请扩大范围或更换层级。`, true);
+      return;
+    }
     session = {
-      version: 1,
+      version: 2,
+      tier: selectedTier,
       start,
       end,
       selectedIds,
@@ -159,9 +216,10 @@
   function resetSession() {
     session = null;
     sessionStorage.removeItem(SESSION_KEY);
-    el.rangeStart.value = "1";
-    el.rangeEnd.value = String(Math.min(30, catalogue.length));
-    showRangeMessage("例如：K001—K030。建议一次学习 20—50 条。", false);
+    el.rangeStart.value = selectedTier === "reference" ? "516" : "1";
+    el.rangeEnd.value = selectedTier === "reference" ? String(Math.min(565, catalogue.length)) : String(Math.min(100, catalogue.length));
+    renderTierPicker();
+    showRangeSummary();
     renderSession();
   }
 
@@ -257,7 +315,7 @@
   }
 
   function rangeLabel() {
-    return `${formatId(session.start)}—${formatId(session.end)} · ${session.selectedIds.length} 条`;
+    return `${tierRules.LABELS[session.tier]} · ${formatId(session.start)}—${formatId(session.end)} · ${session.selectedIds.length} 条`;
   }
 
   function formatId(number) {
@@ -294,7 +352,7 @@
   function loadSession() {
     try {
       const parsed = JSON.parse(sessionStorage.getItem(SESSION_KEY));
-      if (!parsed || parsed.version !== 1 || !Array.isArray(parsed.selectedIds)) return null;
+      if (!parsed || parsed.version !== 2 || !tierRules.LABELS[parsed.tier] || !Array.isArray(parsed.selectedIds)) return null;
       if (!parsed.selectedIds.every((id) => catalogueById.has(id))) return null;
       return parsed;
     } catch (_) {
@@ -308,5 +366,5 @@
     })[character]);
   }
 
-  window.ReadingStudy = { setMode, resetSession };
+  window.ReadingStudy = { setMode, resetSession, classifyCollocation: tierRules.classify };
 })();
