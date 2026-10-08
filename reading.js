@@ -3,10 +3,12 @@
 
   const data = window.READING_DATA;
   const core = window.ReadingCore;
-  if (!data || !core) throw new Error("Reading data failed to load");
+  const curriculum = window.READING_CURRICULUM;
+  if (!data || !core || !curriculum) throw new Error("Reading data failed to load");
 
   const STORAGE_KEY = "pte-reading-progress-v1";
   const methodsById = new Map(data.methods.map((method) => [method.id, method]));
+  const chaptersById = new Map(curriculum.chapters.map((chapter) => [chapter.id, chapter]));
   Object.entries(window.READING_METHOD_GUIDES || {}).forEach(([id, guide]) => {
     const method = methodsById.get(id);
     if (method) Object.assign(method, guide);
@@ -43,7 +45,7 @@
   init();
 
   function init() {
-    el.dataSummary.textContent = `${data.stats.pointCount} 个考点 · ${data.stats.questionCount} 题 · ${data.stats.blankCount} 空`;
+    el.dataSummary.textContent = `${curriculum.chapters.length} 门课 · ${data.stats.pointCount} 个细分考点 · ${data.stats.questionCount} 题 · ${data.stats.blankCount} 空`;
     bindEvents();
     selectPoint(state.pointId, false);
   }
@@ -80,7 +82,8 @@
 
   function resolveInitialPoint() {
     const fromHash = location.hash.replace(/^#/, "");
-    return methodsById.has(fromHash) ? fromHash : data.methods[0].id;
+    const firstCoursePoint = curriculum.chapters[0]?.pointIds[0];
+    return methodsById.has(fromHash) ? fromHash : (firstCoursePoint || data.methods[0].id);
   }
 
   function selectPoint(pointId, updateHash = true) {
@@ -100,26 +103,43 @@
 
   function visibleMethods() {
     return data.methods.filter((method) => {
-      const matchesQuery = !state.query || `${method.id} ${method.name} ${method.module}`.toLowerCase().includes(state.query);
+      const chapter = chaptersById.get(curriculum.pointToChapter[method.id]);
+      const searchText = `${method.id} ${method.name} ${method.module} ${chapter?.id || ""} ${chapter?.name || ""}`.toLowerCase();
+      const matchesQuery = !state.query || searchText.includes(state.query);
       const matchesFilter = state.pointFilter === "all"
-        || (state.pointFilter === "high" && method.primary_count >= 100)
-        || (state.pointFilter === "weak" && method.teacher_coverage !== "完整讲解");
+        || (state.pointFilter === "form" && chapter?.stage === "形")
+        || (state.pointFilter === "later" && chapter?.stage !== "形");
       return matchesQuery && matchesFilter;
     });
   }
 
   function renderPointList() {
-    el.pointList.replaceChildren(...visibleMethods().map((method) => {
-      const button = document.createElement("button");
-      button.type = "button";
-      const isActive = method.id === state.pointId;
-      const isRelated = state.reviewPointIds.has(method.id);
-      button.className = `point-item${isActive ? " is-active" : ""}${isRelated ? " is-related" : ""}`;
-      if (isRelated) button.setAttribute("aria-label", `${method.id} ${method.name} · 当前错题涉及`);
-      button.innerHTML = `<span class="point-id">${escapeHtml(method.id)}</span><span class="point-name">${escapeHtml(method.name)}</span><span class="point-count">${method.primary_count}</span>`;
-      button.addEventListener("click", () => selectPoint(method.id));
-      return button;
-    }));
+    const visibleIds = new Set(visibleMethods().map((method) => method.id));
+    const groups = curriculum.chapters.map((chapter) => {
+      const methods = chapter.pointIds.map((id) => methodsById.get(id)).filter((method) => method && visibleIds.has(method.id));
+      if (!methods.length) return null;
+      const details = document.createElement("details");
+      details.className = "course-group";
+      const containsActive = methods.some((method) => method.id === state.pointId);
+      const containsRelated = methods.some((method) => state.reviewPointIds.has(method.id));
+      details.open = containsActive || containsRelated || Boolean(state.query);
+      const summary = document.createElement("summary");
+      summary.innerHTML = `<span class="course-stage">${escapeHtml(chapter.stage)}</span><span><strong>${escapeHtml(chapter.id)} · ${escapeHtml(chapter.name)}</strong><small>${escapeHtml(chapter.goal)}</small></span><b>${methods.length}</b>`;
+      details.append(summary);
+      methods.forEach((method) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        const isActive = method.id === state.pointId;
+        const isRelated = state.reviewPointIds.has(method.id);
+        button.className = `point-item${isActive ? " is-active" : ""}${isRelated ? " is-related" : ""}`;
+        if (isRelated) button.setAttribute("aria-label", `${method.id} ${method.name} · 当前错题涉及`);
+        button.innerHTML = `<span class="point-id">${escapeHtml(method.id)}</span><span class="point-name">${escapeHtml(method.name)}</span><span class="point-count">${method.primary_count}</span>`;
+        button.addEventListener("click", () => selectPoint(method.id));
+        details.append(button);
+      });
+      return details;
+    }).filter(Boolean);
+    el.pointList.replaceChildren(...groups);
   }
 
   function applyLearnerFacingMethodFixes() {
@@ -202,39 +222,42 @@
 
   function renderPointContent() {
     const method = methodsById.get(state.pointId);
+    const chapter = chaptersById.get(curriculum.pointToChapter[method.id]);
     const progress = state.progress.points[state.pointId] || { attempts: 0, correct: 0, total: 0 };
     const accuracy = progress.total ? `${Math.round(progress.correct / progress.total * 100)}% 正确` : "尚未练习";
-    el.pointModule.textContent = `${method.id} · ${method.module}`;
-    el.pointTitle.textContent = method.name;
-    el.pointFrequency.textContent = `主考点 ${method.primary_count} 次 · 关联 ${method.all_link_count} 次`;
+    el.pointModule.textContent = `${chapter.id} · ${chapter.stage} · ${chapter.name}`;
+    el.pointTitle.textContent = `${method.id} · ${method.name}`;
+    el.pointFrequency.textContent = `主考 ${method.primary_count} · 关联 ${method.all_link_count}`;
     el.pointProgress.textContent = progress.attempts ? `${progress.attempts} 次练习 · ${accuracy}` : accuracy;
     el.pointPanel.innerHTML = `
-      <div class="lead-card">
-        <p class="eyebrow">这个考点解决什么</p>
-        <h3>${escapeHtml(method.name)}</h3>
+      <div class="signal-grid">
+        <section class="signal-card"><span>看到什么</span><h3>${escapeHtml(chapter.trigger)}</h3></section>
+        <section class="signal-card action-card"><span>立即做什么</span><h3>${escapeHtml(chapter.action)}</h3></section>
+      </div>
+      <div class="lead-card compact-lead">
+        <p class="eyebrow">这个细分考点解决什么</p>
         <p>${escapeHtml(method.core_method)}</p>
       </div>
-      <div class="info-grid">
-        <div class="info-box"><span>题库主考频次</span><strong>${method.primary_count} 空</strong></div>
-        <div class="info-box"><span>含关联考点</span><strong>${method.all_link_count} 空</strong></div>
-        <div class="info-box"><span>专项练习</span><strong>${state.practiceQuestions.length} 题</strong></div>
-      </div>`;
+      <details class="point-metadata">
+        <summary>查看频次和题库覆盖</summary>
+        <div class="info-grid">
+          <div class="info-box"><span>题库主考频次</span><strong>${method.primary_count} 空</strong></div>
+          <div class="info-box"><span>含关联考点</span><strong>${method.all_link_count} 空</strong></div>
+          <div class="info-box"><span>专项练习</span><strong>${state.practiceQuestions.length} 题</strong></div>
+        </div>
+      </details>`;
     el.methodPanel.innerHTML = `
-      <h3 class="section-heading">固定解题顺序</h3>
+      ${method.memory_rule ? `<section class="memory-rule-card"><span>一句话规则</span><strong>${escapeHtml(method.memory_rule)}</strong></section>` : ""}
+      <h3 class="section-heading method-heading">考场动作</h3>
       <ol class="step-list">${method.decision_steps.map((step) => `<li>${escapeHtml(step)}</li>`).join("")}</ol>`;
-    const boundaryTitle = method.id === "C08" ? "不能只靠固定搭配的情况" : "容易混淆的情况";
     const quickChecks = method.quick_checks || [];
     const judgmentContent = quickChecks.length
       ? `<ul>${quickChecks.map((tip) => `<li>${escapeHtml(tip)}</li>`).join("")}</ul>`
-      : `<div class="example-list">${renderExamples(method.normal_examples)}</div>`;
-    const boundaryContent = quickChecks.length ? "" : `
-      <section class="tip-card tip-card-wide"><h4>${boundaryTitle}</h4><div class="example-list">${renderExamples(method.contrast_examples)}</div></section>`;
+      : `<div class="example-list">${renderExamples((method.normal_examples || []).slice(0, 1))}</div>`;
     el.tipsPanel.innerHTML = `
       <div class="tip-grid">
-        ${method.memory_rule ? `<section class="memory-rule-card"><span>做题口诀</span><strong>${escapeHtml(method.memory_rule)}</strong></section>` : ""}
         <section class="tip-card"><h4>最容易错在哪里</h4><ul>${method.traps.map((tip) => `<li>${escapeHtml(tip)}</li>`).join("")}</ul></section>
-        <section class="tip-card"><h4>${quickChecks.length ? "一眼识别" : "怎么判断"}</h4>${judgmentContent}</section>
-        ${boundaryContent}
+        <section class="tip-card"><h4>${quickChecks.length ? "一眼识别" : "典型例子"}</h4>${judgmentContent}</section>
       </div>`;
   }
 

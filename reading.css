@@ -175,8 +175,10 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px v
 
 /* Reading study modes */
 .reading-shell[data-mode="guide"],
+.reading-shell[data-mode="recognition"],
 .reading-shell[data-mode="collocations"] { grid-template-columns: minmax(0, 1fr); }
 .reading-shell[data-mode="guide"] .reading-sidebar,
+.reading-shell[data-mode="recognition"] .reading-sidebar,
 .reading-shell[data-mode="collocations"] .reading-sidebar { display: none; }
 .reading-shell:not([data-mode="points"]) .reading-header,
 .reading-shell:not([data-mode="points"]) .return-review-bar,
@@ -185,7 +187,7 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px v
 
 .reading-mode-switcher {
   display: inline-grid;
-  grid-template-columns: repeat(3, minmax(112px, 1fr));
+  grid-template-columns: repeat(4, minmax(112px, 1fr));
   gap: 5px;
   margin-bottom: 28px;
   padding: 5px;
@@ -340,4 +342,162 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px v
   .guide-route { grid-template-columns: repeat(2, 1fr); }
   .memory-pair { grid-template-columns: 1fr; align-content: center; }
   .memory-pair > span { display: none; }
+}
+
+
+/* Course-first navigation */
+.course-group {
+  margin-bottom: 8px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  overflow: hidden;
+}
+.course-group summary {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) auto;
+  gap: 9px;
+  align-items: center;
+  padding: 11px 10px;
+  cursor: pointer;
+  list-style: none;
+}
+.course-group summary::-webkit-details-marker { display: none; }
+.course-group summary:hover { background: var(--surface-soft); }
+.course-group summary > span:nth-child(2) { min-width: 0; }
+.course-group summary strong,
+.course-group summary small { display: block; }
+.course-group summary strong { font-size: 12px; }
+.course-group summary small {
+  margin-top: 3px;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.course-group summary > b { color: var(--muted); font-size: 11px; }
+.course-stage {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--accent-soft);
+  color: var(--accent-dark);
+  font-size: 13px;
+  font-weight: 900;
+}
+.course-group[open] summary { border-bottom: 1px solid var(--line); }
+.course-group .point-item { border-radius: 0; padding-left: 14px; }
+.course-group .point-item + .point-item { border-top: 1px solid #edf1ee; }
+
+.signal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.signal-card {
+  min-height: 150px;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: #f7faf7;
+}
+.signal-card.action-card { border-color: #abd2c7; background: var(--accent-soft); }
+.signal-card span { color: var(--accent); font-size: 11px; font-weight: 900; letter-spacing: .08em; }
+.signal-card h3 { margin: 18px 0 0; font-size: 17px; line-height: 1.55; }
+.compact-lead { margin-top: 20px; }
+.compact-lead > p:last-child { font-size: 15px; }
+.point-metadata { margin-top: 20px; }
+.point-metadata summary { cursor: pointer; color: var(--muted); font-size: 12px; font-weight: 800; }
+.method-heading { margin-top: 28px; }
+
+/* Mixed recognition trainer */
+.recognition-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: end;
+}
+.recognition-heading > div:first-child { max-width: 820px; }
+.recognition-heading > div:first-child > p:last-child { color: var(--muted); line-height: 1.7; }
+.recognition-actions { display: flex; gap: 8px; }
+.recognition-card {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: #fff;
+  box-shadow: var(--shadow);
+}
+.recognition-status { grid-template-columns: auto auto minmax(0, 1fr); }
+.recognition-snippet {
+  min-height: 130px;
+  margin: 0;
+  padding: 34px 40px 22px;
+  font: 20px/1.85 Georgia, "Times New Roman", serif;
+}
+.recognition-options {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  padding: 0 40px 24px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.recognition-options b {
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: var(--surface-soft);
+  color: var(--ink);
+}
+.recognition-routes {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  padding: 0 40px 32px;
+}
+.recognition-routes button {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  min-height: 76px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: #fff;
+  color: var(--ink);
+  text-align: left;
+}
+.recognition-routes button:not(:disabled):hover { border-color: var(--accent); background: var(--accent-soft); }
+.recognition-routes button > strong {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: var(--accent-soft);
+  color: var(--accent-dark);
+  font-size: 20px;
+}
+.recognition-routes button > span { font-weight: 850; }
+.recognition-routes button.is-correct { border-color: var(--good); background: var(--good-soft); }
+.recognition-routes button.is-wrong { border-color: var(--bad); background: var(--bad-soft); }
+.recognition-feedback {
+  margin: 0 40px 24px;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #f7faf7;
+}
+.recognition-feedback.is-correct { border-color: #a8d6b9; background: var(--good-soft); }
+.recognition-feedback.is-wrong { border-color: #efbbb5; background: var(--bad-soft); }
+.recognition-feedback h3 { margin: 0 0 12px; }
+.recognition-feedback p { line-height: 1.65; }
+.recognition-next-row { display: flex; justify-content: flex-end; padding: 0 40px 32px; }
+
+@media (max-width: 1100px) {
+  .reading-mode-switcher { grid-template-columns: repeat(2, minmax(112px, 1fr)); }
+  .signal-grid { grid-template-columns: 1fr; }
+  .recognition-heading { display: block; }
+  .recognition-actions { margin-top: 16px; }
+  .recognition-routes { grid-template-columns: repeat(2, 1fr); }
 }

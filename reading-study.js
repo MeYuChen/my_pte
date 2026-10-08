@@ -7,7 +7,7 @@
 
   const el = {};
   [
-    "readingShell", "readingModeSwitcher", "examGuide", "collocationModule", "collocationCount",
+    "readingShell", "readingModeSwitcher", "examGuide", "recognitionModule", "collocationModule", "collocationCount",
     "collocationSetup", "rangeStart", "rangeEnd", "startCollocationSession", "rangeMessage",
     "collocationStudy", "studyRange", "rememberedCount", "studySeenCount", "cardId",
     "cardCategory", "cardPhrase", "cardMeaning", "notYetCollocation", "rememberCollocation",
@@ -39,6 +39,13 @@
     document.querySelectorAll("[data-range-size]").forEach((button) => {
       button.addEventListener("click", () => applyRangeSize(Number(button.dataset.rangeSize)));
     });
+    document.querySelectorAll("[data-range-start][data-range-end]").forEach((button) => {
+      button.addEventListener("click", () => applyExactRange(
+        Number(button.dataset.rangeStart),
+        Number(button.dataset.rangeEnd),
+        button.textContent.trim()
+      ));
+    });
     document.querySelectorAll("[data-reset-collocations]").forEach((button) => {
       button.addEventListener("click", resetSession);
     });
@@ -49,9 +56,10 @@
   }
 
   function setMode(mode) {
-    if (!["guide", "points", "collocations"].includes(mode)) return;
+    if (!["guide", "points", "recognition", "collocations"].includes(mode)) return;
     el.readingShell.dataset.mode = mode;
     el.examGuide.hidden = mode !== "guide";
+    el.recognitionModule.hidden = mode !== "recognition";
     el.collocationModule.hidden = mode !== "collocations";
     el.readingModeSwitcher.querySelectorAll("[data-reading-mode]").forEach((button) => {
       button.classList.toggle("is-active", button.dataset.readingMode === mode);
@@ -64,6 +72,12 @@
     el.rangeStart.value = String(start);
     el.rangeEnd.value = String(Math.min(catalogue.length, start + size - 1));
     showRangeMessage(`已选择 ${formatId(start)}—${formatId(Number(el.rangeEnd.value))}，共 ${Number(el.rangeEnd.value) - start + 1} 条。`, false);
+  }
+
+  function applyExactRange(start, end, label) {
+    el.rangeStart.value = String(clampNumber(start, 1, catalogue.length));
+    el.rangeEnd.value = String(clampNumber(end, 1, catalogue.length));
+    showRangeMessage(`${label}：${formatId(start)}—${formatId(end)}，建议再缩小为20—50条开始学习。`, false);
   }
 
   function startSession() {

@@ -9,9 +9,11 @@ const context = { window: {} };
 vm.runInNewContext(fs.readFileSync(path.join(root, "reading-data.js"), "utf8"), context);
 vm.runInNewContext(fs.readFileSync(path.join(root, "reading-method-guides.js"), "utf8"), context);
 vm.runInNewContext(fs.readFileSync(path.join(root, "reading-explanations.js"), "utf8"), context);
+vm.runInNewContext(fs.readFileSync(path.join(root, "reading-curriculum.js"), "utf8"), context);
 const data = context.window.READING_DATA;
 const guides = context.window.READING_METHOD_GUIDES;
 const explanations = context.window.READING_EXPLANATIONS;
+const curriculum = context.window.READING_CURRICULUM;
 
 assert.equal(data.methods.length, 44, "should include all audited knowledge points");
 assert.equal(Object.keys(guides).length, 42, "all non-curated points should have learner guides");
@@ -27,6 +29,15 @@ assert.equal(explanations["RW539:2"].primary_point, "D04", "contrast, not tense 
 assert.equal(explanations["RW539:6"].primary_point, "S01", "semantic role decides RW539:6");
 assert.equal(explanations["RW539:7"].primary_point, "S03", "negative direction decides RW539:7");
 const methodIds = new Set(data.methods.map((method) => method.id));
+assert.equal(curriculum.chapters.length, 12, "learner view should merge the catalogue into twelve courses");
+const curriculumPointIds = curriculum.chapters.flatMap((chapter) => chapter.pointIds);
+assert.equal(curriculumPointIds.length, 44, "every fine-grained point should appear in the curriculum");
+assert.equal(new Set(curriculumPointIds).size, 44, "a point should not be duplicated across courses");
+methodIds.forEach((id) => assert.ok(curriculum.pointToChapter[id], `${id} should map to a learner course`));
+curriculum.chapters.forEach((chapter) => {
+  assert.ok(["形", "搭", "逻", "义"].includes(chapter.stage), `${chapter.id} should use one live route`);
+  assert.ok(chapter.trigger && chapter.action, `${chapter.id} should teach signal and action`);
+});
 Object.entries(explanations).forEach(([key, explanation]) => {
   assert.ok(methodIds.has(explanation.primary_point), `${key} should use a known decisive point`);
   explanation.secondary_points.forEach((point) => assert.ok(methodIds.has(point), `${key} should use known secondary points`));
@@ -68,10 +79,12 @@ assert.equal(core.formatDuration(65), "01:05");
 assert.ok(core.questionMatchesPoint(sample, sample.blank_map[0].primary_point));
 
 const html = fs.readFileSync(path.join(root, "reading.html"), "utf8");
-assert.match(html, /data-tab="point">考点/);
+assert.match(html, /data-tab="point">识别/);
 assert.match(html, /data-tab="method">解法/);
-assert.match(html, /data-tab="tips">技巧/);
+assert.match(html, /data-tab="tips">避坑/);
 assert.match(html, /data-tab="practice">练习/);
+assert.match(html, /data-reading-mode="recognition">识别训练/);
+assert.match(html, /id="recognitionRoutes"/);
 assert.match(html, /id="questionTimer"/);
 assert.match(html, /id="resultPanel"/);
 assert.match(html, /id="returnToReview"/);

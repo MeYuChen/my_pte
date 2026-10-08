@@ -16,8 +16,10 @@ test.describe("Reading module", () => {
     }));
     expect(guideCoverage).toEqual({ total: 44, withRule: 44 });
 
-    await page.getByRole("button", { name: "技巧", exact: true }).click();
-    await expect(page.locator(".memory-rule-card")).toContainText("先砍词性，再锁搭配，再对句意");
+    await expect(page.locator(".course-group")).toHaveCount(12);
+    await page.getByRole("button", { name: "解法", exact: true }).click();
+    await expect(page.locator(".memory-rule-card")).toContainText("空格位置先定词性");
+    await page.getByRole("button", { name: "避坑", exact: true }).click();
     await expect(page.locator("#tipsPanel")).not.toContainText("给定答案不自动等于唯一答案");
 
     await page.getByRole("button", { name: "练习", exact: true }).click();
@@ -127,9 +129,34 @@ test.describe("Reading module", () => {
 
     await expect(page.locator("#examGuide")).toBeVisible();
     await expect(page.locator(".guide-route article")).toHaveCount(4);
-    await expect(page.locator("#examGuide")).toContainText("先形，后搭，再逻辑，最后词义");
+    await expect(page.locator("#examGuide")).toContainText("形 → 搭 → 逻 → 义");
     await expect(page.locator(".reading-sidebar")).toBeHidden();
     await expect(page.locator("#pointPanel")).toBeHidden();
+  });
+
+  test("mixed recognition trains the four decision routes before revealing the point", async ({ page }) => {
+    await page.goto("./reading.html");
+    await page.getByRole("button", { name: "识别训练" }).click();
+
+    await expect(page.locator("#recognitionModule")).toBeVisible();
+    await page.getByRole("button", { name: "开始20空" }).click();
+    await expect(page.locator("#recognitionSnippet")).toContainText("____");
+    await expect(page.locator("#recognitionRoutes button")).toHaveCount(4);
+
+    const correctRoute = await page.evaluate(() => {
+      const source = document.getElementById("recognitionSource").textContent;
+      const bid = source.split("·").pop().trim();
+      const explanation = window.READING_EXPLANATIONS[bid];
+      const pointId = explanation?.primary_point
+        || window.READING_DATA.questions.flatMap((question) => question.blank_map).find((blank) => blank.bid === bid).primary_point;
+      const chapterId = window.READING_CURRICULUM.pointToChapter[pointId];
+      return window.READING_CURRICULUM.routeByChapter[chapterId];
+    });
+    await page.locator(`#recognitionRoutes [data-route-id="${correctRoute}"]`).click();
+    await expect(page.locator("#recognitionFeedback")).toBeVisible();
+    await expect(page.locator("#recognitionFeedback")).toContainText("识别信号");
+    await expect(page.locator("#recognitionFeedback")).toContainText("立即动作");
+    await expect(page.locator("#recognitionNext")).toBeVisible();
   });
 
   test("collocation range studies each card once remembered and then tests the whole range", async ({ page }) => {
