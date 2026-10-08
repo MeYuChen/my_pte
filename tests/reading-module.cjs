@@ -12,6 +12,7 @@ vm.runInNewContext(fs.readFileSync(path.join(root, "reading-explanations.js"), "
 vm.runInNewContext(fs.readFileSync(path.join(root, "reading-curriculum.js"), "utf8"), context);
 vm.runInNewContext(fs.readFileSync(path.join(root, "reading-collocations.js"), "utf8"), context);
 vm.runInNewContext(fs.readFileSync(path.join(root, "reading-collocation-examples.js"), "utf8"), context);
+vm.runInNewContext(fs.readFileSync(path.join(root, "reading-collocation-example-translations.js"), "utf8"), context);
 vm.runInNewContext(fs.readFileSync(path.join(root, "reading-collocation-tiers.js"), "utf8"), context);
 const data = context.window.READING_DATA;
 const guides = context.window.READING_METHOD_GUIDES;
@@ -20,6 +21,7 @@ const curriculum = context.window.READING_CURRICULUM;
 const collocations = context.window.READING_COLLOCATIONS.items;
 const collocationTiers = context.window.READING_COLLOCATION_TIERS;
 const collocationExamples = context.window.READING_COLLOCATION_EXAMPLES;
+const collocationExampleTranslations = context.window.READING_COLLOCATION_EXAMPLE_TRANSLATIONS;
 
 assert.equal(collocations.length, 683, "collocation IDs should remain stable");
 const tierCounts = collocationTiers.summarize(collocations);
@@ -31,6 +33,7 @@ assert.equal(Object.keys(collocationExamples).length, mustCollocations.length, "
 mustCollocations.forEach((item) => {
   assert.ok(collocationExamples[item.id], `${item.id} should have an example`);
   assert.ok(collocationExamples[item.id].length <= 100, `${item.id} example should stay short`);
+  assert.ok(collocationExampleTranslations[item.id], `${item.id} should have a Chinese example translation`);
 });
 
 assert.equal(data.methods.length, 44, "should include all audited knowledge points");
@@ -104,6 +107,7 @@ assert.match(html, /data-tab="practice">练习/);
 assert.match(html, /data-reading-mode="recognition">识别训练/);
 assert.match(html, /data-collocation-tier="must"/);
 assert.match(html, /reading-collocation-examples\.js/);
+assert.match(html, /reading-collocation-example-translations\.js/);
 assert.match(html, /reading-collocation-tiers\.js/);
 assert.match(html, /id="recognitionRoutes"/);
 assert.match(html, /id="questionTimer"/);

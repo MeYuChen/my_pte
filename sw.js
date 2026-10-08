@@ -1,4 +1,4 @@
-const CACHE_NAME = "pte-we-static-v43-collocation-examples";
+const CACHE_NAME = "pte-we-static-v44-collocation-translations";
 const IMAGE_CACHE_NAME = "pte-we-images-v8";
 const SST_IMAGE_ASSETS = Array.from({ length: 54 }, (_, index) => `./images/sst/S${String(index + 1).padStart(3, "0")}.webp`);
 const STATIC_ASSETS = [
@@ -18,6 +18,7 @@ const STATIC_ASSETS = [
   "./reading-explanations.js",
   "./reading-collocations.js",
   "./reading-collocation-examples.js",
+  "./reading-collocation-example-translations.js",
   "./reading-collocation-tiers.js",
   "./reading-curriculum.js",
   "./reading-study.js",

@@ -4,6 +4,7 @@
   const catalogue = (window.READING_COLLOCATIONS && window.READING_COLLOCATIONS.items) || [];
   const tierRules = window.READING_COLLOCATION_TIERS;
   const examples = window.READING_COLLOCATION_EXAMPLES || {};
+  const exampleTranslations = window.READING_COLLOCATION_EXAMPLE_TRANSLATIONS || {};
   const catalogueById = new Map(catalogue.map((item) => [item.id, item]));
   const SESSION_KEY = "pte-reading-collocation-session-v3";
 
@@ -13,7 +14,7 @@
     "collocationSetup", "collocationTierPicker", "mustTierCount", "usefulTierCount", "referenceTierCount", "allTierCount",
     "rangeStart", "rangeEnd", "startCollocationSession", "rangeMessage",
     "collocationStudy", "studyRange", "rememberedCount", "studySeenCount", "cardId",
-    "cardCategory", "cardPhrase", "cardMeaning", "memoryExample", "cardExample", "notYetCollocation", "rememberCollocation",
+    "cardCategory", "cardPhrase", "cardMeaning", "memoryExample", "cardExample", "cardExampleTranslation", "notYetCollocation", "rememberCollocation",
     "collocationTest", "testRange", "testProgress", "testAnswered", "testCardId",
     "testPhrase", "testOptions", "collocationResult", "collocationResultTitle",
     "collocationScore", "collocationWrongList", "retryWrongCollocations"
@@ -259,6 +260,7 @@
     el.cardPhrase.textContent = item.phrase;
     el.cardMeaning.textContent = item.meaning;
     el.cardExample.textContent = examples[item.id] || "";
+    el.cardExampleTranslation.textContent = exampleTranslations[item.id] || "";
     el.memoryExample.hidden = !examples[item.id];
   }
 

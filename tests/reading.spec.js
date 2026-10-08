@@ -191,6 +191,7 @@ test.describe("Reading module", () => {
     await expect(page.locator("#collocationStudy")).toBeVisible();
     await expect(page.locator("#memoryExample")).toBeVisible();
     await expect(page.locator("#cardExample")).not.toHaveText("—");
+    await expect(page.locator("#cardExampleTranslation")).not.toHaveText("—");
 
     const learnedIds = [];
     for (let index = 0; index < 3; index += 1) {
