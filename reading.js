@@ -3,10 +3,14 @@
 
   const data = window.READING_DATA;
   const core = window.ReadingCore;
-  if (!data || !core) throw new Error("Reading data failed to load");
+  const curriculum = window.READING_CURRICULUM;
+  if (!data || !core || !curriculum) throw new Error("Reading data failed to load");
+  const variantQuestions = window.READING_VARIANTS?.questions || [];
+  const practiceCatalogue = [...data.questions, ...variantQuestions];
 
   const STORAGE_KEY = "pte-reading-progress-v1";
   const methodsById = new Map(data.methods.map((method) => [method.id, method]));
+  const chaptersById = new Map(curriculum.chapters.map((chapter) => [chapter.id, chapter]));
   Object.entries(window.READING_METHOD_GUIDES || {}).forEach(([id, guide]) => {
     const method = methodsById.get(id);
     if (method) Object.assign(method, guide);
@@ -21,6 +25,7 @@
     query: "",
     practiceQuestions: [],
     questionIndex: 0,
+    targetBlankIndices: [],
     startedAt: null,
     timerHandle: null,
     elapsedSeconds: 0,
@@ -43,7 +48,7 @@
   init();
 
   function init() {
-    el.dataSummary.textContent = `${data.stats.pointCount} 个考点 · ${data.stats.questionCount} 题 · ${data.stats.blankCount} 空`;
+    el.dataSummary.textContent = `${curriculum.chapters.length} 门课 · ${data.stats.pointCount} 个细分考点 · ${data.stats.questionCount} 题 · ${data.stats.blankCount} 空 · ${variantQuestions.length} 道变式题`;
     bindEvents();
     selectPoint(state.pointId, false);
   }
@@ -80,15 +85,17 @@
 
   function resolveInitialPoint() {
     const fromHash = location.hash.replace(/^#/, "");
-    return methodsById.has(fromHash) ? fromHash : data.methods[0].id;
+    const firstCoursePoint = curriculum.chapters[0]?.pointIds[0];
+    return methodsById.has(fromHash) ? fromHash : (firstCoursePoint || data.methods[0].id);
   }
 
   function selectPoint(pointId, updateHash = true) {
     if (!methodsById.has(pointId)) return;
     stopTimer();
     state.pointId = pointId;
-    state.practiceQuestions = data.questions.filter((question) => core.questionMatchesPoint(question, pointId));
+    state.practiceQuestions = practiceCatalogue.filter((question) => core.questionMatchesPoint(question, pointId));
     state.questionIndex = 0;
+    state.targetBlankIndices = [];
     state.lastResult = null;
     if (updateHash || location.hash.replace(/^#/, "") !== pointId) {
       history.replaceState(null, "", `#${pointId}`);
@@ -100,26 +107,49 @@
 
   function visibleMethods() {
     return data.methods.filter((method) => {
-      const matchesQuery = !state.query || `${method.id} ${method.name} ${method.module}`.toLowerCase().includes(state.query);
+      const chapter = chaptersById.get(curriculum.pointToChapter[method.id]);
+      const searchText = `${method.id} ${method.name} ${method.module} ${chapter?.id || ""} ${chapter?.name || ""}`.toLowerCase();
+      const matchesQuery = !state.query || searchText.includes(state.query);
       const matchesFilter = state.pointFilter === "all"
-        || (state.pointFilter === "high" && method.primary_count >= 100)
-        || (state.pointFilter === "weak" && method.teacher_coverage !== "完整讲解");
+        || (state.pointFilter === "form" && chapter?.stage === "形")
+        || (state.pointFilter === "later" && chapter?.stage !== "形")
+        || (state.pointFilter === "weak" && isWeakPoint(state.progress.points[method.id]));
       return matchesQuery && matchesFilter;
     });
   }
 
+  function isWeakPoint(progress) {
+    if (!progress?.attempts || !progress.total) return true;
+    return progress.correct / progress.total < 0.85 || progress.attempts < 2;
+  }
+
   function renderPointList() {
-    el.pointList.replaceChildren(...visibleMethods().map((method) => {
-      const button = document.createElement("button");
-      button.type = "button";
-      const isActive = method.id === state.pointId;
-      const isRelated = state.reviewPointIds.has(method.id);
-      button.className = `point-item${isActive ? " is-active" : ""}${isRelated ? " is-related" : ""}`;
-      if (isRelated) button.setAttribute("aria-label", `${method.id} ${method.name} · 当前错题涉及`);
-      button.innerHTML = `<span class="point-id">${escapeHtml(method.id)}</span><span class="point-name">${escapeHtml(method.name)}</span><span class="point-count">${method.primary_count}</span>`;
-      button.addEventListener("click", () => selectPoint(method.id));
-      return button;
-    }));
+    const visibleIds = new Set(visibleMethods().map((method) => method.id));
+    const groups = curriculum.chapters.map((chapter) => {
+      const methods = chapter.pointIds.map((id) => methodsById.get(id)).filter((method) => method && visibleIds.has(method.id));
+      if (!methods.length) return null;
+      const details = document.createElement("details");
+      details.className = "course-group";
+      const containsActive = methods.some((method) => method.id === state.pointId);
+      const containsRelated = methods.some((method) => state.reviewPointIds.has(method.id));
+      details.open = containsActive || containsRelated || Boolean(state.query);
+      const summary = document.createElement("summary");
+      summary.innerHTML = `<span class="course-stage">${escapeHtml(chapter.stage)}</span><span><strong>${escapeHtml(chapter.id)} · ${escapeHtml(chapter.name)}</strong><small>${escapeHtml(chapter.goal)}</small></span><b>${methods.length}</b>`;
+      details.append(summary);
+      methods.forEach((method) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        const isActive = method.id === state.pointId;
+        const isRelated = state.reviewPointIds.has(method.id);
+        button.className = `point-item${isActive ? " is-active" : ""}${isRelated ? " is-related" : ""}`;
+        if (isRelated) button.setAttribute("aria-label", `${method.id} ${method.name} · 当前错题涉及`);
+        button.innerHTML = `<span class="point-id">${escapeHtml(method.id)}</span><span class="point-name">${escapeHtml(method.name)}</span><span class="point-count">${method.primary_count}</span>`;
+        button.addEventListener("click", () => selectPoint(method.id));
+        details.append(button);
+      });
+      return details;
+    }).filter(Boolean);
+    el.pointList.replaceChildren(...groups);
   }
 
   function applyLearnerFacingMethodFixes() {
@@ -202,45 +232,95 @@
 
   function renderPointContent() {
     const method = methodsById.get(state.pointId);
+    const chapter = chaptersById.get(curriculum.pointToChapter[method.id]);
     const progress = state.progress.points[state.pointId] || { attempts: 0, correct: 0, total: 0 };
     const accuracy = progress.total ? `${Math.round(progress.correct / progress.total * 100)}% 正确` : "尚未练习";
-    el.pointModule.textContent = `${method.id} · ${method.module}`;
-    el.pointTitle.textContent = method.name;
-    el.pointFrequency.textContent = `主考点 ${method.primary_count} 次 · 关联 ${method.all_link_count} 次`;
+    const representativePrimaryCount = data.questions.reduce((count, question) => count + (question.blank_map || []).filter((blank) => blank.primary_point === method.id).length, 0);
+    const variantPrimaryCount = variantQuestions.reduce((count, question) => count + (question.blank_map || []).filter((blank) => blank.primary_point === method.id).length, 0);
+    el.pointModule.textContent = `${chapter.id} · ${chapter.stage} · ${chapter.name}`;
+    el.pointTitle.textContent = `${method.id} · ${method.name}`;
+    el.pointFrequency.textContent = `全库主考 ${method.primary_count} · 代表题 ${representativePrimaryCount} · 变式题 ${variantPrimaryCount} · 关联 ${method.all_link_count}`;
     el.pointProgress.textContent = progress.attempts ? `${progress.attempts} 次练习 · ${accuracy}` : accuracy;
     el.pointPanel.innerHTML = `
-      <div class="lead-card">
-        <p class="eyebrow">这个考点解决什么</p>
-        <h3>${escapeHtml(method.name)}</h3>
+      <div class="signal-grid">
+        <section class="signal-card"><span>看到什么</span><h3>${escapeHtml(chapter.trigger)}</h3></section>
+        <section class="signal-card action-card"><span>立即做什么</span><h3>${escapeHtml(chapter.action)}</h3></section>
+      </div>
+      <div class="lead-card compact-lead">
+        <p class="eyebrow">这个细分考点解决什么</p>
         <p>${escapeHtml(method.core_method)}</p>
       </div>
-      <div class="info-grid">
-        <div class="info-box"><span>题库主考频次</span><strong>${method.primary_count} 空</strong></div>
-        <div class="info-box"><span>含关联考点</span><strong>${method.all_link_count} 空</strong></div>
-        <div class="info-box"><span>专项练习</span><strong>${state.practiceQuestions.length} 题</strong></div>
-      </div>`;
+      <details class="point-metadata">
+        <summary>查看频次和题库覆盖</summary>
+        <div class="info-grid">
+          <div class="info-box"><span>全库主考频次</span><strong>${method.primary_count} 空</strong></div>
+          <div class="info-box"><span>当前代表题主考</span><strong>${representativePrimaryCount} 空</strong></div>
+          <div class="info-box"><span>当前变式题主考</span><strong>${variantPrimaryCount} 空</strong></div>
+          <div class="info-box"><span>含关联考点</span><strong>${method.all_link_count} 空</strong></div>
+          <div class="info-box"><span>专项练习</span><strong>${state.practiceQuestions.length} 题</strong></div>
+        </div>
+      </details>`;
     el.methodPanel.innerHTML = `
-      <h3 class="section-heading">固定解题顺序</h3>
+      ${method.memory_rule ? `<section class="memory-rule-card"><span>一句话规则</span><strong>${escapeHtml(method.memory_rule)}</strong></section>` : ""}
+      <h3 class="section-heading method-heading">考场动作</h3>
       <ol class="step-list">${method.decision_steps.map((step) => `<li>${escapeHtml(step)}</li>`).join("")}</ol>`;
-    const boundaryTitle = method.id === "C08" ? "不能只靠固定搭配的情况" : "容易混淆的情况";
     const quickChecks = method.quick_checks || [];
     const judgmentContent = quickChecks.length
       ? `<ul>${quickChecks.map((tip) => `<li>${escapeHtml(tip)}</li>`).join("")}</ul>`
-      : `<div class="example-list">${renderExamples(method.normal_examples)}</div>`;
-    const boundaryContent = quickChecks.length ? "" : `
-      <section class="tip-card tip-card-wide"><h4>${boundaryTitle}</h4><div class="example-list">${renderExamples(method.contrast_examples)}</div></section>`;
+      : `<div class="example-list">${renderExamples((method.normal_examples || []).slice(0, 1))}</div>`;
+    const examplesContent = `<section class="tip-card tip-card-wide"><h4>跟着做一遍</h4><div class="example-list">${renderExamples((method.normal_examples || []).slice(0, 2), "normal")}</div></section>`;
+    const boundaryContent = (method.contrast_examples || []).length
+      ? `<section class="tip-card tip-card-wide"><h4>边界与易混</h4><div class="example-list">${renderExamples((method.contrast_examples || []).slice(0, 2), "contrast")}</div></section>`
+      : "";
     el.tipsPanel.innerHTML = `
       <div class="tip-grid">
-        ${method.memory_rule ? `<section class="memory-rule-card"><span>做题口诀</span><strong>${escapeHtml(method.memory_rule)}</strong></section>` : ""}
         <section class="tip-card"><h4>最容易错在哪里</h4><ul>${method.traps.map((tip) => `<li>${escapeHtml(tip)}</li>`).join("")}</ul></section>
-        <section class="tip-card"><h4>${quickChecks.length ? "一眼识别" : "怎么判断"}</h4>${judgmentContent}</section>
+        <section class="tip-card"><h4>${quickChecks.length ? "一眼识别" : "典型例子"}</h4>${judgmentContent}</section>
+        ${examplesContent}
         ${boundaryContent}
       </div>`;
   }
 
-  function renderExamples(examples) {
+  function renderExamples(examples, kind = "normal") {
     if (!examples || !examples.length) return "<p>暂无代表例。</p>";
-    return examples.map((item) => `<div class="example"><strong>${escapeHtml(item.bid)} · ${escapeHtml(item.answer)}</strong><br>${escapeHtml(item.evidence)}</div>`).join("");
+    return examples.map((item) => `<div class="example"><strong>${escapeHtml(item.bid)} · ${escapeHtml(item.answer)}</strong>${renderExampleContext(item)}<br>${escapeHtml(learnerExampleEvidence(item, kind))}</div>`).join("");
+  }
+
+  function renderExampleContext(item) {
+    const [source, rawIndex] = String(item.bid || "").split(":");
+    const targetIndex = Number(rawIndex) - 1;
+    const question = practiceCatalogue.find((candidate) => candidate.source === source);
+    if (!question || !Number.isInteger(targetIndex) || targetIndex < 0) return "";
+    const marker = "\uE000";
+    let blankIndex = 0;
+    const filled = question.passage.replace(/【[^】]*】/g, () => {
+      const value = blankIndex === targetIndex ? marker : (question.answers[blankIndex] || "___");
+      blankIndex += 1;
+      return value;
+    });
+    const markerIndex = filled.indexOf(marker);
+    if (markerIndex < 0) return "";
+    const sentenceStart = Math.max(filled.lastIndexOf(".", markerIndex - 1), filled.lastIndexOf("?", markerIndex - 1), filled.lastIndexOf("!", markerIndex - 1)) + 1;
+    const endings = [filled.indexOf(".", markerIndex), filled.indexOf("?", markerIndex), filled.indexOf("!", markerIndex)].filter((index) => index >= 0);
+    const sentenceEnd = endings.length ? Math.min(...endings) + 1 : filled.length;
+    const sentence = filled.slice(sentenceStart, sentenceEnd).trim();
+    const [before, after] = sentence.split(marker);
+    const options = question.type === "RW" ? question.options?.[targetIndex] : "答案池回忆训练（R题没有原始干扰项）";
+    return `<div class="example-context"><span>原句</span><p>${escapeHtml(before)}<mark>${escapeHtml(item.answer)}</mark>${escapeHtml(after || "")}</p><small>${escapeHtml(options || "")}</small></div>`;
+  }
+
+  function learnerExampleEvidence(item, kind) {
+    const evidence = String(item.evidence || "")
+      .replace(/^本题全文与原选项已重新核对；\s*/u, "")
+      .replace(/^逐项比较[^，]*后，/u, "线索：")
+      .replace(/由句法形式、搭配或全文逻辑获得有效排他证据。?$/u, "")
+      .trim();
+    if (/给定答案|原选项|题内证据不足以认证唯一/u.test(evidence)) {
+      return kind === "contrast"
+        ? `边界：${item.answer}可以成立，但其他近义选项也可能通顺；继续检查整句的范围、强弱和事实。`
+        : `线索：${evidence.replace(/给定答案[^，。]*[，。]?/u, "").trim()}`;
+    }
+    return evidence;
   }
 
   function setTab(tab) {
@@ -268,17 +348,19 @@
       el.passageCard.textContent = "此处会在后续全题库训练扩展中继续补题。";
       return;
     }
-    el.questionSource.textContent = `${question.type} · ${question.source}`;
+    state.targetBlankIndices = core.pointBlankIndices(question, state.pointId);
+    el.questionSource.textContent = `${question.type} · ${question.source}${question.source.startsWith("V-") ? " · 变式训练" : ""}`;
     el.questionTitle.textContent = question.title || question.source;
     const practiceMode = question.type === "R" ? "本题答案池选择" : "原始选项选择";
     el.questionMeta.textContent = `专项第 ${state.questionIndex + 1} / ${state.practiceQuestions.length} 题 · ${question.answers.length} 空 · ${practiceMode}`;
     el.practiceStatus.textContent = "点击“开始本题”后开始计时；所有空均使用选择，不需要手打单词。";
-    renderPassage(question, true);
+    renderPassage(question, true, state.targetBlankIndices);
   }
 
-  function renderPassage(question, locked) {
+  function renderPassage(question, locked, targetIndices = []) {
     const parts = question.passage.split(/【([^】]*)】/g);
     const fragment = document.createDocumentFragment();
+    const targetSet = new Set(targetIndices);
     let blankIndex = 0;
     parts.forEach((part, index) => {
       if (index % 2 === 0) {
@@ -286,11 +368,11 @@
         return;
       }
       const wrapper = document.createElement("span");
-      wrapper.className = "blank-field";
+      wrapper.className = `blank-field${targetSet.has(blankIndex) ? " is-target" : ""}`;
       wrapper.dataset.blankIndex = String(blankIndex);
       const select = document.createElement("select");
       select.disabled = locked;
-      select.setAttribute("aria-label", `第 ${blankIndex + 1} 空`);
+      select.setAttribute("aria-label", `第 ${blankIndex + 1} 空${targetSet.has(blankIndex) ? " · 当前考点" : ""}`);
       select.append(new Option(`第 ${blankIndex + 1} 空`, ""));
       const choices = question.type === "RW"
         ? parseOptions(question.options[blankIndex] || part)
@@ -320,7 +402,7 @@
     el.returnReviewBar.hidden = true;
     el.resultPanel.hidden = true;
     renderPointList();
-    renderPassage(question, false);
+    renderPassage(question, false, state.targetBlankIndices);
     el.questionTimer.textContent = "00:00";
     el.submitQuestion.disabled = false;
     el.startQuestion.textContent = "重新开始";
@@ -350,7 +432,7 @@
     stopTimer();
     const controls = [...el.passageCard.querySelectorAll("select, input")];
     const responses = controls.map((control) => control.value);
-    const result = core.gradeQuestion(question, responses);
+    const result = core.gradeQuestion(question, responses, state.targetBlankIndices);
     result.seconds = state.elapsedSeconds;
     state.lastResult = result;
     controls.forEach((control, index) => {
@@ -358,6 +440,7 @@
       const detail = result.details[index];
       const wrapper = control.closest(".blank-field");
       wrapper.classList.add(detail.correct ? "is-correct" : "is-wrong");
+      wrapper.classList.toggle("is-target", result.targetIndices.includes(index));
       if (!detail.correct) {
         const note = document.createElement("span");
         note.className = "answer-note";
@@ -367,7 +450,10 @@
     });
     el.submitQuestion.disabled = true;
     el.practiceStatus.className = `practice-status${result.wrong === 0 ? " is-good" : ""}`;
-    el.practiceStatus.textContent = `已提交：答对 ${result.correct}，答错 ${result.wrong}，用时 ${core.formatDuration(result.seconds)}。`;
+    const targetSummary = result.targetTotal < result.total
+      ? `当前考点 ${result.targetCorrect} / ${result.targetTotal}`
+      : `本题 ${result.correct} / ${result.total}`;
+    el.practiceStatus.textContent = `已提交：${targetSummary}；整题答对 ${result.correct}，答错 ${result.wrong}，用时 ${core.formatDuration(result.seconds)}。`;
     recordProgress(result);
     renderPointContent();
     showResult(result);
@@ -376,13 +462,14 @@
   function recordProgress(result) {
     const current = state.progress.points[state.pointId] || { attempts: 0, correct: 0, total: 0, seconds: 0 };
     current.attempts += 1;
-    current.correct += result.correct;
-    current.total += result.total;
+    current.correct += result.targetCorrect;
+    current.total += result.targetTotal;
     current.seconds += result.seconds;
     state.progress.points[state.pointId] = current;
     state.progress.sessions.push({
       at: new Date().toISOString(), pointId: state.pointId, source: currentQuestion().source,
-      correct: result.correct, total: result.total, seconds: result.seconds
+      correct: result.targetCorrect, total: result.targetTotal, seconds: result.seconds,
+      questionCorrect: result.correct, questionTotal: result.total
     });
     state.progress.sessions = state.progress.sessions.slice(-200);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state.progress));
@@ -391,7 +478,7 @@
   function showResult(result) {
     el.resultTitle.textContent = result.wrong ? `有 ${result.wrong} 个空需要复盘` : "全部答对";
     el.scoreStrip.innerHTML = [
-      [result.total, "总空数"], [result.correct, "答对"], [result.wrong, "答错"], [core.formatDuration(result.seconds), "用时"]
+      [result.targetTotal, "当前考点空数"], [result.targetCorrect, "考点答对"], [result.targetWrong, "考点答错"], [result.total, "整题空数"], [core.formatDuration(result.seconds), "用时"]
     ].map(([value, label]) => `<div class="score-cell"><strong>${value}</strong><span>${label}</span></div>`).join("");
     const wrong = result.details.filter((detail) => !detail.correct);
     state.reviewPointIds = new Set(wrong.flatMap((detail) => {

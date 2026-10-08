@@ -2,31 +2,46 @@
   "use strict";
 
   const catalogue = (window.READING_COLLOCATIONS && window.READING_COLLOCATIONS.items) || [];
+  const tierRules = window.READING_COLLOCATION_TIERS;
+  const examples = window.READING_COLLOCATION_EXAMPLES || {};
+  const exampleTranslations = window.READING_COLLOCATION_EXAMPLE_TRANSLATIONS || {};
   const catalogueById = new Map(catalogue.map((item) => [item.id, item]));
-  const SESSION_KEY = "pte-reading-collocation-session-v1";
+  const SESSION_KEY = "pte-reading-collocation-session-v3";
 
   const el = {};
   [
-    "readingShell", "readingModeSwitcher", "examGuide", "collocationModule", "collocationCount",
-    "collocationSetup", "rangeStart", "rangeEnd", "startCollocationSession", "rangeMessage",
+    "readingShell", "readingModeSwitcher", "examGuide", "recognitionModule", "collocationModule", "collocationCount",
+    "collocationSetup", "collocationTierPicker", "mustTierCount", "usefulTierCount", "referenceTierCount", "allTierCount",
+    "rangeStart", "rangeEnd", "startCollocationSession", "rangeMessage",
     "collocationStudy", "studyRange", "rememberedCount", "studySeenCount", "cardId",
-    "cardCategory", "cardPhrase", "cardMeaning", "notYetCollocation", "rememberCollocation",
+    "cardCategory", "cardPhrase", "cardMeaning", "memoryExample", "cardExample", "cardExampleTranslation", "notYetCollocation", "rememberCollocation",
     "collocationTest", "testRange", "testProgress", "testAnswered", "testCardId",
     "testPhrase", "testOptions", "collocationResult", "collocationResultTitle",
     "collocationScore", "collocationWrongList", "retryWrongCollocations"
   ].forEach((id) => { el[id] = document.getElementById(id); });
 
-  if (!el.readingShell || !catalogue.length) return;
+  if (!el.readingShell || !catalogue.length || !tierRules) return;
 
+  const tierCounts = tierRules.summarize(catalogue);
+  let selectedTier = "must";
   let session = loadSession();
+  if (session) selectedTier = session.tier;
+
   init();
 
   function init() {
     el.collocationCount.textContent = catalogue.length;
-    el.rangeStart.max = String(catalogue.length);
-    el.rangeEnd.max = String(catalogue.length);
-    el.rangeEnd.value = String(Math.min(30, catalogue.length));
+    el.mustTierCount.textContent = `${tierCounts.must}条`;
+    el.usefulTierCount.textContent = `${tierCounts.useful}条`;
+    el.referenceTierCount.textContent = `${tierCounts.reference}条`;
+    el.allTierCount.textContent = `${tierCounts.all}条`;
+    const activeCount = tierCounts[selectedTier];
+    el.rangeStart.max = String(activeCount);
+    el.rangeEnd.max = String(activeCount);
+    el.rangeEnd.value = String(Math.min(100, activeCount));
     bindEvents();
+    renderTierPicker();
+    if (!session) showRangeSummary();
     renderSession();
   }
 
@@ -36,8 +51,20 @@
       if (button) setMode(button.dataset.readingMode);
     });
     el.startCollocationSession.addEventListener("click", startSession);
+    [el.rangeStart, el.rangeEnd].forEach((input) => input.addEventListener("change", () => showRangeSummary()));
+    el.collocationTierPicker.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-collocation-tier]");
+      if (button) selectTier(button.dataset.collocationTier);
+    });
     document.querySelectorAll("[data-range-size]").forEach((button) => {
       button.addEventListener("click", () => applyRangeSize(Number(button.dataset.rangeSize)));
+    });
+    document.querySelectorAll("[data-range-start][data-range-end]").forEach((button) => {
+      button.addEventListener("click", () => applyExactRange(
+        Number(button.dataset.rangeStart),
+        Number(button.dataset.rangeEnd),
+        button.textContent.trim()
+      ));
     });
     document.querySelectorAll("[data-reset-collocations]").forEach((button) => {
       button.addEventListener("click", resetSession);
@@ -49,9 +76,10 @@
   }
 
   function setMode(mode) {
-    if (!["guide", "points", "collocations"].includes(mode)) return;
+    if (!["guide", "points", "recognition", "collocations"].includes(mode)) return;
     el.readingShell.dataset.mode = mode;
     el.examGuide.hidden = mode !== "guide";
+    el.recognitionModule.hidden = mode !== "recognition";
     el.collocationModule.hidden = mode !== "collocations";
     el.readingModeSwitcher.querySelectorAll("[data-reading-mode]").forEach((button) => {
       button.classList.toggle("is-active", button.dataset.readingMode === mode);
@@ -60,23 +88,73 @@
   }
 
   function applyRangeSize(size) {
-    const start = clampNumber(el.rangeStart.value, 1, catalogue.length) || 1;
+    const activeCount = tierItems().length;
+    const start = clampNumber(el.rangeStart.value, 1, activeCount) || 1;
     el.rangeStart.value = String(start);
-    el.rangeEnd.value = String(Math.min(catalogue.length, start + size - 1));
-    showRangeMessage(`已选择 ${formatId(start)}—${formatId(Number(el.rangeEnd.value))}，共 ${Number(el.rangeEnd.value) - start + 1} 条。`, false);
+    el.rangeEnd.value = String(Math.min(activeCount, start + size - 1));
+    showRangeSummary();
+  }
+
+  function applyExactRange(start, end, label) {
+    const activeCount = tierItems().length;
+    el.rangeStart.value = String(clampNumber(start, 1, activeCount));
+    el.rangeEnd.value = String(clampNumber(end, 1, activeCount));
+    showRangeSummary(label);
+  }
+
+  function selectTier(tier) {
+    if (!tierRules.LABELS[tier] || session) return;
+    selectedTier = tier;
+    const activeCount = tierCounts[tier];
+    el.rangeStart.max = String(activeCount);
+    el.rangeEnd.max = String(activeCount);
+    el.rangeStart.value = "1";
+    el.rangeEnd.value = String(Math.min(100, activeCount));
+    renderTierPicker();
+    showRangeSummary();
+  }
+
+  function renderTierPicker() {
+    el.collocationTierPicker.querySelectorAll("[data-collocation-tier]").forEach((button) => {
+      button.classList.toggle("is-active", button.dataset.collocationTier === selectedTier);
+    });
+  }
+
+  function tierItems(tier = selectedTier) {
+    return tier === "all" ? catalogue : catalogue.filter((item) => tierRules.classify(item) === tier);
+  }
+
+  function itemsInRange(start, end, tier = selectedTier) {
+    return tierItems(tier).slice(start - 1, end);
+  }
+
+  function showRangeSummary(prefix) {
+    const activeCount = tierItems().length;
+    const start = clampNumber(el.rangeStart.value, 1, activeCount) || 1;
+    const end = clampNumber(el.rangeEnd.value, 1, activeCount) || activeCount;
+    const selected = start <= end ? itemsInRange(start, end) : [];
+    const lead = prefix ? `${prefix}：` : "";
+    const originalIds = selected.length ? `；原编号 ${selected[0].id}—${selected[selected.length - 1].id}` : "";
+    showRangeMessage(`${lead}“${tierRules.LABELS[selectedTier]}”第 ${start}—${end} 条，共 ${selected.length} 张${originalIds}。`, selected.length === 0);
   }
 
   function startSession() {
     const start = Number(el.rangeStart.value);
     const end = Number(el.rangeEnd.value);
-    if (!Number.isInteger(start) || !Number.isInteger(end) || start < 1 || end > catalogue.length || start > end) {
-      showRangeMessage(`请输入 1—${catalogue.length} 内的有效范围，且起始编号不能大于结束编号。`, true);
+    const activeCount = tierItems().length;
+    if (!Number.isInteger(start) || !Number.isInteger(end) || start < 1 || end > activeCount || start > end) {
+      showRangeMessage(`请输入 1—${activeCount} 内的有效范围，且起始位置不能大于结束位置。`, true);
       return;
     }
 
-    const selectedIds = catalogue.slice(start - 1, end).map((item) => item.id);
+    const selectedIds = itemsInRange(start, end).map((item) => item.id);
+    if (!selectedIds.length) {
+      showRangeMessage(`当前层的这个范围没有卡片，请调整起止位置。`, true);
+      return;
+    }
     session = {
-      version: 1,
+      version: 3,
+      tier: selectedTier,
       start,
       end,
       selectedIds,
@@ -145,9 +223,13 @@
   function resetSession() {
     session = null;
     sessionStorage.removeItem(SESSION_KEY);
+    const activeCount = tierItems().length;
+    el.rangeStart.max = String(activeCount);
+    el.rangeEnd.max = String(activeCount);
     el.rangeStart.value = "1";
-    el.rangeEnd.value = String(Math.min(30, catalogue.length));
-    showRangeMessage("例如：K001—K030。建议一次学习 20—50 条。", false);
+    el.rangeEnd.value = String(Math.min(100, activeCount));
+    renderTierPicker();
+    showRangeSummary();
     renderSession();
   }
 
@@ -177,6 +259,9 @@
     el.cardCategory.textContent = item.category;
     el.cardPhrase.textContent = item.phrase;
     el.cardMeaning.textContent = item.meaning;
+    el.cardExample.textContent = examples[item.id] || "";
+    el.cardExampleTranslation.textContent = exampleTranslations[item.id] || "";
+    el.memoryExample.hidden = !examples[item.id];
   }
 
   function renderTest() {
@@ -243,7 +328,7 @@
   }
 
   function rangeLabel() {
-    return `${formatId(session.start)}—${formatId(session.end)} · ${session.selectedIds.length} 条`;
+    return `${tierRules.LABELS[session.tier]} · 第${session.start}—${session.end}条 · ${session.selectedIds.length} 张`;
   }
 
   function formatId(number) {
@@ -280,7 +365,7 @@
   function loadSession() {
     try {
       const parsed = JSON.parse(sessionStorage.getItem(SESSION_KEY));
-      if (!parsed || parsed.version !== 1 || !Array.isArray(parsed.selectedIds)) return null;
+      if (!parsed || parsed.version !== 3 || !tierRules.LABELS[parsed.tier] || !Array.isArray(parsed.selectedIds)) return null;
       if (!parsed.selectedIds.every((id) => catalogueById.has(id))) return null;
       return parsed;
     } catch (_) {
@@ -294,5 +379,5 @@
     })[character]);
   }
 
-  window.ReadingStudy = { setMode, resetSession };
+  window.ReadingStudy = { setMode, resetSession, classifyCollocation: tierRules.classify };
 })();

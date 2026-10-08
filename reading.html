@@ -18,12 +18,13 @@
         </header>
         <div class="sidebar-controls">
           <label>
-            <span>搜索考点</span>
-            <input id="pointSearch" type="search" placeholder="时态 / 搭配 / S02" autocomplete="off">
+            <span>搜索课程或细分考点</span>
+            <input id="pointSearch" type="search" placeholder="非谓语 / 搭配 / G06" autocomplete="off">
           </label>
-          <div class="point-filters" aria-label="考点筛选">
+          <div class="point-filters" aria-label="课程阶段筛选">
             <button class="is-active" type="button" data-point-filter="all">全部</button>
-            <button type="button" data-point-filter="high">高频</button>
+            <button type="button" data-point-filter="form">先学形</button>
+            <button type="button" data-point-filter="later">搭·逻·义</button>
             <button type="button" data-point-filter="weak">待补</button>
           </div>
         </div>
@@ -33,58 +34,94 @@
       <main class="reading-main">
         <nav class="reading-mode-switcher" id="readingModeSwitcher" aria-label="Reading 学习方式">
           <button type="button" data-reading-mode="guide">考场总纲</button>
-          <button class="is-active" type="button" data-reading-mode="points">考点学习</button>
+          <button class="is-active" type="button" data-reading-mode="points">课程学习</button>
+          <button type="button" data-reading-mode="recognition">识别训练</button>
           <button type="button" data-reading-mode="collocations">固定搭配</button>
         </nav>
 
         <section class="standalone-module guide-module" id="examGuide" hidden>
           <header class="module-heading">
-            <p class="eyebrow">1—2 分钟的做题路线</p>
-            <h2>先形，后搭，再逻辑，最后词义</h2>
-            <p>不要在考场搜索 44 个考点。每个空只按下面四步判断，在哪一步获得排他证据就停止。</p>
+            <p class="eyebrow">考前 30 秒行动卡</p>
+            <h2>形 → 搭 → 逻 → 义</h2>
+            <p>不是先认编号，也不是逐个翻译选项。按顺序扫描，哪一步出现决定性证据就停止。</p>
           </header>
           <div class="guide-route">
-            <article><span>01 · 形</span><h3>形式不同，先看语法</h3><p>词性、时态、主动被动、单复数、非谓语和并列形式。</p></article>
-            <article><span>02 · 搭</span><h3>前后卡得紧，看搭配</h3><p>把空格与前后 2—4 个词连读，识别固定结构、短语动词和学术词块。</p></article>
-            <article><span>03 · 逻</span><h3>连接句子，看逻辑</h3><p>判断因果、转折、让步、递进、举例、指代和主题词链。</p></article>
-            <article><span>04 · 义</span><h3>形式都相同，再比词义</h3><p>比较动作对象、褒贬、范围、强弱与全文事实，不凭中文近义硬猜。</p></article>
+            <article><span>01 · 定形</span><h3>空里允许放什么？</h3><p>看冠词、系动词、助动词、介词、名词和并列结构，先排除词性或形式不可能的选项。</p></article>
+            <article><span>02 · 找搭</span><h3>左右能否组成整块？</h3><p>连读空格前后 2—4 个词，检查动名搭配、介词配价、短语动词和固定词块。</p></article>
+            <article><span>03 · 看逻</span><h3>前后是什么关系？</h3><p>检查指代、复现、定义、因果、转折、递进和条件；局部证据足够就不用通读全文。</p></article>
+            <article><span>04 · 辨义</span><h3>剩余词差在哪里？</h3><p>只比较剩余选项的动作对象、方向、范围、强度、语域和全文事实。</p></article>
           </div>
           <div class="guide-bottom">
             <section>
-              <h3>10 秒识别器</h3>
+              <h3>看到信号，立即动作</h3>
               <ul>
-                <li>选项词形不同 → 先走“形”。</li>
-                <li>选项是介词、小词或短语 → 先走“搭”。</li>
-                <li>选项是连接词或逻辑副词 → 先走“逻”。</li>
-                <li>选项词性、形式都相同 → 进入“义”。</li>
+                <li>介词后是动作 → 先检查 doing。</li>
+                <li>空后紧跟名词 → 先检查修饰词或限定词。</li>
+                <li>and / or / but → 先检查两侧是否同级。</li>
+                <li>选项形式完全相同 → 不再纠缠语法，转向搭配和词义。</li>
               </ul>
             </section>
             <section>
-              <h3>时间上限</h3>
-              <p><strong>每空 8—12 秒。</strong>超过 15 秒仍剩两个选项，先选更符合搭配和上下文的一个，继续下一空；最后再整句回读。</p>
+              <h3>止损规则</h3>
+              <p><strong>一般空控制在 10—15 秒。</strong>超过 20 秒仍剩两个选项，保留候选先做后空；利用后文信息返回，不让一个空拖垮整篇。</p>
             </section>
           </div>
         </section>
 
+        <section class="standalone-module recognition-module" id="recognitionModule" hidden>
+          <header class="module-heading recognition-heading">
+            <div>
+              <p class="eyebrow">混合考点 · 不提前提示章节</p>
+              <h2>定位决定性证据</h2>
+              <p>每轮随机20空。扫描顺序始终是“形→搭→逻→义”；你要判断的是哪一层最先出现足以锁定答案的证据。</p>
+            </div>
+            <div class="recognition-actions">
+              <button class="primary-button" id="recognitionStart" type="button">开始20空</button>
+              <button class="secondary-button" id="recognitionReset" type="button" hidden>重新抽题</button>
+            </div>
+          </header>
+          <section class="recognition-card">
+            <div class="session-bar recognition-status">
+              <div><span>进度</span><strong id="recognitionProgress">尚未开始</strong></div>
+              <div><span>正确率</span><strong id="recognitionAccuracy">目标：定位决定证据</strong></div>
+              <div><span>来源</span><strong id="recognitionSource">随机抽取代表题中的空</strong></div>
+            </div>
+            <p class="recognition-snippet" id="recognitionSnippet">点击“开始20空”。按形→搭→逻→义扫描，判断答案在哪一层被真正锁定。</p>
+            <div class="recognition-options" id="recognitionOptions"></div>
+            <div class="recognition-routes" id="recognitionRoutes"></div>
+            <div class="recognition-feedback" id="recognitionFeedback" hidden></div>
+            <div class="recognition-next-row">
+              <button class="primary-button" id="recognitionNext" type="button" hidden>下一空</button>
+            </div>
+          </section>
+        </section>
+
         <section class="standalone-module collocation-module" id="collocationModule" hidden>
           <header class="module-heading">
-            <p class="eyebrow">全题库词块</p>
+            <p class="eyebrow">核心主线＋可选扩展</p>
             <h2>固定搭配卡片</h2>
-            <p>共 <strong id="collocationCount">—</strong> 条。选择编号范围后，只学习这一组；记住的本轮不再出现，没记住的稍后随机重现。</p>
+            <p>完整词库 <strong id="collocationCount">—</strong> 条，但默认只学能直接帮助排除选项的高收益搭配。原 K 编号保留，方便从错题反查。</p>
           </header>
 
           <section class="range-card" id="collocationSetup">
+            <div class="tier-picker" id="collocationTierPicker" aria-label="搭配学习层级">
+              <button class="is-active" type="button" data-collocation-tier="must"><strong>必背</strong><span id="mustTierCount">—</span><small>形式陷阱、固定介词、句型槽位、非字面表达</small></button>
+              <button type="button" data-collocation-tier="useful"><strong>结构扩展</strong><span id="usefulTierCount">—</span><small>成立但较容易逐词理解的搭配</small></button>
+              <button type="button" data-collocation-tier="reference"><strong>查阅词块</strong><span id="referenceTierCount">—</span><small>普通学术组合，遇到错题再学</small></button>
+              <button type="button" data-collocation-tier="all"><strong>全部</strong><span id="allTierCount">—</span><small>仅用于完整检索，不建议直接背完</small></button>
+            </div>
             <div class="range-fields">
-              <label>起始编号 <span>K</span><input id="rangeStart" type="number" min="1" value="1" inputmode="numeric"></label>
-              <label>结束编号 <span>K</span><input id="rangeEnd" type="number" min="1" value="30" inputmode="numeric"></label>
+              <label>当前层起始 <input id="rangeStart" type="number" min="1" value="1" inputmode="numeric"></label>
+              <label>当前层结束 <input id="rangeEnd" type="number" min="1" value="100" inputmode="numeric"></label>
               <button class="primary-button" id="startCollocationSession" type="button">生成学习卡片</button>
             </div>
-            <div class="range-presets" aria-label="常用范围">
-              <button type="button" data-range-size="20">20 条</button>
-              <button type="button" data-range-size="30">30 条</button>
-              <button type="button" data-range-size="50">50 条</button>
+            <div class="range-presets" aria-label="推荐范围">
+              <button type="button" data-range-size="20">从当前起20条</button>
+              <button type="button" data-range-start="1" data-range-end="50">本层前50条</button>
+              <button type="button" data-range-start="1" data-range-end="100">本层前100条</button>
+              <button type="button" data-range-start="1" data-range-end="683">当前层全部</button>
             </div>
-            <p class="range-message" id="rangeMessage">例如：K001—K030。建议一次学习 20—50 条。</p>
+            <p class="range-message" id="rangeMessage">范围按当前层计数：选择1—100就是100张；卡片上的原K编号仅用于错题反查。</p>
           </section>
 
           <section class="deck-panel" id="collocationStudy" hidden>
@@ -97,6 +134,7 @@
             <article class="memory-card">
               <div class="memory-card-meta"><span id="cardId">K001</span><span id="cardCategory">结构搭配</span></div>
               <div class="memory-pair"><strong id="cardPhrase">—</strong><span aria-hidden="true">→</span><p id="cardMeaning">—</p></div>
+              <div class="memory-example" id="memoryExample"><span>例</span><div><p id="cardExample">—</p><p class="example-translation" id="cardExampleTranslation">—</p></div></div>
             </article>
             <div class="memory-actions">
               <button class="secondary-button not-yet-button" id="notYetCollocation" type="button">还没记住 · 稍后再来</button>
@@ -147,9 +185,9 @@
         </div>
 
         <nav class="content-tabs" id="contentTabs" aria-label="考点学习模块">
-          <button class="is-active" type="button" data-tab="point">考点</button>
+          <button class="is-active" type="button" data-tab="point">识别</button>
           <button type="button" data-tab="method">解法</button>
-          <button type="button" data-tab="tips">技巧</button>
+          <button type="button" data-tab="tips">避坑</button>
           <button type="button" data-tab="practice">练习</button>
         </nav>
 
@@ -192,11 +230,17 @@
     </div>
 
     <script src="./reading-data.js"></script>
+    <script src="./reading-variants.js"></script>
     <script src="./reading-method-guides.js"></script>
     <script src="./reading-explanations.js"></script>
     <script src="./reading-collocations.js"></script>
+    <script src="./reading-collocation-examples.js"></script>
+    <script src="./reading-collocation-example-translations.js"></script>
+    <script src="./reading-collocation-tiers.js"></script>
+    <script src="./reading-curriculum.js"></script>
     <script src="./reading-core.js"></script>
     <script src="./reading.js"></script>
     <script src="./reading-study.js"></script>
+    <script src="./reading-recognition.js"></script>
   </body>
 </html>

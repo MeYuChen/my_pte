@@ -780,13 +780,13 @@ window.READING_COLLOCATIONS = {
     {
       "id": "K130",
       "phrase": "compare A to B",
-      "meaning": "与……比较或比作；是否比喻由语境决定",
+      "meaning": "把A与B相比或把A比作B；强调相似、类比时更常用to，普通比较也可用",
       "category": "结构搭配"
     },
     {
       "id": "K131",
       "phrase": "compare A with B",
-      "meaning": "与……比较；compare A with B",
+      "meaning": "比较A和B；逐项比较异同更常用with，与强调类比的compare A to B对照",
       "category": "结构搭配"
     },
     {
