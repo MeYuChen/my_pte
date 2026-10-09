@@ -739,5 +739,24 @@ window.WE_LEARNING_PATHS = {
       "Quality education can also happen without travel.",
       "Travel should be treated as a valuable option rather than a necessary condition for quality education."
     ]
+  },
+  "#101010": {
+    "cnRoute": [
+      "大众媒体影响社会与个人",
+      "引导社会舆论",
+      "塑造个人观点与性格",
+      "提升媒介素养"
+    ],
+    "cnHook": "大众媒体既引导社会舆论，也塑造个人观点与性格；所以应重视媒介素养，谨慎选择媒体内容。",
+    "keywords": [
+      "It can direct public opinion in society.",
+      "It can shape personal opinions and characters."
+    ],
+    "skeleton": [
+      "Agree. The mass media have a profound influence on society and individuals.",
+      "They can direct public opinion in society.",
+      "They can shape personal opinions and characters.",
+      "People should improve media literacy and choose reliable programs carefully."
+    ]
   }
 };

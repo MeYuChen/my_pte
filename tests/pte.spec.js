@@ -33,8 +33,25 @@ test.describe("desktop flows", () => {
     await page.getByRole("button", { name: /#24 Information Revolution/ }).click();
 
     await expect(page.locator("#drillCardTitle")).toHaveText("#24 Information Revolution");
-    await expect(page.locator("#drillProgressText")).toHaveText("16 / 195");
+    await expect(page.locator("#drillProgressText")).toHaveText("16 / 200");
     await expect(page.locator(".level-item.is-active .level-item-title")).toHaveText("#24 Information Revolution");
+  });
+
+  test("extra Mass Media and Society card uses the supplied mnemonic image", async ({ page }) => {
+    await openFresh(page);
+    await page.getByRole("button", { name: "速记", exact: true }).click();
+    await page.locator('.memory-filter-button[data-memory-filter="technology"]').click();
+    await page.getByRole("button", { name: /#101010 Mass Media and Society/ }).click();
+    await expect(page.locator("#levelImage")).toHaveAttribute("src", /101010_Mass_Media_and_Society_memory_card\.jpg\?v=20261009-9/);
+  });
+
+  test("Mass Media and Society article mode shows the supplied path and card", async ({ page }) => {
+    await openFresh(page);
+    await page.getByRole("button", { name: "文章论点", exact: true }).click();
+    await page.getByRole("button", { name: /#101010 Mass Media and Society/ }).click();
+    await expect(page.locator("#learningPathPanel")).toBeVisible();
+    await expect(page.locator("#learningPathHook")).toContainText("引导社会舆论");
+    await expect(page.locator("#levelImage")).toHaveAttribute("src", /101010_Mass_Media_and_Society_memory_card\.jpg\?v=20261009-9/);
   });
 
   test("desktop WFD imports, checks and persists local progress", async ({ page }) => {

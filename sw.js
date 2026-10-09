@@ -1,15 +1,15 @@
-const CACHE_NAME = "pte-we-static-v46-reading-variants";
-const IMAGE_CACHE_NAME = "pte-we-images-v8";
+const CACHE_NAME = "pte-we-static-v47-we-cards";
+const IMAGE_CACHE_NAME = "pte-we-images-v9";
 const SST_IMAGE_ASSETS = Array.from({ length: 54 }, (_, index) => `./images/sst/S${String(index + 1).padStart(3, "0")}.webp`);
 const STATIC_ASSETS = [
   "./",
   "./index.html",
-  "./styles.css?v=20261005-25",
-  "./practice-data.js?v=20261005-25",
-  "./translations.js?v=20261005-25",
-  "./learning-paths.js?v=20261005-25",
-  "./wfd-data.js?v=20261005-25",
-  "./app.js?v=20261005-25",
+  "./styles.css?v=20261009-26",
+  "./practice-data.js?v=20261009-26",
+  "./translations.js?v=20261009-26",
+  "./learning-paths.js?v=20261009-26",
+  "./wfd-data.js?v=20261009-26",
+  "./app.js?v=20261009-26",
   "./reading.html",
   "./reading.css",
   "./reading-core.js",

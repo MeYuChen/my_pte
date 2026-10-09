@@ -9,6 +9,8 @@ All notable changes to this project are recorded here.
 
 ## Unreleased
 
+- Replace all 39 WE memory cards with the unified 1600 × 1220 PNG set from `PTE_WE_39篇_背诵卡_统一程序版`; bump static assets to v26 and image cache to v9.
+- Add the supplied `Mass Media and Society` card for the extra #101010 essay under the technology · media · information category.
 - Publish Reading learning flow: organize 44 fine-grained points into 12 learner courses, add route and point recognition practice, scope point-specific scoring, show full sentence examples and boundary cases, and add 22 labeled transfer variants for low-frequency points.
 - Add a standalone Reading module with 44 audited knowledge points and four linked views: concept, method, tips and practice.
 - Replace audit-style Reading notes across all 44 knowledge points with memorable learner rules; add two quick-recognition cues to each of the 42 standard guides and retain hand-curated clue-driven examples for S02/C08.
