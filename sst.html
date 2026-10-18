@@ -4,23 +4,25 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>PTE SST 学习与考核</title>
-    <link rel="stylesheet" href="./styles.css?v=20261008-4">
-    <link rel="stylesheet" href="./sst.css?v=20261008-4">
+    <link rel="stylesheet" href="./styles.css?v=20261018-16">
+    <link rel="stylesheet" href="./sst.css?v=20261018-16">
   </head>
   <body>
     <div class="app-shell" id="appShell">
       <aside class="sidebar">
-        <div class="brand"><div><h1>PTE SST</h1><p id="progressSummary">0 / 54 已掌握</p></div></div>
+        <div class="brand"><div><h1>PTE SST</h1><p id="progressSummary">0 / 60 已掌握</p></div></div>
         <div class="sidebar-tools">
           <div class="mode-tabs sst-mode-tabs" role="tablist" aria-label="SST 学习模式">
             <button class="mode-tab is-active" data-mode="template" type="button">模板</button>
             <button class="mode-tab" data-mode="learn" type="button">学习</button>
+            <button class="mode-tab" data-mode="vocab" type="button">词汇</button>
             <button class="mode-tab" data-mode="drill" type="button">速记</button>
+            <button class="mode-tab" data-mode="dictation" type="button">听写</button>
             <button class="mode-tab" data-mode="exam" type="button">考核</button>
           </div>
           <div class="module-links"><a href="./index.html">← WE</a><a href="./reading.html">Reading →</a></div>
           <label class="field"><span>搜索题目</span><input id="searchInput" type="search" placeholder="编号 / 标题 / 关键词"></label>
-          <label class="field category-field"><span>主题分类</span><select id="categoryFilter"><option value="all">全部 8 类</option></select></label>
+          <label class="field category-field"><span>主题分类</span><select id="categoryFilter"><option value="all">全部 7 类</option></select></label>
           <div class="segmented" role="group" aria-label="状态筛选">
             <button class="segment is-active" data-filter="all" type="button">全部</button>
             <button class="segment" data-filter="todo" type="button">未过</button>
@@ -70,14 +72,46 @@
 
         <section class="sst-learn" id="learnPanel" hidden>
           <div class="sst-meta"><span id="itemCode"></span><span id="itemType"></span><span id="itemDifficulty"></span><span id="sourceWordCount"></span></div>
+          <article class="study-card" id="audioStudyCard">
+            <span>原音精听 · 音频与原文</span>
+            <audio id="sstAudio" controls preload="metadata" style="width:100%;margin:12px 0"></audio>
+            <div class="audio-options"><label>播放速度 <select id="audioSpeed"><option value="0.75">0.75×</option><option value="0.8">0.8×</option><option value="1" selected>1.0×</option><option value="1.2">1.2×</option><option value="1.5">1.5×</option></select></label><label><input type="checkbox" id="audioLoop"> 循环播放</label></div><p id="audioStatus" class="eyebrow"></p>
+            <details id="transcriptDetails" open><summary>讲座英文原文 / 中文翻译（点击折叠）</summary>
+              <div id="transcriptContents" class="article-source-body"></div>
+            </details>
+          </article>
           <div class="learn-grid">
             <article class="study-card logic-card"><span>中文逻辑</span><div id="logicText"></div></article>
             <article class="study-card"><span>听到就记</span><div class="keyword-list" id="keywordList"></div></article>
           </div>
+          <article class="study-card sst-vocab-article" id="articleVocabSection">
+            <div class="sst-vocab-heading"><div><span>本篇重点词汇</span><h3>生词与固定搭配</h3><p id="articleVocabMeta"></p></div>
+              <div class="sst-vocab-tab-buttons" id="articleVocabTabs"><button type="button" class="is-active" data-article-type="word">单词</button><button type="button" data-article-type="phrase">固定搭配</button></div>
+            </div>
+            <p class="sst-vocab-notice">根据萤火虫文本整理；点开词条显示中文和原文，标记后可在「词汇」模式复习。</p>
+            <div id="articleVocabItems" class="sst-vocab-article-list"></div>
+          </article>
           <article class="study-card mnemonic-card"><span>助记图 · 看图回忆内容</span><img id="mnemonicImage" alt="" loading="eager"></article>
           <article class="study-card answer-card"><span>成品答案</span><div id="answerSentences"></div></article>
         </section>
 
+        <section class="sst-vocab" id="vocabPanel" hidden>
+          <article class="study-card">
+            <span>听力词汇复习 · 2 秒反应训练</span>
+            <div class="sst-vocab-heading"><div><h3>139 个单词 · 59 条短语</h3><p id="vocabProgress"></p></div>
+              <button type="button" id="vocabSpeak" class="secondary-button" title="使用浏览器英文语音朗读，非 SST 原音">朗读词汇</button></div>
+            <div class="sst-vocab-filters">
+              <label>复习范围<select id="vocabScope"><option value="all">全部文章</option><option value="current">当前文章</option></select></label>
+              <label>词条类型<select id="vocabType"><option value="all">单词＋短语</option><option value="word">仅单词</option><option value="phrase">仅短语</option></select></label>
+              <label>掌握状态<select id="vocabStatusFilter"><option value="pending">待复习（排除已会）</option><option value="unknown">不会</option><option value="slow">反应慢</option><option value="unreviewed">未测试</option><option value="known">记住了</option><option value="all">全部状态</option></select></label>
+              <label>搜索词汇<input id="vocabSearch" type="search" placeholder="英文 / 中文 / 题号"></label>
+            </div>
+            <div class="sst-vocab-deck-top"><b id="vocabDeckCount">当前筛选 0 条</b><button type="button" id="vocabNext" class="secondary-button">下一词 →</button></div>
+            <div id="vocabCard" class="sst-vocab-flashcard"></div>
+            <p class="sst-vocab-notice">先看英文，在 2 秒内想出中文；点击显示释义后，选择「不会」「反应慢」「记住了」。进度只保存在此浏览器。</p>
+          </article>
+          <article class="study-card"><span>词库目录 · 点击词条开始复习</span><div id="vocabItemList" class="sst-vocab-list"></div><button type="button" class="secondary-button" id="vocabShowMore">显示更多</button></article>
+        </section>
         <section class="sst-drill" id="drillPanel" hidden>
           <div class="drill-topbar"><div><span>逻辑 → 关键词 → 英文</span><h3 id="drillTitle"></h3></div><div class="drill-progress" id="drillProgress"></div></div>
           <div class="drill-card sst-drill-card">
@@ -92,9 +126,26 @@
           </div>
         </section>
 
+        <section class="sst-dictation" id="dictationPanel" hidden>
+          <article class="study-card">
+            <span>关键句听写 · 根据原音提取核心信息</span>
+            <h3 id="dictationTitle"></h3>
+            <p class="sst-dictation-note">先听讲座，记录你认为重要的英文句子。允许概括，不要求逐字一致。提交后按原音关键词复盘。</p>
+            <audio id="dictationAudio" controls preload="metadata" style="width:100%"></audio>
+            <div id="dictationSentenceGrid" class="dictation-sentence-grid">
+              <label>关键句 1 · 主题 <textarea class="dictation-line" rows="2" placeholder="The lecture discusses..."></textarea></label>
+              <label>关键句 2 · 主要观点 <textarea class="dictation-line" rows="2" placeholder="输入听到的核心信息……"></textarea></label>
+              <label>关键句 3 · 证据或细节 <textarea class="dictation-line" rows="2" placeholder="输入关键数字、事实或例子……"></textarea></label>
+              <label>关键句 4 · 关系或对比 <textarea class="dictation-line" rows="2" placeholder="输入原因、结果或对比……"></textarea></label>
+              <label>关键句 5 · 结论 <textarea class="dictation-line" rows="2" placeholder="输入结论（不需要五句全部填写）……"></textarea></label>
+            </div>
+            <div class="exam-toolbar"><span id="dictationWordCount">0 words</span><div><button class="secondary-button" id="dictationClear" type="button">清空</button><button class="primary-button" id="dictationSubmit" type="button">检查关键句</button></div></div>
+            <div id="dictationResult" class="exam-result" hidden></div>
+          </article>
+        </section>
         <section class="sst-exam" id="examPanel" hidden>
-          <div class="exam-brief"><div><span>模拟任务</span><h3 id="examTitle"></h3></div><p>根据题目和中文逻辑写一段 50–70 词总结。当前资料无音频，因此本页训练成文与内容覆盖，不模拟听力。</p></div>
-          <div class="exam-hints"><b>笔记线索</b><div id="examLogic"></div></div>
+          <div class="exam-brief"><div><span>模拟任务</span><h3 id="examTitle"></h3></div><p>先听原音，再写 50–70 词总结；录音结束后开始 10 分钟倒计时。仅提供格式与关键词反馈，非官方评分。</p></div>
+          <article class="study-card"><span>听力模拟 · 先听再写</span><audio id="examAudio" controls preload="metadata" style="width:100%"></audio><p id="examAudioStatus">音频结束后开始 10 分钟答题计时。请勿切换至学习模式查看原文。</p><button class="secondary-button" id="beginWritingButton" type="button">跳过音频，开始计时作答</button></article>
           <textarea id="examInput" rows="10" placeholder="在这里写一段英文总结……"></textarea>
           <div class="exam-toolbar"><span id="wordCount">0 words</span><div><button class="secondary-button" id="restartButton" type="button">重新开始</button><button class="primary-button" id="submitButton" type="button">提交检查</button></div></div>
           <div class="exam-result" id="examResult" hidden></div>
@@ -102,7 +153,10 @@
       </main>
     </div>
     <div class="toast" id="toast" role="status" hidden></div>
-    <script src="./sst-data.js?v=20261008-4"></script>
-    <script src="./sst.js?v=20261008-4"></script>
+    <script src="./sst-data.js?v=20261018-16"></script>
+    <script src="./sst-unified-data.js?v=20261018-16"></script>
+    <script src="./sst-vocab-data.js?v=20261018-16"></script>
+    <script src="./sst-vocab.js?v=20261018-16"></script>
+    <script src="./sst.js?v=20261018-16"></script>
   </body>
 </html>

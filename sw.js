@@ -1,4 +1,4 @@
-const CACHE_NAME = "pte-we-static-v47-we-cards";
+const CACHE_NAME = "pte-we-static-v50-sst-release";
 const IMAGE_CACHE_NAME = "pte-we-images-v9";
 const SST_IMAGE_ASSETS = Array.from({ length: 54 }, (_, index) => `./images/sst/S${String(index + 1).padStart(3, "0")}.webp`);
 const STATIC_ASSETS = [
@@ -26,9 +26,12 @@ const STATIC_ASSETS = [
   "./reading-recognition.js",
   "./reading.js",
   "./sst.html",
-  "./sst.css?v=20261008-4",
-  "./sst-data.js?v=20261008-4",
-  "./sst.js?v=20261008-4",
+  "./sst.css?v=20261018-16",
+  "./sst-data.js?v=20261018-16",
+  "./sst-unified-data.js?v=20261018-16",
+  "./sst-vocab-data.js?v=20261018-16",
+  "./sst-vocab.js?v=20261018-16",
+  "./sst.js?v=20261018-16",
   ...SST_IMAGE_ASSETS
 ];
 
@@ -58,6 +61,9 @@ self.addEventListener("fetch", (event) => {
 
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
+
+  // Audio requires HTTP byte-range support; do not intercept media requests.
+  if (request.destination === "audio" || url.pathname.includes("/assets/sst/mp3/")) return;
 
   if (url.pathname.includes("/images/")) {
     event.respondWith(cacheFirst(request, IMAGE_CACHE_NAME));

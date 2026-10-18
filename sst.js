@@ -6,7 +6,7 @@
   const saved = JSON.parse(localStorage.getItem(key) || "{}");
   const state = { mode: "template", currentId: saved.currentId || orderedItems[0]?.id, category: "all", filter: "all", query: "", mastered: new Set(saved.mastered || []), attempts: saved.attempts || {}, seconds: 600, timer: null };
   const $ = (id) => document.getElementById(id);
-  const panels = { template: $("templatePanel"), learn: $("learnPanel"), drill: $("drillPanel"), exam: $("examPanel") };
+  const panels = { template: $("templatePanel"), learn: $("learnPanel"), vocab: $("vocabPanel"), drill: $("drillPanel"), exam: $("examPanel"), dictation: $("dictationPanel") };
   const current = () => items.find((item) => item.id === state.currentId) || orderedItems[0];
   const escapeHtml = (value) => String(value || "").replace(/[&<>\"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   function save() { localStorage.setItem(key, JSON.stringify({ currentId: state.currentId, mastered: [...state.mastered], attempts: state.attempts })); }
@@ -20,8 +20,9 @@
       return inCategory && status && (!q || haystack.includes(q));
     });
   }
+  const vocabUI = window.createSstVocabularyUI ? window.createSstVocabularyUI() : null;
   function renderCategoryControls() {
-    $("categoryFilter").innerHTML = `<option value="all">全部 8 类 · ${items.length} 篇</option>` + categories.map((category) => `<option value="${category.id}">${escapeHtml(category.name)} · ${category.count} 篇</option>`).join("");
+    $("categoryFilter").innerHTML = `<option value="all">全部 ${categories.length} 类 · ${items.length} 篇</option>` + categories.map((category) => `<option value="${category.id}">${escapeHtml(category.name)} · ${category.count} 篇</option>`).join("");
     $("categoryFilter").value = state.category;
     $("categoryOverview").innerHTML = categories.map((category, index) => `<button class="category-card" data-category="${category.id}" type="button"><b>${String(index + 1).padStart(2, "0")} · ${escapeHtml(category.name)}</b><span>${category.count} 篇 · 点击进入</span></button>`).join("");
     $("categoryOverview").querySelectorAll("[data-category]").forEach((button) => button.addEventListener("click", () => selectCategory(button.dataset.category, true)));
@@ -56,12 +57,33 @@
     $("timerDisplay").hidden = state.mode !== "exam";
     $("markMasteredButton").textContent = state.mastered.has(item.id) ? "取消已会" : "标记已会";
   }
+  function loadTranscript(item) {
+    const status = $("audioStatus");
+    const container = $("transcriptContents");
+    const doc = window.SST_UNIFIED_DATA?.[item.id];
+    if (!doc) {
+      status.textContent = "原音校对数据暂不可用";
+      container.textContent = "";
+      return;
+    }
+    status.textContent = doc.note;
+    // A paragraph is one EN block + one ZH block; never render a separate row per ASR sentence.
+    container.innerHTML = doc.paragraphs.map(p =>
+      `<article class="sst-reading-paragraph"><p class="sst-reading-en">${escapeHtml(p.en)}</p><p class="sst-reading-zh">${escapeHtml(p.zh || "中文译文待校对")}</p></article>`
+    ).join("");
+  }
   function renderLearn(item) {
     $("itemCode").textContent = `编号 ${item.id}`;
     $("itemType").textContent = item.category_name;
     $("itemDifficulty").textContent = item.difficulty;
     $("sourceWordCount").textContent = `参考答案 ${item.word_count} 词`;
     $("logicText").textContent = item.logic;
+    const audio = $("sstAudio");
+    audio.pause(); audio.src = item.audio_mp3 || item.audio || ""; audio.load();
+    audio.playbackRate = Number($("audioSpeed").value);
+    audio.loop = $("audioLoop").checked;
+    loadTranscript(item);
+    if (vocabUI) vocabUI.renderArticle(item.id);
     $("keywordList").innerHTML = (item.keywords || []).map((x) => `<span>${escapeHtml(x)}</span>`).join("");
     $("mnemonicImage").src = `./images/sst/${item.id}.webp`;
     $("mnemonicImage").alt = `${item.title_zh}助记图`;
@@ -77,10 +99,22 @@
     $("drillAnswer").innerHTML = `<p>${escapeHtml(item.answer)}</p>`;
     $("drillAnswer").hidden = true; $("drillActions").hidden = true; $("revealButton").hidden = false;
   }
+  function renderDictation(item) {
+    $("dictationTitle").textContent = `${item.id} · ${item.title_en}`;
+    const player = $("dictationAudio");
+    player.pause(); player.src = item.audio_mp3 || item.audio || ""; player.load();
+    document.querySelectorAll(".dictation-line").forEach(el => { el.value = ""; });
+    $("dictationWordCount").textContent = "0 words";
+    $("dictationResult").hidden = true;
+  }
   function renderExam(item) {
     $("examTitle").textContent = `${item.id} · ${item.title_en}`;
-    $("examLogic").textContent = item.logic;
-    $("examInput").value = ""; $("examResult").hidden = true; updateWordCount(); resetTimer();
+    const examAudio = $("examAudio");
+    examAudio.pause(); examAudio.src = item.audio_mp3 || item.audio || ""; examAudio.load();
+    $("examAudioStatus").textContent = "请先听音频；播放完成后开始 10 分钟倒计时。";
+    $("examInput").value = ""; $("examInput").disabled = false;
+    $("beginWritingButton").disabled = false;
+    $("examResult").hidden = true; updateWordCount(); resetTimer(false);
   }
   function render() {
     const item = current(); if (!item) return;
@@ -88,18 +122,20 @@
     document.querySelectorAll(".mode-tab").forEach((button) => button.classList.toggle("is-active", button.dataset.mode === state.mode));
     setHeader(item); renderList();
     if (state.mode === "learn") renderLearn(item);
+    if (state.mode === "vocab" && vocabUI) vocabUI.renderStudy(item.id);
     if (state.mode === "drill") renderDrill(item);
     if (state.mode === "exam") renderExam(item);
+    if (state.mode === "dictation") renderDictation(item);
   }
   function selectItem(id) { state.currentId = id; if (state.mode === "template") state.mode = "learn"; save(); render(); }
   function move(delta) { const pool = state.category === "all" ? orderedItems : orderedItems.filter((item) => item.category_id === state.category); const i = Math.max(0, pool.findIndex((item) => item.id === state.currentId)); state.currentId = pool[(i + delta + pool.length) % pool.length].id; save(); render(); }
-  function setMode(mode) { state.mode = mode; clearInterval(state.timer); render(); }
+  function setMode(mode) { $("dictationAudio").pause(); $("examAudio").pause(); $("sstAudio").pause(); state.mode = mode; clearInterval(state.timer); render(); }
   function words(text) { return text.trim() ? text.trim().split(/\s+/).length : 0; }
   function updateWordCount() { $("wordCount").textContent = `${words($("examInput").value)} words`; }
   function formatTime(total) { return `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`; }
-  function resetTimer() {
+  function resetTimer(start = true) {
     clearInterval(state.timer); state.seconds = 600; $("timerDisplay").textContent = "10:00";
-    if (state.mode !== "exam") return;
+    if (state.mode !== "exam" || !start) return;
     state.timer = setInterval(() => { state.seconds = Math.max(0, state.seconds - 1); $("timerDisplay").textContent = formatTime(state.seconds); if (!state.seconds) { clearInterval(state.timer); toast("时间到，可以提交检查"); } }, 1000);
   }
   function normalizeToken(s) { return s.toLowerCase().replace(/[^a-z0-9\s-]/g, " ").replace(/\s+/g, " ").trim(); }
@@ -122,12 +158,40 @@
   }
   document.querySelectorAll(".mode-tab").forEach((button) => button.addEventListener("click", () => setMode(button.dataset.mode)));
   document.querySelectorAll(".segment").forEach((button) => button.addEventListener("click", () => { state.filter = button.dataset.filter; document.querySelectorAll(".segment").forEach((x) => x.classList.toggle("is-active", x === button)); renderList(); }));
+  $("audioSpeed").addEventListener("change", (e) => { $("sstAudio").playbackRate = Number(e.target.value); });
+  $("audioLoop").addEventListener("change", (e) => { $("sstAudio").loop = e.target.checked; });
   $("searchInput").addEventListener("input", (e) => { state.query = e.target.value; renderList(); });
   $("categoryFilter").addEventListener("change", (e) => selectCategory(e.target.value));
   $("previousButton").addEventListener("click", () => move(-1)); $("nextButton").addEventListener("click", () => move(1));
   $("markMasteredButton").addEventListener("click", () => { const id = current().id; state.mastered.has(id) ? state.mastered.delete(id) : state.mastered.add(id); save(); render(); });
   $("revealButton").addEventListener("click", () => { $("revealButton").hidden = true; $("drillAnswer").hidden = false; $("drillActions").hidden = false; });
   $("drillActions").addEventListener("click", (e) => { const grade = e.target.dataset.grade; if (!grade) return; if (grade === "known") state.mastered.add(current().id); else if (grade === "forgot") state.mastered.delete(current().id); save(); toast(grade === "known" ? "已记住，进入下一篇" : grade === "vague" ? "已标记模糊，稍后再练" : "已加入复习"); move(1); });
+  function startExamWriting() {
+    if (state.mode !== "exam" || $("beginWritingButton").disabled) return;
+    $("examAudio").pause();
+    $("examInput").disabled = false;
+    $("beginWritingButton").disabled = true;
+    $("examAudioStatus").textContent = "正在作答：请在 10 分钟内提交总结。";
+    resetTimer(true);
+    $("examInput").focus();
+  }
+  const dictationText = () => [...document.querySelectorAll(".dictation-line")].map(el => el.value.trim()).filter(Boolean).join(" ");
+  document.querySelectorAll(".dictation-line").forEach(el => el.addEventListener("input", () => { $("dictationWordCount").textContent = `${words(dictationText())} words`; }));
+  $("dictationClear").addEventListener("click", () => { document.querySelectorAll(".dictation-line").forEach(el => { el.value = ""; }); $("dictationWordCount").textContent = "0 words"; $("dictationResult").hidden = true; });
+  $("dictationSubmit").addEventListener("click", () => {
+    const input = dictationText();
+    if (!input) { toast("请先输入听到的英文关键句"); return; }
+    const item = current();
+    const expected = (item.keywords || []).map(k => k.trim()).filter(Boolean);
+    const lower = normalizeToken(input);
+    const hit = expected.filter(k => lower.includes(normalizeToken(k)));
+    const missing = expected.filter(k => !hit.includes(k));
+    const coverage = expected.length ? Math.round(hit.length / expected.length * 100) : 0;
+    $("dictationResult").innerHTML = `<p><b>关键短语覆盖：${coverage}%（${hit.length}/${expected.length}）</b> · 仅用于自检，不是官方评分</p><p>已覆盖：${escapeHtml(hit.join(" · ") || "暂无")}</p><p>可补充：${escapeHtml(missing.join(" · ") || "全部已覆盖")}</p><div class="reference-answer"><b>参考总结</b>${escapeHtml(item.answer)}</div>`;
+    $("dictationResult").hidden = false;
+  });
+  $("examAudio").addEventListener("ended", startExamWriting);
+  $("beginWritingButton").addEventListener("click", startExamWriting);
   $("examInput").addEventListener("input", updateWordCount); $("restartButton").addEventListener("click", render); $("submitButton").addEventListener("click", submitExam);
   $("sidebarToggle").addEventListener("click", () => { const collapsed = $("appShell").classList.toggle("is-sidebar-collapsed"); $("sidebarToggle").textContent = collapsed ? "›" : "‹"; $("sidebarToggle").setAttribute("aria-expanded", String(!collapsed)); });
   renderCategoryControls();
